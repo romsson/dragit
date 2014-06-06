@@ -1,4 +1,5 @@
-dragit
-======
+dragit.js
+==========
 
-Direct manipulation of data graphics
+**dragit** is an extension to the **D3** library to enable the direct manipulation of SVG data graphics. 
+
