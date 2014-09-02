@@ -173,13 +173,19 @@ dragit.object.activate = function(d, i) {
 
       var m = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
 
+
+//      case "closestpoint":
+
+//      case "closestcurve":
+
+
       // Browse all the .lineTrail trajectories
-      d3.selectAll(".lineTrail")[0].forEach(function(ddd, iii) {
-        dragit.lineGraph = d3.select(ddd);
+      d3.selectAll(".lineTrail")[0].forEach(function(e, j) {
+        dragit.lineGraph = d3.select(e);
 
         var  p = Utils.prototype.closestPoint(dragit.lineGraph.node(), m);
-        closest = Utils.prototype.closestValue(m, dragit.data[iii]);
-        q = dragit.data[iii][[closest.indexOf(Math.min.apply(Math, closest))]];
+        closest = Utils.prototype.closestValue(m, dragit.data[j]);
+        q = dragit.data[j][[closest.indexOf(Math.min.apply(Math, closest))]];
 
         list_p.push(p);
         list_q.push(q);
@@ -193,7 +199,7 @@ dragit.object.activate = function(d, i) {
         list_times.push(new_time);
 
         // Store the current line
-        list_lines.push(iii);
+        list_lines.push(j);
       })
 
       // Find the index for the shortest distance
@@ -205,6 +211,11 @@ dragit.object.activate = function(d, i) {
       dragit.lineGuide.attr("x1", list_p[index_min][0]).attr("y1", list_p[index_min][1]).attr("x2", m[0]).attr("y2", m[1]);
       dragit.pointGuide.attr("cx", list_p[index_min][0]).attr("cy", list_p[index_min][1]);
       dragit.valueGuide.attr("x1", list_q[index_min][0]).attr("y1", list_q[index_min][1]).attr("x2", m[0]).attr("y2", m[1]);
+
+      /*
+      dragit.lineGuide.style("opacity", 1)
+      dragit.lineGuide.style("visible", "block")
+  */
 
       // Update to the closest snapshot
       if(dragit.time.current != new_time || dragit.trajectory.index_min != index_min) {
@@ -226,8 +237,12 @@ dragit.object.activate = function(d, i) {
       dragit.lineGuide.remove();
       dragit.valueGuide.remove();
       dragit.pointGuide.remove();
-      gDragit.remove();
+      // Remove trajectory
 
+      d3.selectAll(".gDragit").remove();
+      //gDragit.remove();
+
+      // Snapping
       switch(dragit.mouse.dragging) {
 
         case "free":
