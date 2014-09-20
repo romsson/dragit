@@ -114,9 +114,6 @@ dragit.trajectory.remove = function(d, i) {
 
 dragit.trajectory.removeAll = function() { 
   d3.selectAll(".gDragit").remove();
-  //dragit.data.map(function(d, i) {
-    //d3.selectAll(".gDragit").remove();
-  //});
 }
 
 // Creates a slider to navigate in the timecube
@@ -195,8 +192,8 @@ dragit.object.activate = function(d, i) {
       d3.selectAll(".lineTrail")[0].forEach(function(e, j) {
         dragit.lineGraph = d3.select(e);
 
-        var  p = Utils.prototype.closestPoint(dragit.lineGraph.node(), m);
-        closest = Utils.prototype.closestValue(m, dragit.data[j]);
+        var  p = dragit.utils.closestPoint(dragit.lineGraph.node(), m);
+        closest = dragit.utils.closestValue(m, dragit.data[j]);
         q = dragit.data[j][[closest.indexOf(Math.min.apply(Math, closest))]];
 
         list_p.push(p);
@@ -288,7 +285,7 @@ function Utils() {
 }
 
 // Credits: http://bl.ocks.org/mbostock/8027637
-Utils.prototype.closestPoint  = function(pathNode, point) {
+dragit.utils.closestPoint  = function(pathNode, point) {
 
   var pathLength = pathNode.getTotalLength(),
       precision = pathLength / pathNode.pathSegList.numberOfItems * .125,
@@ -332,7 +329,7 @@ Utils.prototype.closestPoint  = function(pathNode, point) {
   }
 }
 
-Utils.prototype.closestValue  = function(p, points) {
+dragit.utils.closestValue  = function(p, points) {
   //console.log("closest", points)
   var distances = points.map(function(d, i) { 
     var dx = d[0]-p[0];
@@ -346,7 +343,7 @@ Utils.prototype.closestValue  = function(p, points) {
 // http://bl.ocks.org/mbostock/8027835
 // http://bl.ocks.org/njvack/1405439
 // http://bl.ocks.org/mbostock/9078690
-Utils.prototype.closestValueVoronoi  = function(points) {
+dragit.utils.closestValueVoronoi  = function(points) {
 
   var voronoi = d3.geom.voronoi()
       .clipExtent([[-2, -2], [width + 2, height + 2]]);
@@ -371,6 +368,4 @@ Utils.prototype.closestValueVoronoi  = function(points) {
   //  cell.select("circle").attr("transform", function(d) { return "translate(" + d.point + ")"; });
   //  cell.select("path").attr("d", function(d) { return "M" + d.join("L") + "Z"; });
   }
-
-
 };
