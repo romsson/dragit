@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Simple Test</title>
+	<script src="../lib/d3.v3.js"></script>
+	<script src="../src/dragit.js"></script>
+</head>
+<body>
+	<p style="clear:both"></p>
+	<span id="min-time">0</span> 
+	<input type="range" name="points" min="0" max="43" step="1" value="0" id="slider-time" oninput="update(this.value, 0)"> <span id="max-time">0</span>
+	<div id="viz"></div>
+
+<script>
+
+
+var margin = {top: 20, right: 20, bottom: 20, left: 20},
+    width = 900 - margin.right - margin.left,
+    height = 500 - margin.top - margin.bottom;
+
+// Create the SVG? Not now..
+var svg = d3.select("#viz").append("svg")
+  .attr("width", 10)
+  .attr("height", 10)
+  .style("top", margin.top)
+  .style("left", margin.left)
+  .style("position", "absolute")
+
+var timecube = [];
+
+d3.text("../data/rankings.csv", function(text) {
+	
+	data = d3.csv.parseRows(text);
+
+	dragit.time = {min: d3.min(data, function(d) { return parseInt(d[5]);}), 
+								 max: d3.max(data, function(d) { return parseInt(d[5]);}), 
+								 step:1, 
+								 current:0
+								};
+
+	update(0, 0);
+	init();
+});
+
+function update(v, duration) {
+	
+	v = parseInt(v)
+
+	d3.select("#viz").select("table").remove();
+
+	var table = d3.select("#viz")
+	    .append("table")		
+	    .style("border-collapse", "collapse")
+	    .style("border", "2px black solid");
+
+	var rows = table.selectAll("tr")
+		    .data(data.filter(function(d) {
+		    	return d[5] == (dragit.time.min+v);
+		    }))
+		  .enter().append("tr")
+		    .selectAll("td")
+		    .data(function(d){ return d;})
+		  .enter().append("td")
+		    .style("border", "1px black solid")
+		    .style("padding", "5px")
+		    .text(function(d){ return d; })
+		    .style("font-size", "12px")
+			  .on("mouseenter", dragit.trajectory.display)
+			  .on("mouseout", dragit.trajectory.remove)
+		  	.call(dragit.object.activate);
+
+}
+
+function init() {
+
+	 var margin = {top: d3.select("table").property("offsetTop"), right: d3.select("table").property("offsetRight"), bottom: 19.5, left: d3.select("table").property("offsetLeft")};
+
+	  var  width = parseInt(d3.select("table").style("width").replace("px", "")),
+	    height = parseInt(d3.select("table").style("height").replace("px", ""));
+
+  dragit.object.update = update;
+
+	d3.select("#min-time").text(dragit.time.min);
+	d3.select("#max-time").text(dragit.time.max);
+
+  d3.select("#slider-time").property("value", dragit.time.current);
+
+}
+
+</script>
+</body>
+</html>
