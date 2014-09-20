@@ -83,8 +83,7 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var time_steps = 20, nb_points = 12;
-
+var nb_points = 12;
 
 var config = {
   time: {min:0, max:20, step:1, current:0}    
@@ -93,7 +92,7 @@ var config = {
 dragit.time.current = 0;
 
 var timecube = d3.range(nb_points).map(function(d, i) {
-  return d3.range(time_steps).map(function(e, j) { 
+  return d3.range(config.time.max).map(function(e, j) { 
     return {x:j, y:20*Math.random(), t: j};
   });
 })
@@ -114,7 +113,6 @@ var margin = {top: 20, right: 20, bottom: 20, left: 20},
 init();
 
 // Create the bar chart
-
 svg.append("g")
     .attr("class", "x axis")
     .attr("transform", "translate(0," + height + ")")
@@ -128,7 +126,7 @@ svg.append("g")
     .attr("y", 6)
     .attr("dy", ".71em")
     .style("text-anchor", "end")
-    .text("Temperature");
+    .text("Y-axis");
 
 bars = svg.selectAll(".bar")
     .data(timecube)
@@ -147,13 +145,15 @@ bars = svg.selectAll(".bar")
 
 function update(t, duration) {
 
-  dragit.time.current = t;
+  dragit.time.current = t || dragit.time.current;
 
   svg.selectAll(".bar")
-      .data(timecube)
+    .data(timecube)
       .transition().duration(duration)
-    .attr("y", function(d) { return y(d[dragit.time.current].y); })
-    .attr("height", function(d) { return height - y(d[dragit.time.current].y); })
+      .attr("y", function(d) { return y(d[dragit.time.current].y); })
+      .attr("height", function(d) { return height - y(d[dragit.time.current].y); })
+
+  d3.select("#slider-time").property("value", dragit.time.current);
 }
 
 function init() {
@@ -165,9 +165,10 @@ function init() {
     }) 
   });
 
+  dragit.object.update = update;
+
   d3.selectAll("#min-time").text(0)
   d3.selectAll("#max-time").text(dragit.time.step)
-
   d3.select("#slider-time").property("value", dragit.time.current);
 }
 
@@ -175,7 +176,7 @@ function init() {
 </script>
 
 <p style="clear:both"></p>
-0 <input type="range" name="points" min="0" max="20" step="1" value="0" id="time-slider" oninput="update(this.value, 100)"> 20
-
+0 <input type="range" name="points" min="0" max="20" step="1" value="0" id="time-slider" oninput="update(parseInt(this.value), 100)"> 20
+<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll();"> Show trajectories</label>
 </body>
 </html>
