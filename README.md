@@ -10,6 +10,7 @@ dragit.js
 * Ranking tables
 * Advanced data visualizations
 
+
 ### Getting Started
 
 To use it, insert the following snippets:
@@ -18,6 +19,8 @@ To use it, insert the following snippets:
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="dragit.js" charset="utf-8"></script>
 ```
+
+Your code should contain two functions (names don't matter) `init()` (called only once during startup), and `update()` (called once time has changed).
 
 Below a few concepts that are important to undersdant and that we'll refer to later on:
 
@@ -29,7 +32,9 @@ Below a few concepts that are important to undersdant and that we'll refer to la
 
 ###`dragit.data`
 
-* `dragit.data`: is a time-cube defined as follows:
+* `dragit.data`: is a time-cube defined where each row are data points and columns time steps.
+
+Example:
 
 ```
 [ d0 [ t0 ] [ t1 ] ... [ tm ] ]
@@ -38,7 +43,15 @@ Below a few concepts that are important to undersdant and that we'll refer to la
 [ dn [ t0 ] [ t1 ] ... [ tm ] ]
 ```
 
-Where di are dimensions, as ti are time points.
+Where di are dimensions, as ti are time points. You may want to generate a random time cube as follow:
+
+```
+var timecube = d3.range(nb_data_points).map(function(d, i) {
+	return d3.range(nb_time_steps).map(function(e, j) { 
+		return {x:j, y:Math.random(), t: j};
+	});
+})
+```
 
 ###`dragit.time`
 
@@ -81,4 +94,12 @@ It concerns the object of interest or handle, i.e. the object the user interact 
 ####`dragit.focus`
 
 * Functions related to the focus manipulation
+
+### `dragit.trajectory`
+
+
+* `dragit.trajectory.display` displays the currently dragged element's trajectory
+* `dragit.trajectory.displayAll` displays all trajectories
+* `dragit.trajectory.remove` removes the created trajectory
+* `dragit.trajectory.removeAll` removes all trajectories
 
