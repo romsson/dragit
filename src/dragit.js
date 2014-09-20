@@ -6,7 +6,7 @@
   dragit.version = "0.1";
 
    var vars = {
-      "dev": false // Verbose mode for debugging
+      "dev": false
     };
 
   dragit.statemachine = {current_state:"idle", current_id:-1};
@@ -18,15 +18,17 @@
   dragit.data = [];
 
   dragit.evt = {};                // List of events binded to states
-  dragit.evt.dragstart = [];        // dragstart: end of dragging
-  dragit.evt.drag = [];        // dragend: end of dragging
+  dragit.evt.dragstart = [];      // dragstart: end of dragging
+  dragit.evt.drag = [];           // dragend: end of dragging
   dragit.evt.dragend = [];        // dragend: end of dragging
 
   dragit.guide = {};
 
   dragit.trajectory = {interpolate: "linear"};
 
-dragit.trajectory.init = function(tc) {  this.tc = tc;
+dragit.trajectory.init = function(tc) {  
+
+  this.tc = tc;
 
 }
 
@@ -90,6 +92,15 @@ dragit.trajectory.toggle = function() {
 
 }
 
+dragit.trajectory.toggleAll = function() {
+
+  if(d3.selectAll(".gDragit")[0].length > 0)
+    dragit.trajectory.removeAll();
+  else
+    dragit.trajectory.displayAll();
+
+}
+
 dragit.trajectory.displayAll = function() { 
   dragit.data.map(function(d, i) {
     dragit.trajectory.display({}, i)    
@@ -102,9 +113,10 @@ dragit.trajectory.remove = function(d, i) {
 }
 
 dragit.trajectory.removeAll = function() { 
-  dragit.data.map(function(d, i) {
+  d3.selectAll(".gDragit").remove();
+  //dragit.data.map(function(d, i) {
     //d3.selectAll(".gDragit").remove();
-  });
+  //});
 }
 
 // Creates a slider to navigate in the timecube
@@ -175,9 +187,7 @@ dragit.object.activate = function(d, i) {
 
 
 //      case "closestpoint":
-
 //      case "closestcurve":
-
 
       // Browse all the .lineTrail trajectories
       d3.selectAll(".lineTrail")[0].forEach(function(e, j) {
@@ -263,9 +273,7 @@ dragit.object.activate = function(d, i) {
         if(typeof(e) != "undefined")
           e(d, i)
           //setTimeout(e(d, i), 100) 
-      });
-
-     
+      });     
 
         dragit.statemachine.current_state = "idle";
         dragit.statemachine.current_id = -1;

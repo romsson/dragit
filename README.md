@@ -58,6 +58,13 @@ dragit.time = {min: d3.min(data, function(d) { return parseInt(d[i]);}),
 							}
 ```
 
+### `dragit.object`
+
+It concerns the object of interest or handle, i.e. the object the user interact with to start the interaction and thus starts the time change.
+
+
+* `dragit.object.activate` activates dragging for the selected element. It creates the necessary mouse events (drag). Example: `.call(dragit.object.activate)`.
+
 ####`dragit.mouse.dragging`
 
 * `horizontal` similar as a time
@@ -69,8 +76,9 @@ dragit.time = {min: d3.min(data, function(d) { return parseInt(d[i]);}),
 ####`dragit.target`
 
 * Functions related to the target manipulation
+* Transition between focus and target
 
 ####`dragit.focus`
 
-* Functiosn related to the focus manipulation
+* Functions related to the focus manipulation
 
