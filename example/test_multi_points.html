@@ -62,7 +62,8 @@ function update(v, t) {
 				.attr({cx: function(d) { return xScale(d[dragit.time.current].x)}, 
 					 cy: function(d) { return yScale(d[dragit.time.current].y)}
 				  })
-
+  console.log(dragit.time.current)
+  d3.select("#slider-time").property("value", dragit.time.current);
 }
 
 function init() {
@@ -78,13 +79,14 @@ function init() {
   
   dragit.time = {min:0, max:time_steps, step:1, current: current_time}
   dragit.object.update = update;
+  d3.select("#slider-time").property("value", dragit.time.current);
 }
 
 init();
 
 </script>
 <form>
-  <label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggle();"> Show trajectories</label>
+  <label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.displayAll();"> Show trajectories</label>
 </form>
 </body>
 </html>
