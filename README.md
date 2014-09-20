@@ -6,9 +6,10 @@ dragit.js
 ### Examples
 
 * [Interactive soccer bracket](http://romain.vuillemot.net/projects/worldcup14/)
-* Standard charts (bar chart, pie chart, scatterplot, ..)
+* Standard charts ([Bar chart](example/test_barchart.html), pie chart, scatterplot, ..)
+* [Gapminder / Wealth of Nations](example/nations.html): drag countries to desired position ([original version](http://bost.ocks.org/mike/nations/))
 * Ranking tables
-* Advanced data visualizations
+* ... and more to come!
 
 
 ### Getting Started
@@ -20,7 +21,9 @@ To use it, insert the following snippets:
 <script src="dragit.js" charset="utf-8"></script>
 ```
 
-Your code should contain two functions (names don't matter) `init()` (called only once during startup), and `update()` (called once time has changed).
+If you look at the examples, the library can be indluded quasi-seamlessly. All you need, is to have two functions (names don't matter) `init()` (called only once during startup), and `update()` (called once time has changed).
+
+Those two functions will make sure the library's internal state is always up to date, regardless how you udpate the data graphics (using regular slider or direct manipulation).
 
 Below a few concepts that are important to undersdant and that we'll refer to later on:
 
