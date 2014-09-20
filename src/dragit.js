@@ -154,6 +154,7 @@ dragit.object.activate = function(d, i) {
       dragit.lineGuide = gDragit.append("line").attr({stroke: "red", "stroke-dasharray": "4,4"}).style("display", "block")
       dragit.valueGuide = gDragit.append("line").attr({stroke: "red"}).style({opacity: .1}).style("display", "block")
       dragit.pointGuide = gDragit.append("circle").attr({cx: -10, cy: -10, r: 3.5}).style({opacity: .1}).style("display", "block")
+      dragit.focusGuide = gDragit.append("circle").attr({cx: -10, cy: -10, r: 5.5, fill:"none", stroke: "black"}).style({opacity: 1}).style("display", "block")
 
       dragit.statemachine.current_state = "drag";
 
@@ -164,6 +165,7 @@ dragit.object.activate = function(d, i) {
           e(d, i)
           //setTimeout(e(d, i), 100) 
       });
+
 
     })
     .on("drag", function(d,i) {
@@ -221,15 +223,12 @@ dragit.object.activate = function(d, i) {
       dragit.lineGuide.attr("x1", list_p[index_min][0]).attr("y1", list_p[index_min][1]).attr("x2", m[0]).attr("y2", m[1]);
       dragit.pointGuide.attr("cx", list_p[index_min][0]).attr("cy", list_p[index_min][1]);
       dragit.valueGuide.attr("x1", list_q[index_min][0]).attr("y1", list_q[index_min][1]).attr("x2", m[0]).attr("y2", m[1]);
-
-      /*
-      dragit.lineGuide.style("opacity", 1)
-      dragit.lineGuide.style("visible", "block")
-  */
+      
+      // Focus follows the mouse cursor
+      dragit.focusGuide.attr("cx", m[0]).attr("cy", m[1]);
 
       // Update to the closest snapshot
       if(dragit.time.current != new_time || dragit.trajectory.index_min != index_min) {
-
         dragit.trajectory.index_min = index_min;
         dragit.time.current = new_time;
         dragit.object.update();
@@ -243,12 +242,12 @@ dragit.object.activate = function(d, i) {
     })
     .on("dragend", function(d,i) {
 
-
       dragit.lineGuide.remove();
       dragit.valueGuide.remove();
       dragit.pointGuide.remove();
-      // Remove trajectory
+      dragit.focusGuide.remove();
 
+      // Remove trajectory
       d3.selectAll(".gDragit").remove();
       //gDragit.remove();
 
@@ -332,7 +331,6 @@ Utils.prototype.closestPoint  = function(pathNode, point) {
     return dx * dx + dy * dy;
   }
 }
-
 
 Utils.prototype.closestValue  = function(p, points) {
   //console.log("closest", points)
