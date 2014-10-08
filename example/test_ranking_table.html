@@ -56,6 +56,7 @@ function update(v, duration) {
 
 	var rows = table.selectAll("tr")
 		    .data(data.filter(function(d) {
+		    	// Filter by time
 		    	return d[5] == (dragit.time.min+v);
 		    }))
 		  .enter().append("tr")
@@ -66,7 +67,10 @@ function update(v, duration) {
 		    .style("padding", "5px")
 		    .text(function(d){ return d; })
 		    .style("font-size", "12px")
-			  .on("mouseenter", dragit.trajectory.display)
+			  .on("mouseenter", function(d, i) {
+			  	console.log(d, i);
+			  	dragit.trajectory.display
+			  })
 			  .on("mouseout", dragit.trajectory.remove)
 		  	.call(dragit.object.activate);
 
@@ -79,7 +83,13 @@ function init() {
 	  var  width = parseInt(d3.select("table").style("width").replace("px", "")),
 	    height = parseInt(d3.select("table").style("height").replace("px", ""));
 
-  dragit.object.update = update;
+  	dragit.object.update = update;
+
+  dragit.data = timecube.map(function(d, i) { 
+  	return d.map(function(e, i) { 
+  		return [xScale(e.x), yScale(e.y)]; 
+  	}) 
+  });
 
 	d3.select("#min-time").text(dragit.time.min);
 	d3.select("#max-time").text(dragit.time.max);

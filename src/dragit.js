@@ -38,8 +38,7 @@ dragit.trajectory.display = function(d, i) {
   if(dragit.statemachine.current_state == "drag" && dragit.statemachine.current_id == i)
     return;
 
-  if(vars.dev)
-    console.log("display", dragit.statemachine.current_state, dragit.statemachine.current_id, i)
+  if(vars.dev) console.log("display", dragit.statemachine.current_state, dragit.statemachine.current_id, i)
 
   dragit.statemachine.current_id = i;
 
@@ -137,8 +136,7 @@ dragit.utils.centroid = function(s) {
 // Main function that binds drag callbacks to the current element
 dragit.object.activate = function(d, i) {
 
-  if (vars.dev) 
-    console.log("Activate", d, i)
+  if (vars.dev) console.log("Activate", d, i)
 
   d.call(d3.behavior.drag()
     .on("dragstart", function(d, i) {
@@ -157,7 +155,8 @@ dragit.object.activate = function(d, i) {
 
       // Call dragend events
       dragit.evt.dragstart.forEach(function(e, j) {
-      //  console.log("dragstart", d, i)
+        if(vars.dev) console.log("dragstart", d, i)
+        
         if(typeof(e) != "undefined")
           e(d, i)
           //setTimeout(e(d, i), 100) 
