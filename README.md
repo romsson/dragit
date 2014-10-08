@@ -21,17 +21,18 @@ To use it, insert the following snippets:
 <script src="dragit.js" charset="utf-8"></script>
 ```
 
-If you look at the examples, the library can be indluded quasi-seamlessly. All you need, is to have two functions (names don't matter) `init()` (called only once during startup), and `update()` (called once time has changed).
+If you look at the examples, the library is supposed to be indluded quasi-seamlessly, i.e. without much change of the current data graphics. You are, however, very likely to structure the chart as follows:
 
-Those two functions will make sure the library's internal state is always up to date, regardless how you udpate the data graphics (using regular slider or direct manipulation).
+* Two functions (names don't matter) `init()` (called only once during startup), and `update()` (called once time has changed). Those two functions will make sure the library's internal state is always up to date, regardless how you udpate the data graphics (using regular slider or direct manipulation).
+
+* Crate an internal data structure (namely a time cube) where each row is a data point, and each column a time point.
 
 Below a few concepts that are important to undersdant and that we'll refer to later on:
 
-* **Object of Interest**: the DOM element (SVG node, div, ..) that can be dragged.
-* **Trajectory**: the visual path along which the **Object of Interest** can be dragged along.
-* **Target**: the visual element that is selected before dragging dragged.
+* **Object of Interest**: the graphical marks (SVG node, div, ..) that can be dragged and will indirectly update the graphic.
+* **Trajectory**: the visual path along which the **Object of Interest** can be dragged. It is represented as a line.
 * **Focus**: the visual element that is being dragged (can be a simplified simplified such as into a point or shadow).
-* **Intermediate points**: series of focus points that can be reached, over time.
+* **Time points**: series of points the focus can reach along its trajectory.
 
 ###`dragit.data`
 
@@ -46,12 +47,12 @@ Example:
 [ dn [ t0 ] [ t1 ] ... [ tm ] ]
 ```
 
-Where di are dimensions, as ti are time points. You may want to generate a random time cube as follow:
+Where d<sub>i</sub> are dimensions, as t<sub>i</sub> are time points. You may want to generate a random time cube as follow:
 
 ```
 var timecube = d3.range(nb_data_points).map(function(d, i) {
 	return d3.range(nb_time_steps).map(function(e, j) { 
-		return {x:j, y:Math.random(), t: j};
+		return {x:i, y:Math.random(), t: j};
 	});
 })
 ```
@@ -89,10 +90,6 @@ It concerns the object of interest or handle, i.e. the object the user interact 
 * `flow` flow dragging method. Usually well suited for background * motion.
 * `free` dragging with no constraints on the activated element, returns to its original position
 
-####`dragit.target`
-
-* Functions related to the target manipulation
-* Transition between focus and target
 
 ####`dragit.focus`
 
