@@ -59,11 +59,11 @@ var timecube = d3.range(nb_data_points).map(function(d, i) {
 
 ###`dragit.time`
 
-* `dragit.time.current`: the current time (default: 0)
-* `dragit.time.min`: the minimal time point (default: 0)
-* `dragit.time.max`: the maximal time point (default: 0)
-* `dragit.time.step`: increment (default: 1)
-* `dragit.time.speed`: for the playback (default:1)
+* `dragit.time.current` : 	the current time (default: 0)
+* `dragit.time.min`		: 	the minimal time point (default: 0)
+* `dragit.time.max`		: 	the maximal time point (default: 0)
+* `dragit.time.step`	: 	increment (default: 1)
+* `dragit.time.speed`	: 	for the playback (default:1)
 
 Example:
 
