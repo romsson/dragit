@@ -53,12 +53,7 @@ dragit.trajectory.display = function(d, i) {
                   .data([dragit.data[i]])
                 .enter().append("path")
                   .attr("d", svgLine)
-                  .attr("stroke", "blue")
-                  .style("stroke", "black")
-                  .attr("stroke-width", 2)                            
-                  .attr("fill", "none")
                   .attr("class", "lineTrail")
-                  .style("pointer-events", "none")
 
   dragit.pointsGraph  = gDragit.selectAll(".pointsTrail")
                     .data(dragit.data[i].filter(function(e, j) { 
@@ -68,18 +63,13 @@ dragit.trajectory.display = function(d, i) {
                     .attr("class", "pointsTrail")
                     .attr('cx', function(d) { return d[0]; })
                     .attr('cy', function(d) { return d[1]; })
-                    .attr('r', 10)
-                    .style("pointer-events", "none")
+                    .attr('r', 3);
 
   dragit.lineSimple = gDragit.selectAll(".lineSimple")
                   .data([dragit.data[i]])
                 .enter().append("path")
-                  .attr("d", svgLine.interpolate("basis"))
-                  .attr("stroke-width", 10)                            
-                  .attr("fill", "none")
                   .attr("class", "lineSimple")
-                  .style("pointer-events", "none")
-                  .attr({stroke: "lightgray", "stroke-dasharray": "10,10"})
+                  .attr("d", svgLine.interpolate("monotone"));
 
 }
 
