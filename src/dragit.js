@@ -136,10 +136,10 @@ dragit.object.activate = function(d, i) {
       d.y = 0;
 
       // Create elements for trajectories
-      dragit.lineGuide = gDragit.append("line").attr({stroke: "red", "stroke-dasharray": "4,4"}).style("display", "block")
-      dragit.valueGuide = gDragit.append("line").attr({stroke: "red"}).style({opacity: .1}).style("display", "block")
-      dragit.pointGuide = gDragit.append("circle").attr({cx: -10, cy: -10, r: 3.5}).style({opacity: .1}).style("display", "block")
-      dragit.focusGuide = gDragit.append("circle").attr({cx: -10, cy: -10, r: 5.5, fill:"none", stroke: "black"}).style({opacity: 1}).style("display", "block")
+      dragit.lineGuide = gDragit.append("line").attr("class", "lineGuide")
+      dragit.valueGuide = gDragit.append("line").attr("class", "valueGuide")
+      dragit.pointGuide = gDragit.append("circle").attr({cx: -10, cy: -10, r: 3.5}).attr("class", "pointGuide")
+      dragit.focusGuide = gDragit.append("circle").attr({cx: -10, cy: -10, r: 5.5}).attr("class", "focusGuide")
 
       dragit.statemachine.current_state = "drag";
 
@@ -173,6 +173,7 @@ dragit.object.activate = function(d, i) {
 
       var m = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
 
+      console.log("HERERE", m)
 
 //      case "closestpoint":
 //      case "closestcurve":
@@ -189,7 +190,7 @@ dragit.object.activate = function(d, i) {
         list_q.push(q);
 
         // Store all the distances
-        list_distances.push(Math.sqrt( (p[0] - m[0]) * (p[0] - m[0]) + (p[1] - m[1]) * (p[1] - m[1]) ));
+        list_distances.push(Math.sqrt((p[0] - m[0]) * (p[0] - m[0]) + (p[1] - m[1]) * (p[1] - m[1])));
 
         var new_time = closest.indexOf(Math.min.apply(Math, closest)) + dragit.time.min;
 

@@ -19,7 +19,31 @@ path.lineSimple {
 }
 
 circle.pointsTrail {
-  pointer-events: none;
+   pointer-events: none;
    stroke: lightgray;
    fill: gray;
+}
+
+circle.pointGuide {
+  opacity: .1;
+  display: block;
+}
+
+circle.focusGuide {
+  opacity: 1;
+  display: block;
+  fill: none;
+  stroke: black;
+}
+
+line.lineGuide {
+  stroke: red;
+  stroke-dasharray: 4,4;
+  display: block;
+}
+
+line.valueGuide {
+  stroke: red;
+  opacity: .1;
+  display: block;
 }
