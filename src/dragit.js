@@ -82,12 +82,10 @@ dragit.trajectory.toggle = function() {
 }
 
 dragit.trajectory.toggleAll = function() {
-
   if(d3.selectAll(".gDragit")[0].length > 0)
     dragit.trajectory.removeAll();
   else
     dragit.trajectory.displayAll();
-
 }
 
 dragit.trajectory.displayAll = function() { 
@@ -105,7 +103,7 @@ dragit.trajectory.removeAll = function() {
   d3.selectAll(".gDragit").remove();
 }
 
-// Creates a slider to navigate in the timecube
+// Automatically add an HTML slider to navigate in the timecube
 // TODO: <input type="range" name="points" min="0" max="20" step="1" value="0" id="slider-time" oninput="update(this.value, 100)"> <span id="max-time">0</span>
 dragit.utils.slider = function(el) {
 
@@ -237,7 +235,6 @@ dragit.object.activate = function(d, i) {
 
       // Remove trajectory
       d3.selectAll(".gDragit").remove();
-      //gDragit.remove();
 
       // Snapping
       switch(dragit.mouse.dragging) {
@@ -256,7 +253,6 @@ dragit.object.activate = function(d, i) {
 
       // Call dragend events
       dragit.evt.dragend.forEach(function(e, j) {
-      //  console.log("dragstart", d, i)
         if(typeof(e) != "undefined")
           e(d, i)
           //setTimeout(e(d, i), 100) 
@@ -324,34 +320,3 @@ dragit.utils.closestValue  = function(p, points) {
   })
   return distances;
 }
-
-// Credits:
-// http://bl.ocks.org/mbostock/8027835
-// http://bl.ocks.org/njvack/1405439
-// http://bl.ocks.org/mbostock/9078690
-dragit.utils.closestValueVoronoi  = function(points) {
-
-  var voronoi = d3.geom.voronoi()
-      .clipExtent([[-2, -2], [width + 2, height + 2]]);
-
-  var cell = gDragit.append("g")
-      .attr("class", "voronoi")
-    .selectAll("g");
-
-  var output = d3.select("output");
-
-  var input = d3.select("input")
-      .on("change", function() { resample(+this.value); })
-      .each(function() { resample(+this.value); });
-
-  function resample() {
-   // console.log(voronoi(points))
-    cell = cell.data(voronoi(points));
-  //  cell.exit().remove();
-  //  var cellEnter = cell.enter().append("g");
-  //  cellEnter.append("circle").attr("r", 3.5);
-  //  cellEnter.append("path");
-  //  cell.select("circle").attr("transform", function(d) { return "translate(" + d.point + ")"; });
-  //  cell.select("path").attr("d", function(d) { return "M" + d.join("L") + "Z"; });
-  }
-};

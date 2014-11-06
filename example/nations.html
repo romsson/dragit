@@ -48,9 +48,9 @@ text {
 
 <p id="chart"></p>
 
+  <link href="../src/dragit.css" rel="stylesheet"/>
   <script src="../lib/d3.v3.js"></script>
   <script src="../src/dragit.js"></script>
-  <link type="text/css" rel="stylesheet" href="../style/dragee.css"></link>
 
 <script>
 
@@ -281,7 +281,6 @@ d3.json("../data/nations.json", function(nations) {
 <span id="min-time">1800</span> 
 <input type="range" name="points" min="1800" max="2008" step="1" value="0" id="slider-time">
 <span id="max-time">2008</span>
-<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll();"> Show trajectories</label>
 <br><br><br>
 Original code: <a href="http://bost.ocks.org/mike/nations/">The Wealth & Health of Nations</a> by Mike Bostock.
 </body>
