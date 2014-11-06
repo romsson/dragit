@@ -173,18 +173,19 @@ dragit.object.activate = function(d, i) {
 
       var m = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
 
-      console.log("HERERE", m)
-
 //      case "closestpoint":
 //      case "closestcurve":
 
       // Browse all the .lineTrail trajectories
       d3.selectAll(".lineTrail")[0].forEach(function(e, j) {
+
         dragit.lineGraph = d3.select(e);
 
         var  p = dragit.utils.closestPoint(dragit.lineGraph.node(), m);
-        closest = dragit.utils.closestValue(m, dragit.data[j]);
-        q = dragit.data[j][[closest.indexOf(Math.min.apply(Math, closest))]];
+        closest = dragit.utils.closestValue(m, dragit.data[i]);
+
+        // Find the closest data point
+        q = dragit.data[i][[closest.indexOf(Math.min.apply(Math, closest))]];
 
         list_p.push(p);
         list_q.push(q);
