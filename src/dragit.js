@@ -270,11 +270,6 @@ dragit.object.activate = function(d, i) {
   
 })()
 
-
-function Utils() {
-
-}
-
 // Credits: http://bl.ocks.org/mbostock/8027637
 dragit.utils.closestPoint  = function(pathNode, point) {
 
