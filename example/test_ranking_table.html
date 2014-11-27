@@ -2,7 +2,8 @@
 <html>
 <head>
 	<meta charset="utf-8"/>
-	<title>Simple Test</title>
+	<title>dragit example with ranking table</title>
+	<link href="../src/dragit.css" rel="stylesheet"/>
 	<script src="../lib/d3.v3.js"></script>
 	<script src="../src/dragit.js"></script>
 </head>
@@ -28,12 +29,11 @@ var svg = d3.select("#viz").append("svg")
 
 var timecube = [];
 
-
 d3.text("../data/rankings.csv", function(text) {
 	
 	data = d3.csv.parseRows(text);
 
-	data.shift();
+	columns = data.shift();
 
 	dragit.time = {min: d3.min(data, function(d) { return parseInt(d[5]);}), 
 								 max: d3.max(data, function(d) { return parseInt(d[5]);}), 
@@ -58,7 +58,6 @@ d3.text("../data/rankings.csv", function(text) {
 	xScale = d3.scale.linear().domain([0, all_years.length]).range([margin.left, width]);
 	yScale = d3.scale.linear().domain([0, height]).range([margin.top, height]);
 
-	
 	init();
 
 });
@@ -69,10 +68,41 @@ function update(v, duration) {
 
 	d3.select("#viz").select("table").remove();
 
-	var table = d3.select("#viz")
-	    .append("table")		
+	var table = d3.select("#viz").append("table"),
+			thead = table.append("thead"),
+      tbody = table.append("tbody");
+
+    table.append("caption")
+      .html("World Country rankings")
 	    .style("border-collapse", "collapse")
 	    .style("border", "2px black solid");
+
+    thead.append("tr").selectAll("th")
+      .data(columns)
+    .enter()
+      .append("th")
+      .text(function(d) { return d; })
+      .on("click", function(d, i) {
+        var is_sorted = (d3.select(this).attr("id") == "sorted");
+
+        thead.selectAll("th").attr("id", null);
+        
+        if (!is_sorted)
+          d3.select(this).attr("id", "sorted");
+
+        if (i == 1) {
+          tbody.selectAll("tr").sort(function(a, b) {
+            var ascending = d3.ascending(a[1], b[1]);
+            return is_sorted ? ascending : - ascending;
+          });
+        } else if (i == 2) {
+          tbody.selectAll("tr").sort(function(a, b) {
+            var ascending = d3.ascending(parseFloat(a[2]), parseFloat(b[2])) || d3.ascending(a[1], b[1]);
+            return is_sorted ? ascending : - ascending;
+          });
+        }
+
+      });
 
 	var rows = table.selectAll("tr")
 		    .data(data.filter(function(d) {
@@ -116,7 +146,10 @@ function init() {
 	d3.select("#min-time").text(dragit.time.min);
 	d3.select("#max-time").text(dragit.time.max);
 
-  d3.select("#slider-time").property("value", dragit.time.current);
+	d3.select("#slider-time").property("min", dragit.time.min);
+	d3.select("#slider-time").property("max", dragit.time.max);
+  d3.select("#slider-time").property("value", dragit.time.current+dragit.time.min);
+
 
 }
 
