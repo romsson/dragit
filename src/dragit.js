@@ -17,7 +17,7 @@
   dragit.partition = {};
   dragit.data = [];
 
-  dragit.evt = {};                // List of events binded to states
+  dragit.evt = {};                // List of events bound to states
   dragit.evt.dragstart = [];      // dragstart: end of dragging
   dragit.evt.drag = [];           // dragend: end of dragging
   dragit.evt.dragend = [];        // dragend: end of dragging
@@ -109,12 +109,21 @@ dragit.utils.slider = function(el) {
 
   d3.select(el).append("p").style("clear", "both");
   d3.select(el).append("span").attr("id", "min-time").text(dragit.time.min);
-  d3.select(el).append("input").attr("type", "range")
+
+  d3.select(el).append("input")
+                .attr("type", "range")
+                .property("min", dragit.time.min)
+                .property("max", dragit.time.max)
+                .property("value", 10)
+                .property("step", 1)
+                .on("oninput", function() { update(this.value, 0); })
+
   d3.select(el).append("span").attr("id", "max-time").text(dragit.time.max);
+
 
 }
 
-// Calculate the centroif of a given SVG element
+// Calculate the centroid of a given SVG element
 dragit.utils.centroid = function(s) {
   var e = selection.node(),
   bbox = e.getBBox();
@@ -170,7 +179,7 @@ dragit.object.activate = function(d, i) {
       list_distances = [], list_times = [], list_lines = [], list_p = [], list_q = [];
 
       var m = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
-
+      console.log(d3.event)
 //      case "closestpoint":
 //      case "closestcurve":
 
