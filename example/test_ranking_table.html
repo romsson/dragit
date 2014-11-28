@@ -9,11 +9,16 @@
 </head>
 <body>
 	<p style="clear:both"></p>
+	<!--
 	<span id="min-time">0</span> 
 	<input type="range" name="points" min="0" max="43" step="1" value="0" id="slider-time" oninput="update(this.value, 0)"> <span id="max-time">0</span>
+-->
+	<div id="slider"></div>
 	<div id="viz"></div>
 
 <script>
+
+
 
 var margin = {top: 20, right: 20, bottom: 20, left: 20},
     width = 900 - margin.right - margin.left,
@@ -86,7 +91,7 @@ function update(v, duration) {
         var is_sorted = (d3.select(this).attr("id") == "sorted");
 
         thead.selectAll("th").attr("id", null);
-        
+
         if (!is_sorted)
           d3.select(this).attr("id", "sorted");
 
@@ -143,14 +148,9 @@ function init() {
   	}) 
   });
 
-	d3.select("#min-time").text(dragit.time.min);
-	d3.select("#max-time").text(dragit.time.max);
-
-	d3.select("#slider-time").property("min", dragit.time.min);
-	d3.select("#slider-time").property("max", dragit.time.max);
-  d3.select("#slider-time").property("value", dragit.time.current+dragit.time.min);
 
 
+dragit.utils.slider("#slider")
 }
 
 </script>
