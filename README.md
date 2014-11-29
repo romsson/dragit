@@ -5,9 +5,10 @@ dragit.js
 
 ### Examples
 
-* [Interactive soccer bracket](http://romain.vuillemot.net/projects/worldcup14/)
-* Standard charts ([Bar chart](example/test_barchart.html), pie chart, scatterplot, ..)
-* [Gapminder / Wealth of Nations](example/nations.html): drag countries to desired position ([original version](http://bost.ocks.org/mike/nations/))
+* Interactive [soccer bracket](http://romain.vuillemot.net/projects/worldcup14/)
+* A series of [simple](http://romsson.github.io/dragit/example/test_single_point.html) [examples](http://romsson.github.io/dragit/example/test_multi_points.html)
+* Standard charts ([Bar chart](http://romsson.github.io/dragit/example/test_barchart.html), pie chart, scatterplot, ..)
+* [Gapminder / Wealth of Nations](http://romsson.github.io/dragit/example/nations.html): drag countries to desired position ([original version](http://bost.ocks.org/mike/nations/))
 * Ranking tables
 * ... and more to come!
 
