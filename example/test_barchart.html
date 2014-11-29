@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  .bar {
+    fill: steelblue;
+  }
+
+  .shadowBar {
+    fill: lightgray;
+  }
+
+  .axis {
+    font: 10px sans-serif;
+  }
+
+  .axis path,
+  .axis line, {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  path.current-path, path.context-curve {
+    stroke: steelblue;
+    stroke-width: 1;
+    fill: none;
+  }
+
+  path.focus-curve {
+    stroke: red;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  rect.horizontal {
+    cursor: ns-resize;
+  }
+
+  rect.vertical {
+    cursor: ew-resize;
+  }
+
+  rect.flow {
+    cursor: nesw-resize;
+  }
+
+  .x.axis path {
+    /* display: none; */
+  }
+</style>
+<body>
+<script src="../lib/d3.v3.js"></script>
+<script src="../src/dragit.js"></script>
+<script>
+
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var bandsPadding = .1;
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], bandsPadding);
+
+var x2 = d3.scale.ordinal()
+    .rangeRoundBands([0, width], bandsPadding);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(10);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var nb_points = 12;
+
+var config = {
+  time: {min:0, max:20, step:1, current:0}    
+}
+
+dragit.time.current = 0;
+
+var timecube = d3.range(nb_points).map(function(d, i) {
+  return d3.range(config.time.max).map(function(e, j) { 
+    return {x:j, y:20*Math.random(), t: j};
+  });
+})
+
+var min_y = d3.min(timecube, function(d) { return d3.min(d, function(e) { return e.y}); });
+var max_y = d3.max(timecube, function(d) { return d3.max(d, function(e) { return e.y}); });
+
+x.domain(timecube.map(function(d, i) { return i; }));
+y.domain([min_y, max_y]);
+
+var xScale = d3.scale.linear().domain([0, timecube.length]).range([margin.left, width]);
+var yScale = d3.scale.linear().domain([min_y, max_y]).range([margin.top, height]);
+
+var margin = {top: 20, right: 20, bottom: 20, left: 20},
+    width = 900 - margin.right - margin.left,
+    height = 500 - margin.top - margin.bottom;
+
+init();
+
+// Create the bar chart
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+  .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .text("Y-axis");
+
+bars = svg.selectAll(".bar")
+    .data(timecube)
+      .enter();
+
+  bars.append("rect")
+    .attr("class", "bar")
+    .attr("x", function(d, i) { return x(i); })
+    .attr("width", x.rangeBand())
+    .attr("y", function(d) { return y(d[dragit.time.current].y); })
+    .attr("height", function(d) { return height - y(d[dragit.time.current].y); })
+    .attr("opacity", 1)
+    .on("mouseenter", dragit.trajectory.display)
+    .on("mouseout", dragit.trajectory.remove)
+    .call(dragit.object.activate)
+
+function update(t, duration) {
+
+  dragit.time.current = t || dragit.time.current;
+
+  svg.selectAll(".bar")
+    .data(timecube)
+      .transition().duration(duration)
+      .attr("y", function(d) { return y(d[dragit.time.current].y); })
+      .attr("height", function(d) { return height - y(d[dragit.time.current].y); })
+
+  d3.select("#slider-time").property("value", dragit.time.current);
+}
+
+function init() {
+  d3.select("#slider-time")
+
+  dragit.data = timecube.map(function(d, i) { 
+    return d.map(function(e, i) { 
+      return [xScale(e.x), yScale(e.y)]; 
+    }) 
+  });
+
+  dragit.object.update = update;
+
+  d3.selectAll("#min-time").text(0)
+  d3.selectAll("#max-time").text(dragit.time.step)
+  d3.select("#slider-time").property("value", dragit.time.current);
+}
+
+
+</script>
+
+<p style="clear:both"></p>
+0 <input type="range" name="points" min="0" max="20" step="1" value="0" id="time-slider" oninput="update(parseInt(this.value), 100)"> 20
+<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll();"> Show trajectories</label>
+</body>
+</html>

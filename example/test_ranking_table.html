@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>dragit example with ranking table</title>
+	<link href="../src/dragit.css" rel="stylesheet"/>
+	<script src="../lib/d3.v3.js"></script>
+	<script src="../src/dragit.js"></script>
+</head>
+<body>
+	<p style="clear:both"></p>
+	<!--
+	<span id="min-time">0</span> 
+	<input type="range" name="points" min="0" max="43" step="1" value="0" id="slider-time" oninput="update(this.value, 0)"> <span id="max-time">0</span>
+-->
+	<div id="slider"></div>
+	<div id="viz"></div>
+
+<script>
+
+
+
+var margin = {top: 20, right: 20, bottom: 20, left: 20},
+    width = 900 - margin.right - margin.left,
+    height = 500 - margin.top - margin.bottom;
+
+// Create the SVG? Not now..
+var svg = d3.select("#viz").append("svg")
+  .attr("width", width)
+  .attr("height", height)
+  .style("top", margin.top)
+  .style("left", margin.left)
+  .style("position", "absolute")
+
+var timecube = [];
+
+d3.text("../data/rankings.csv", function(text) {
+	
+	data = d3.csv.parseRows(text);
+
+	columns = data.shift();
+
+	dragit.time = {min: d3.min(data, function(d) { return parseInt(d[5]);}), 
+								 max: d3.max(data, function(d) { return parseInt(d[5]);}), 
+								 step:1, 
+								 current:0
+								};
+
+	update(0, 0);
+
+  all_years = d3.set(data.map(function(d) { return d[5];})).values();
+
+  // find unique countrie
+  all_countries = d3.set(data.map(function(d) { return d[1]; })).values();
+
+
+	timecube = d3.range(all_countries.length).map(function(d, i) {
+		return d3.range(all_years.length).map(function(e, j) { 
+			return {x:j, y:height*Math.random(), t: j};
+		});
+	})
+
+	xScale = d3.scale.linear().domain([0, all_years.length]).range([margin.left, width]);
+	yScale = d3.scale.linear().domain([0, height]).range([margin.top, height]);
+
+	init();
+
+});
+
+function update(v, duration) {
+	
+	v = parseInt(v)
+
+	d3.select("#viz").select("table").remove();
+
+	var table = d3.select("#viz").append("table"),
+			thead = table.append("thead"),
+      tbody = table.append("tbody");
+
+    table.append("caption")
+      .html("World Country rankings")
+	    .style("border-collapse", "collapse")
+	    .style("border", "2px black solid");
+
+    thead.append("tr").selectAll("th")
+      .data(columns)
+    .enter()
+      .append("th")
+      .text(function(d) { return d; })
+      .on("click", function(d, i) {
+        var is_sorted = (d3.select(this).attr("id") == "sorted");
+
+        thead.selectAll("th").attr("id", null);
+
+        if (!is_sorted)
+          d3.select(this).attr("id", "sorted");
+
+        if (i == 1) {
+          tbody.selectAll("tr").sort(function(a, b) {
+            var ascending = d3.ascending(a[1], b[1]);
+            return is_sorted ? ascending : - ascending;
+          });
+        } else if (i == 2) {
+          tbody.selectAll("tr").sort(function(a, b) {
+            var ascending = d3.ascending(parseFloat(a[2]), parseFloat(b[2])) || d3.ascending(a[1], b[1]);
+            return is_sorted ? ascending : - ascending;
+          });
+        }
+
+      });
+
+	var rows = table.selectAll("tr")
+		    .data(data.filter(function(d) {
+		    	// Filter by time
+		    	return d[5] == (dragit.time.min+v);
+		    }))
+		  .enter().append("tr")
+		    .attr("id", function(d) { return d[1]; })
+		    .selectAll("td")
+		    .data(function(d){return d;})
+
+		  .enter().append("td")
+		    .style("border", "1px black solid")
+		    .style("padding", "5px")
+		    .text(function(d){ return d; })
+		    .style("font-size", "12px")
+			  .on("mouseenter", function(d, i) {
+			  	dragit.trajectory.display(d, all_countries.indexOf(d3.select(d3.select(this).node().parentNode).attr("id")))
+			  })
+			  .on("mouseout", dragit.trajectory.remove)
+		  	.call(dragit.object.activate);
+
+}
+
+function init() {
+
+ var margin = {top: d3.select("table").property("offsetTop"), right: d3.select("table").property("offsetRight"), bottom: 19.5, left: d3.select("table").property("offsetLeft")};
+
+  var  width = parseInt(d3.select("table").style("width").replace("px", "")),
+    height = parseInt(d3.select("table").style("height").replace("px", ""));
+
+  dragit.object.update = update;
+
+  // Translate the data cube into real line chart coordinates
+  dragit.data = timecube.map(function(d, i) { 
+  	return d.map(function(e, i) { 
+  		return [xScale(e.x), yScale(e.y)]; 
+  	}) 
+  });
+
+
+
+dragit.utils.slider("#slider")
+}
+
+</script>
+</body>
+</html>
