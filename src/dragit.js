@@ -3,7 +3,7 @@
   var dragit = window.dragit || {};
   window.dragit = dragit;
 
-  dragit.version = "0.1";
+  dragit.version = "0.1.1";
 
    var vars = {
       "dev": false,
