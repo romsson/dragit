@@ -6,7 +6,8 @@
   dragit.version = "0.1";
 
    var vars = {
-      "dev": false
+      "dev": false,
+      evt: []
     };
 
   dragit.statemachine = {current_state:"idle", current_id:-1};
@@ -17,7 +18,11 @@
   dragit.partition = {};
   dragit.data = [];
 
-  dragit.evt = {};                // List of events bound to states
+  dragit.evt = {};                // Events manager
+
+  dragit.evt.register = null;
+  dragit.evt.run = null;
+
   dragit.evt.dragstart = [];      // dragstart: end of dragging
   dragit.evt.drag = [];           // dragend: end of dragging
   dragit.evt.dragend = [];        // dragend: end of dragging
@@ -25,6 +30,30 @@
   dragit.guide = {};
 
   dragit.trajectory = {interpolate: "linear"};
+
+dragit.evt.register = function(evt, f, d) {
+
+  if(typeof vars.evt[evt] == "undefined")
+    vars.evt[evt] = [];
+  
+  vars.evt[evt].push([f,d]);
+
+}
+
+dragit.evt.call = function(evt, p, q) {
+
+  if(typeof vars.evt[evt] == "undefined") {
+    console.warn("No callback for event", evt)
+    return;
+  }
+
+  vars.evt[evt].forEach(function(e) {
+    if(vars.dev) console.log("update", e)
+    if(typeof(e[0]) != "undefined")
+      e[0](e[1])
+  });
+
+}
 
 dragit.trajectory.init = function(tc) {  
 
@@ -116,12 +145,15 @@ dragit.utils.slider = function(el) {
                 .property("max", dragit.time.max)
                 .property("value", 10)
                 .property("step", 1)
-                .on("oninput", function() { update(this.value, 0); })
+                .on("oninput", function() { 
+                  dragit.evt.call("update", this.value, 0); 
+                })
 
   d3.select(el).append("span").attr("id", "max-time").text(dragit.time.max);
 
 
 }
+
 
 // Calculate the centroid of a given SVG element
 dragit.utils.centroid = function(s) {
@@ -134,6 +166,8 @@ dragit.utils.centroid = function(s) {
 dragit.object.activate = function(d, i) {
 
   if (vars.dev) console.log("Activate", d, i)
+
+//  d3.select(this)
 
   d.call(d3.behavior.drag()
     .on("dragstart", function(d, i) {
@@ -153,10 +187,8 @@ dragit.object.activate = function(d, i) {
       // Call dragend events
       dragit.evt.dragstart.forEach(function(e, j) {
         if(vars.dev) console.log("dragstart", d, i)
-        
         if(typeof(e) != "undefined")
           e(d, i)
-          //setTimeout(e(d, i), 100) 
       });
 
 
