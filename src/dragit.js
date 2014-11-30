@@ -133,7 +133,6 @@ dragit.trajectory.removeAll = function() {
 }
 
 // Automatically add an HTML slider to navigate in the timecube
-// TODO: <input type="range" name="points" min="0" max="20" step="1" value="0" id="slider-time" oninput="update(this.value, 100)"> <span id="max-time">0</span>
 dragit.utils.slider = function(el) {
 
   d3.select(el).append("p").style("clear", "both");
@@ -151,9 +150,7 @@ dragit.utils.slider = function(el) {
 
   d3.select(el).append("span").attr("id", "max-time").text(dragit.time.max);
 
-
 }
-
 
 // Calculate the centroid of a given SVG element
 dragit.utils.centroid = function(s) {
@@ -166,8 +163,6 @@ dragit.utils.centroid = function(s) {
 dragit.object.activate = function(d, i) {
 
   if (vars.dev) console.log("Activate", d, i)
-
-//  d3.select(this)
 
   d.call(d3.behavior.drag()
     .on("dragstart", function(d, i) {
@@ -353,7 +348,6 @@ dragit.utils.closestPoint  = function(pathNode, point) {
 }
 
 dragit.utils.closestValue  = function(p, points) {
-  //console.log("closest", points)
   var distances = points.map(function(d, i) { 
     var dx = d[0]-p[0];
     var dy = d[1]-p[1];
