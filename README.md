@@ -7,49 +7,30 @@ dragit.js
 
 * Interactive [soccer bracket](http://romain.vuillemot.net/projects/worldcup14/)
 * A series of [simple](http://romsson.github.io/dragit/example/test_single_point.html) [examples](http://romsson.github.io/dragit/example/test_multi_points.html)
-* [Gapminder / Wealth of Nations](http://romsson.github.io/dragit/example/nations.html): drag countries to desired position ([original version](http://bost.ocks.org/mike/nations/))
+* [Gapminder / Wealth of Nations](http://romsson.github.io/dragit/example/nations.html) to drag countries to desired position instead of using the time slider
 
 #### Coming soon
 
 * Ranking tables
-* Standard charts ([Bar chart](http://romsson.github.io/dragit/example/test_barchart.html), pie chart, scatterplot, ..)
+* Standard charts: [Bar chart](http://romsson.github.io/dragit/example/test_barchart.html), pie chart, scatterplot, ..
 
 ### Getting Started
 
-To use it, insert the following snippets in the header of your code, right after **D3**:
+One of the library design goal to be indluded quasi-seamlessly in a current data visualization, i.e. without much change. To use it, insert the following snippets in the header of your code, right after **D3**:
 
 ```html
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="dragit.js" charset="utf-8"></script>
 ```
 
-One of the library design goal to be indluded quasi-seamlessly in a current data visualization, i.e. without much change. You are, however, very likely to structure the chart as follows to make sure **dragit** is informed on the existing temporal data and the current state of the visualization:
+You are, however, very likely to structure the chart as follows to make sure **dragit** is informed on the existing temporal data and the current state of the visualization. Two functions (names don't matter) are to be created:
 
-* Two functions (names don't matter) `init()` (called only once during startup), and `update()` (called once time has changed). Those two functions will make sure the library's internal state is always up to date, regardless how you udpate the data visualization (using regular slider or direct manipulation).
+* `init()` which is called only once during startup
+* `update()` which is called once time has changed
 
-* Crate an internal data structure (namely a time cube) where each row is a data point, and each column a time point.
+Those two functions will make sure the library's internal state is always up to date, regardless how you udpate the data visualization (using regular slider or direct manipulation).
 
-Below a few concepts that are important to undersdant and that we'll refer to later on:
-
-* **Object of Interest**: the graphical marks (SVG node, div, ..) that can be dragged and will indirectly update the visualization.
-* **Trajectory**: the visual path along which the **Object of Interest** can be dragged. It is represented as a line.
-* **Focus**: the visual element that is being dragged (can be a simplified simplified such as into a point or shadow).
-* **Time points**: series of points the focus can reach along its trajectory.
-
-#### dragit.data
-
-* `dragit.data`: is a time-cube defined where each row are data points and columns time steps.
-
-Example:
-
-```
-[ d0 [ t0 ] [ t1 ] ... [ tm ] ]
-[ d1 [ t0 ] [ t1 ] ... [ tm ] ]
-...
-[ dn [ t0 ] [ t1 ] ... [ tm ] ]
-```
-
-Where d<sub>i</sub> are dimensions, as t<sub>i</sub> are time points. You may want to generate a random time cube as follow:
+Then create an internal data structure (namely a time cube) where each row is a data point, and each column a time point.You may want to generate a random time cube (of `nb_data_points` by `nb_time_steps`) as below:
 
 ```
 var timecube = d3.range(nb_data_points).map(function(d, i) {
@@ -59,13 +40,35 @@ var timecube = d3.range(nb_data_points).map(function(d, i) {
 })
 ```
 
+Here are a few concepts that are important to undersdant and that we'll refer to later on:
+
+* **Object (of Interest)**: the graphical marks (SVG node, div, ..) that can be dragged and will indirectly update the visualization.
+* **Focus**: the visual element that is being dragged (can be a simplified simplified such as into a point or shadow).
+* **Trajectory**: the visual path along which the **Object of Interest** can be dragged. It is represented as a line.
+* **Time points**: series of points the focus can reach along its trajectory.
+
+#### dragit.data
+
+* `dragit.data`: is a time-cube defined where each row are data points and columns time steps.
+
+Example (rows are data, columns are time steps):
+
+```
+[ d0 [ t0 ] [ t1 ] ... [ tm ] ]
+[ d1 [ t0 ] [ t1 ] ... [ tm ] ]
+...
+[ dn [ t0 ] [ t1 ] ... [ tm ] ]
+```
+
+Where d<sub>i</sub> are dimensions, as t<sub>i</sub> are time points.
+
 ### dragit.time
 
-* `dragit.time.current` : 	the current time (default: 0)
+* `dragit.time.current` 	: 	the current time (default: 0)
 * `dragit.time.min`		: 	the minimal time point (default: 0)
 * `dragit.time.max`		: 	the maximal time point (default: 0)
-* `dragit.time.step`	: 	increment (default: 1)
-* `dragit.time.speed`	: 	for the playback (default:1)
+* `dragit.time.step`		: 	increment (default: 1)
+* `dragit.time.speed`		: 	for the playback (default:1)
 
 Example:
 
@@ -79,14 +82,13 @@ dragit.time = {min: d3.min(data, function(d) { return parseInt(d[i]);}),
 
 ### dragit.object
 
-It concerns the object of interest or handle, i.e. the object the user interact with to start the interaction and thus starts the time change.
-
+The object of interest, the handle the user interacts with to start the interaction and thus start the time change.
 
 * `dragit.object.activate` activates dragging for the selected element. It creates the necessary mouse events (drag). Example: `.call(dragit.object.activate)`.
 
 #### dragit.mouse.dragging
 
-* `horizontal` similar as a time
+* `horizontal`
 * `vertical`
 * `curvilinear`
 * `flow` flow dragging method. Usually well suited for background * motion.
@@ -94,7 +96,7 @@ It concerns the object of interest or handle, i.e. the object the user interact 
 
 #### dragit.focus
 
-* Functions related to the focus manipulation
+* Functions related to the focus that is being 
 
 ### dragit.trajectory
 
@@ -102,3 +104,7 @@ It concerns the object of interest or handle, i.e. the object the user interact 
 * `dragit.trajectory.displayAll` displays all trajectories
 * `dragit.trajectory.remove` removes the created trajectory
 * `dragit.trajectory.removeAll` removes all trajectories
+
+### dragit.statemachine
+
+* `dragit.statemachine.current_state` the current state of the interaction
