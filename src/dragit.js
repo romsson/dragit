@@ -7,7 +7,8 @@
 
    var vars = {
       "dev": false,
-      evt: []
+      evt: [],
+      tc: []
     };
 
   dragit.statemachine = {current_state:"idle", current_id:-1};
@@ -57,7 +58,7 @@ dragit.evt.call = function(evt, p, q) {
 
 dragit.trajectory.init = function(tc) {  
 
-  this.tc = tc;
+  vars.tc = tc;
 
 }
 
@@ -206,7 +207,6 @@ dragit.object.activate = function(d, i) {
       list_distances = [], list_times = [], list_lines = [], list_p = [], list_q = [];
 
       var m = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
-      console.log(d3.event)
 //      case "closestpoint":
 //      case "closestcurve":
 
