@@ -1,6 +1,6 @@
 
 
-path.lineTrail {
+path.lineTrajectory {
   stroke-width: 2;
   stroke-opacity: 0.2;
   opacity: 0.5;
@@ -10,7 +10,7 @@ path.lineTrail {
   pointer-events: none;
 }
 
-path.lineSimple {
+path.lineTrajectoryMonotone {
   stroke-width: 2;                            
   fill: none;   
   pointer-events: none;   
@@ -24,6 +24,18 @@ circle.pointsTrail {
    fill: gray;
 }
 
+line.lineClosestTrajectory {
+  stroke: blue;
+  stroke-dasharray: 4,4;
+  display: block;
+}
+
+line.lineClosestPoint {
+  stroke: blue;
+  opacity: .1;
+  display: block;
+}
+
 circle.pointGuide {
   opacity: .1;
   display: block;
@@ -34,16 +46,4 @@ circle.focusGuide {
   display: block;
   fill: none;
   stroke: black;
-}
-
-line.lineGuide {
-  stroke: red;
-  stroke-dasharray: 4,4;
-  display: block;
-}
-
-line.valueGuide {
-  stroke: red;
-  opacity: .1;
-  display: block;
 }
