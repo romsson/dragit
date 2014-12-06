@@ -77,7 +77,7 @@ dragit.trajectory.display = function(d, i) {
                       .y(function(d) { return d[1]; })
                       .interpolate(dragit.trajectory.interpolate);
 
-  gDragit = svg.insert("g").attr("class", "gDragit")
+  gDragit = svg.insert("g", ":first-child").attr("class", "gDragit")
 
   dragit.lineGraph = gDragit.selectAll(".lineTrail")
                   .data([dragit.data[i]])
