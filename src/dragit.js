@@ -57,9 +57,7 @@ dragit.evt.call = function(evt, p, q) {
 }
 
 dragit.trajectory.init = function(tc) {  
-
   vars.tc = tc;
-
 }
 
 dragit.trajectory.display = function(d, i) {
@@ -79,24 +77,24 @@ dragit.trajectory.display = function(d, i) {
 
   gDragit = svg.insert("g", ":first-child").attr("class", "gDragit")
 
-  dragit.lineGraph = gDragit.selectAll(".lineTrail")
+  dragit.lineTrajectory = gDragit.selectAll(".lineTrajectory")
                   .data([dragit.data[i]])
                 .enter().append("path")
                   .attr("d", svgLine)
-                  .attr("class", "lineTrail")
+                  .attr("class", "lineTrajectory")
 
-  dragit.pointsGraph  = gDragit.selectAll(".pointsTrail")
+  dragit.pointTrajectory  = gDragit.selectAll(".pointTrajectory")
                     .data(dragit.data[i])
                   .enter().append("svg:circle")
-                    .attr("class", "pointsTrail")
+                    .attr("class", "pointTrajectory")
                     .attr('cx', function(d) { return d[0]; })
                     .attr('cy', function(d) { return d[1]; })
                     .attr('r', 3);
 
-  dragit.lineSimple = gDragit.selectAll(".lineSimple")
+  dragit.lineTrajectoryMonotone = gDragit.selectAll(".lineTrajectoryMonotone")
                   .data([dragit.data[i]])
                 .enter().append("path")
-                  .attr("class", "lineSimple")
+                  .attr("class", "lineTrajectoryMonotone")
                   .attr("d", svgLine.interpolate("monotone"));
 
 }
@@ -170,10 +168,18 @@ dragit.object.activate = function(d, i) {
       d.x = 0;
       d.y = 0;
 
-      // Create elements for trajectories
-      dragit.lineGuide = gDragit.append("line").attr("class", "lineGuide")
-      dragit.valueGuide = gDragit.append("line").attr("class", "valueGuide")
-      dragit.pointGuide = gDragit.append("circle").attr({cx: -10, cy: -10, r: 3.5}).attr("class", "pointGuide")
+      // Line connecting 
+      dragit.lineClosestTrajectory = gDragit.append("line")
+                                            .attr("class", "lineClosestTrajectory");
+
+      dragit.lineClosestPoint = gDragit.append("line")
+                                             .attr("class", "lineClosestPoint");
+
+      dragit.pointClosestTrajectory = gDragit.append("circle")
+                                                .attr({cx: -10, cy: -10, r: 3.5})
+                                                .attr("class", "pointClosestTrajectory")
+
+      // Overlay the current 
       dragit.focusGuide = gDragit.append("circle").attr({cx: -10, cy: -10, r: 5.5}).attr("class", "focusGuide")
 
       dragit.statemachine.current_state = "drag";
@@ -208,8 +214,8 @@ dragit.object.activate = function(d, i) {
 //      case "closestpoint":
 //      case "closestcurve":
 
-      // Browse all the .lineTrail trajectories
-      d3.selectAll(".lineTrail")[0].forEach(function(e, j) {
+      // Browse all the .lineTrajectory trajectories
+      d3.selectAll(".lineTrajectory")[0].forEach(function(e, j) {
 
         dragit.lineGraph = d3.select(e);
 
@@ -240,9 +246,9 @@ dragit.object.activate = function(d, i) {
       var new_time = list_times[index_min];
 
       // Draw guides
-      dragit.lineGuide.attr("x1", list_p[index_min][0]).attr("y1", list_p[index_min][1]).attr("x2", m[0]).attr("y2", m[1]);
-      dragit.pointGuide.attr("cx", list_p[index_min][0]).attr("cy", list_p[index_min][1]);
-      dragit.valueGuide.attr("x1", list_q[index_min][0]).attr("y1", list_q[index_min][1]).attr("x2", m[0]).attr("y2", m[1]);
+      dragit.lineClosestTrajectory.attr("x1", list_p[index_min][0]).attr("y1", list_p[index_min][1]).attr("x2", m[0]).attr("y2", m[1]);
+      dragit.pointClosestTrajectory.attr("cx", list_p[index_min][0]).attr("cy", list_p[index_min][1]);
+      dragit.lineClosestPoint.attr("x1", list_q[index_min][0]).attr("y1", list_q[index_min][1]).attr("x2", m[0]).attr("y2", m[1]);
       
       // Focus follows the mouse cursor
       dragit.focusGuide.attr("cx", m[0]).attr("cy", m[1]);
@@ -262,9 +268,9 @@ dragit.object.activate = function(d, i) {
     })
     .on("dragend", function(d,i) {
 
-      dragit.lineGuide.remove();
-      dragit.valueGuide.remove();
-      dragit.pointGuide.remove();
+      dragit.lineClosestTrajectory.remove();
+      dragit.lineClosestPoint.remove();
+      dragit.pointClosestTrajectory.remove();
       dragit.focusGuide.remove();
 
       // Remove trajectory
