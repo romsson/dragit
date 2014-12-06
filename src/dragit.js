@@ -86,9 +86,7 @@ dragit.trajectory.display = function(d, i) {
                   .attr("class", "lineTrail")
 
   dragit.pointsGraph  = gDragit.selectAll(".pointsTrail")
-                    .data(dragit.data[i].filter(function(e, j) { 
-                      return e!==dragit.data[i][dragit.time.current-dragit.time.min]; 
-                    }))
+                    .data(dragit.data[i])
                   .enter().append("svg:circle")
                     .attr("class", "pointsTrail")
                     .attr('cx', function(d) { return d[0]; })
