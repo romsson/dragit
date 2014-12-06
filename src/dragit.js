@@ -132,8 +132,12 @@ dragit.trajectory.removeAll = function() {
 // Automatically add an HTML slider to navigate in the timecube
 dragit.utils.slider = function(el) {
 
-  d3.select(el).append("p").style("clear", "both");
-  d3.select(el).append("span").attr("id", "min-time").text(dragit.time.min);
+  d3.select(el).append("p")
+               .style("clear", "both");
+
+  d3.select(el).append("span")
+               .attr("id", "min-time")
+               .text(dragit.time.min);
 
   d3.select(el).append("input")
                 .attr("type", "range")
@@ -145,7 +149,9 @@ dragit.utils.slider = function(el) {
                   dragit.evt.call("update", this.value, 0); 
                 })
 
-  d3.select(el).append("span").attr("id", "max-time").text(dragit.time.max);
+  d3.select(el).append("span")
+               .attr("id", "max-time")
+               .text(dragit.time.max);
 
 }
 
@@ -164,23 +170,27 @@ dragit.object.activate = function(d, i) {
   d.call(d3.behavior.drag()
     .on("dragstart", function(d, i) {
 
-      // Init coordinates for the dragged object of interest
+      // Initial coordinates for the dragged object of interest
       d.x = 0;
       d.y = 0;
 
-      // Line connecting 
+      // Create the line guide to closest trajectory
       dragit.lineClosestTrajectory = gDragit.append("line")
                                             .attr("class", "lineClosestTrajectory");
 
+      // Create the line guide to closest point
       dragit.lineClosestPoint = gDragit.append("line")
                                              .attr("class", "lineClosestPoint");
 
+      // Create the point interesting guide line and closest trajectory
       dragit.pointClosestTrajectory = gDragit.append("circle")
                                                 .attr({cx: -10, cy: -10, r: 3.5})
                                                 .attr("class", "pointClosestTrajectory")
 
-      // Overlay the current 
-      dragit.focusGuide = gDragit.append("circle").attr({cx: -10, cy: -10, r: 5.5}).attr("class", "focusGuide")
+      // Create the focus that follows the mouse cursor
+      dragit.focusGuide = gDragit.append("circle")
+                                .attr({cx: -10, cy: -10, r: 5.5})
+                                .attr("class", "focusGuide")
 
       dragit.statemachine.current_state = "drag";
 
@@ -208,11 +218,9 @@ dragit.object.activate = function(d, i) {
 
       }
 
-      list_distances = [], list_times = [], list_lines = [], list_p = [], list_q = [];
+      var list_distances = [], list_times = [], list_lines = [], list_p = [], list_q = [];
 
       var m = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
-//      case "closestpoint":
-//      case "closestcurve":
 
       // Browse all the .lineTrajectory trajectories
       d3.selectAll(".lineTrajectory")[0].forEach(function(e, j) {
@@ -223,7 +231,7 @@ dragit.object.activate = function(d, i) {
         closest = dragit.utils.closestValue(m, dragit.data[i]);
 
         // Find the closest data point
-        q = dragit.data[i][[closest.indexOf(Math.min.apply(Math, closest))]];
+        var q = dragit.data[i][[closest.indexOf(Math.min.apply(Math, closest))]];
 
         list_p.push(p);
         list_q.push(q);
@@ -245,13 +253,23 @@ dragit.object.activate = function(d, i) {
 
       var new_time = list_times[index_min];
 
-      // Draw guides
-      dragit.lineClosestTrajectory.attr("x1", list_p[index_min][0]).attr("y1", list_p[index_min][1]).attr("x2", m[0]).attr("y2", m[1]);
-      dragit.pointClosestTrajectory.attr("cx", list_p[index_min][0]).attr("cy", list_p[index_min][1]);
-      dragit.lineClosestPoint.attr("x1", list_q[index_min][0]).attr("y1", list_q[index_min][1]).attr("x2", m[0]).attr("y2", m[1]);
+      // Update the line guide to closest trajectory
+      dragit.lineClosestTrajectory.attr("x1", list_p[index_min][0])
+                                  .attr("y1", list_p[index_min][1])
+                                  .attr("x2", m[0]).attr("y2", m[1]);
+
+      // Update the point interesting guide line and closest trajectory
+      dragit.pointClosestTrajectory.attr("cx", list_p[index_min][0])
+                                   .attr("cy", list_p[index_min][1]);
+
+      // Update line guide to closest point
+      dragit.lineClosestPoint.attr("x1", list_q[index_min][0])
+                             .attr("y1", list_q[index_min][1])
+                             .attr("x2", m[0]).attr("y2", m[1]);
       
-      // Focus follows the mouse cursor
-      dragit.focusGuide.attr("cx", m[0]).attr("cy", m[1]);
+      // Update the focus that follows the mouse cursor
+      dragit.focusGuide.attr("cx", m[0])
+                       .attr("cy", m[1]);
 
       // Update to the closest snapshot
       if(dragit.time.current != new_time || dragit.trajectory.index_min != index_min) {
