@@ -47,6 +47,12 @@ Here are a few concepts that are important to undersdant and that we'll refer to
 * **Trajectory**: the visual path along which the **Object of Interest** can be dragged. It is represented as a line.
 * **Time points**: series of points the focus can reach along its trajectory.
 
+Here are the names using for the various objects:
+
+<p align="center">
+	<img src="img/points-trajectories-naming.png"/>
+</p>
+
 #### dragit.data
 
 * `dragit.data`: is a time-cube defined where each row are data points and columns time steps.
