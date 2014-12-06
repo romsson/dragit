@@ -30,6 +30,8 @@ var timecube = d3.range(nb_points).map(function(d, i) {
 	});
 })
 
+
+
 var xScale = d3.scale.linear().domain([0, time_steps]).range([margin.left, width]);
 // TOFIX
 var yScale = d3.scale.linear().domain([0, height]).range([margin.top, height]);
@@ -61,7 +63,7 @@ function update(v, t) {
 				.attr({cx: function(d) { return xScale(d[dragit.time.current].x)}, 
 					 cy: function(d) { return yScale(d[dragit.time.current].y)}
 				  })
-
+  d3.select("#slider-time").property("value", dragit.time.current);
 }
 
 function init() {
