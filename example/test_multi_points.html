@@ -16,6 +16,11 @@
 
 <label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll();"> Show trajectories</label>
 
+<label><input type="radio" name="details" value="low" onchange="dragit.trajectory.toggleAll();" checked>drag one </label>
+<label><input type="radio" name="details" value="low" onchange="dragit.trajectory.toggleAll();">drag all </label><br>
+Current focus:<span id="current-focus"></span><br>
+Closest line:<span id="closest-line"></span><br>
+Closest point:<span id="closest-point"></span><br>
 <script>
 
 var margin = {top: 20, right: 20, bottom: 20, left: 20},
