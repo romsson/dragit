@@ -80,7 +80,6 @@ dragit.trajectory.display = function(d, i) {
 
   if(vars.dev) console.log("[display]", dragit.statemachine.current_state, dragit.statemachine.current_id, i)
 
-  dragit.statemachine.current_id = i;
 
   gDragit = svg.insert("g", ":first-child").attr("class", "gDragit")
 
@@ -98,11 +97,11 @@ dragit.trajectory.display = function(d, i) {
                     .attr('cy', function(d) { return d[1]; })
                     .attr('r', 3);
 
-  dragit.lineTrajectoryMonotone = gDragit.selectAll(".lineTrajectoryMonotone")
-                  .data([dragit.data[i]])
-                .enter().append("path")
-                  .attr("class", "lineTrajectoryMonotone")
-                  .attr("d", vars.svgLine.interpolate("monotone"));
+ // dragit.lineTrajectoryMonotone = gDragit.selectAll(".lineTrajectoryMonotone")
+ //                 .data([dragit.data[i]])
+ //               .enter().append("path")
+ //                 .attr("class", "lineTrajectoryMonotone")
+ //                 .attr("d", vars.svgLine.interpolate("monotone"));
 }
 
 dragit.trajectory.displayUpdate = function(d, i) {
@@ -161,8 +160,12 @@ dragit.object.activate = function(d, i) {
   if (vars.dev) console.log("Activate", d, i)
 
   d3.select(this)[0][0].node().addEventListener("mouseenter", function() {
-    if(dragit.statemachine.current_state == "idle")
+    console.log(dragit.statemachine.current_state)
+    if(dragit.statemachine.current_state == "idle") {
       dragit.statemachine.setState("mouseenter");
+      dragit.statemachine.current_id = i;
+      console.log("current id", dragit.statemachine.current_id)
+    }
   }, false)
 
   d3.select(this)[0][0].node().addEventListener("mouseleave", function() {
@@ -175,6 +178,8 @@ dragit.object.activate = function(d, i) {
 
       dragit.statemachine.setState("dragstart");
       if (vars.dev) console.log("[dragstart]", d, i)
+
+      dragit.statemachine.current_id = i;
 
       // Initial coordinates for the dragged object of interest
       d.x = 0;
@@ -205,7 +210,6 @@ dragit.object.activate = function(d, i) {
           e(d, i)
       });
 
-
     })
     .on("drag", function(d,i) {
       dragit.statemachine.setState("drag");
@@ -222,13 +226,16 @@ dragit.object.activate = function(d, i) {
             return "translate(" + [ d.x,d.y ] + ")"
           })  
 
+
+        return
+
       }
 
       var list_distances = [], list_times = [], list_lines = [], list_p = [], list_q = [];
 
       var m = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
 
-      var type_closest = ".lineTrajectory"; // all trajectories
+      //var type_closest = ".lineTrajectory"; // all trajectories
 
       // Browse all the .lineTrajectory trajectories
       d3.selectAll(".lineTrajectory")[0].forEach(function(e, j) {
@@ -260,13 +267,13 @@ dragit.object.activate = function(d, i) {
         list_lines.push(j);
 
         // Calling registered closestPoint events
-        if(!list_q.equals(vars.list_q)) {
-          dragit.evt.closestPoint.forEach(function(e, j) {
-            if(vars.dev) console.log("closestPoint", d, i)
-            if(typeof(e) != "undefined")
-              e(d, i, list_q, new_time)
-          });
-        }
+        //if(!list_q.equals(vars.list_q)) {
+        //  dragit.evt.closestPoint.forEach(function(e, j) {
+        //    if(vars.dev) console.log("closestPoint", d, i)
+        //    if(typeof(e) != "undefined")
+        //      e(d, i, list_q, new_time)
+        //  });
+        //}
 
         vars.list_q = list_q;
       })
@@ -303,11 +310,11 @@ dragit.object.activate = function(d, i) {
         dragit.object.update();
       }
 
-      // Call drag events [REMOVE BECAUSE of PERFORMANCE ISSUES]
-      //dragit.evt.drag.forEach(function(e, j) {
-      //  if(typeof(e) != "undefined")
-      //    e(d, i)
-      //});
+      // Call drag events
+      dragit.evt.drag.forEach(function(e, j) {
+        if(typeof(e) != "undefined")
+          e(d, i)
+      });
 
     })
     .on("dragend", function(d,i) {
@@ -345,6 +352,8 @@ dragit.object.activate = function(d, i) {
       });     
 
       dragit.statemachine.current_id = -1;
+
+      dragit.statemachine.current_state = "idle";
     })
 
   )} 
@@ -445,6 +454,34 @@ dragit.utils.closestValue  = function(p, points) {
   })
   return distances;
 }
+
+// Code from http://bl.ocks.org/duopixel/3824661
+dragit.utils.findYgivenX = function(x, path) {
+  var pathEl = path.node();
+  var pathLength = pathEl.getTotalLength();
+  var BBox = pathEl.getBBox();
+  var scale = pathLength/BBox.width;
+  var offsetLeft = document.getElementsByClassName("lineTrajectory")[0].offsetLeft;
+
+  x = x - offsetLeft; 
+
+  var beginning = x, end = pathLength, target;
+
+  while (true) {
+    target = Math.floor((beginning + end) / 2);
+    pos = pathEl.getPointAtLength(target);
+    if ((target === end || target === beginning) && pos.x !== x) {
+      break;
+    }
+    if (pos.x > x)      
+      end = target;
+    else if (pos.x < x) 
+      beginning = target;
+    else                
+      break;
+  }
+  return pos.y-200;
+},
 
 Array.prototype.equals = function (b) {
     var a = this;
