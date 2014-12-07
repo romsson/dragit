@@ -14,10 +14,6 @@
 	<input type="range" name="points" min="0" max="19" step="1" value="0" id="slider-time" oninput="update(this.value, 100)">
 <span id="max-time">0</span>
 <label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll();"> Show complete trajectory</label>
-<style>
-
-
-</style>
 
 <script>
 
@@ -28,21 +24,28 @@ var margin = {top: 20, right: 20, bottom: 20, left: 20},
 var time_steps = 20, nb_points = 1, current_time = Math.floor(Math.random()*time_steps);
 
 var config = {
-	time: {min:0, max:20, step:1, current:0}		
+	time: {min: 0, max: 20, step: 1, current: 0}		
 }
 
 var timecube = d3.range(nb_points).map(function(d, i) {
 	return d3.range(time_steps).map(function(e, j) { 
-		return {x:j, y:height*Math.random(), t: j};
+		return {x: j, y: Math.random(), t: j};
 	});
 })
 
 var xScale = d3.scale.linear().domain([0, time_steps]).range([margin.left, width]);
-var yScale = d3.scale.linear().domain([0, height]).range([margin.top, height]);
+var yScale = d3.scale.linear()
+										 .domain([0, d3.max(timecube, function(d) { 
+										 																return d3.max(d, function(e) { 
+										 																	return e.y; 
+										 																});
+										 															})
+										 ])
+										 .range([margin.top, height]);
 
 var svg = d3.select("#viz")
 		.append("svg")
-			.attr({width: width, height:height})
+			.attr({width: width, height: height})
 
 var points = svg.selectAll(".points")
 								.data(timecube)
@@ -56,7 +59,7 @@ points.attr({cx: function(d) {
 						}, 
 						 cy: function(d) { 
 						 			return yScale(d[current_time].y)
-						 }, 
+						}, 
 						 r:10, 
 						 fill:"red"
 						})
@@ -71,8 +74,8 @@ function update(v, t) {
 
 	points.transition().duration(100)
 				.attr({cx: function(d) { return xScale(d[dragit.time.current].x)}, 
-					 cy: function(d) { return yScale(d[dragit.time.current].y)}
-				  })
+					     cy: function(d) { return yScale(d[dragit.time.current].y)}
+				})
 
   d3.select("#slider-time").property("value", dragit.time.current);
 }
@@ -82,6 +85,7 @@ function init() {
 	d3.select("#min-time").text(config.time.min);
 	d3.select("#max-time").text(config.time.max);
 
+	// Convert the timecube for dragit
   dragit.data = timecube.map(function(d, i) { 
   	return d.map(function(e, i) { 
   		return [xScale(e.x), yScale(e.y)]; 
@@ -90,6 +94,8 @@ function init() {
   
   dragit.time = {min:0, max:time_steps, step:1, current: current_time}
   dragit.object.update = update;
+
+  // Update the time slider
   d3.select("#slider-time").property("value", dragit.time.current);
 }
 
