@@ -31,15 +31,20 @@ var time_steps = 20, nb_points = 5, current_time = Math.floor(Math.random()*time
 
 var timecube = d3.range(nb_points).map(function(d, i) {
 	return d3.range(time_steps).map(function(e, j) { 
-		return {x:j, y:height*Math.random(), t: j};
+		return {x:j, y: Math.random(), t: j};
 	});
 })
 
-
-
 var xScale = d3.scale.linear().domain([0, time_steps]).range([margin.left, width]);
-// TOFIX
-var yScale = d3.scale.linear().domain([0, height]).range([margin.top, height]);
+
+var yScale = d3.scale.linear()
+										 .domain([0, d3.max(timecube, function(d) { 
+										 																return d3.max(d, function(e) { 
+										 																	return e.y; 
+										 																});
+										 															})
+										 ])
+										 .range([margin.top, height]);
 
 var svg = d3.select("#viz").append("svg").attr({width: width, height:height})
 
