@@ -13,6 +13,7 @@ dragit.js
 
 * Ranking tables
 * Standard charts: [Bar chart](http://romsson.github.io/dragit/example/test_barchart.html), pie chart, scatterplot, ..
+* Node link diagrams
 
 ### Getting Started
 
@@ -45,7 +46,7 @@ Here are a few concepts that are important to undersdant and that we'll refer to
 * **Object (of Interest)**: the graphical marks (SVG node, div, ..) that can be dragged and will indirectly update the visualization.
 * **Focus**: the visual element that is being dragged (can be a simplified simplified such as into a point or shadow).
 * **Trajectory**: the visual path along which the **Object of Interest** can be dragged. It is represented as a line.
-* **Time points**: series of points the focus can reach along its trajectory.
+* **Data points**: series of points the focus can reach along its trajectory.
 
 Here are the names using for the various objects:
 
@@ -67,6 +68,10 @@ Example (rows are data, columns are time steps):
 ```
 
 Where d<sub>i</sub> are dimensions, as t<sub>i</sub> are time points.
+
+### dragit.vars
+
+A series of internal/private parameters
 
 ### dragit.time
 
@@ -107,10 +112,19 @@ The object of interest, the handle the user interacts with to start the interact
 ### dragit.trajectory
 
 * `dragit.trajectory.display` displays the currently dragged element's trajectory
+* `dragit.trajectory.displayUpdate` update the trajectory
 * `dragit.trajectory.displayAll` displays all trajectories
+* `dragit.trajectory.toggle` toggle the display of current trajectory
+* `dragit.trajectory.toggleAll` toggle the display of all trajectories
 * `dragit.trajectory.remove` removes the created trajectory
 * `dragit.trajectory.removeAll` removes all trajectories
 
+### dragit.evt
+
+Events management mechanism.
+
 ### dragit.statemachine
+
+(not fully implemented yet)
 
 * `dragit.statemachine.current_state` the current state of the interaction
