@@ -303,11 +303,11 @@ dragit.object.activate = function(d, i) {
         dragit.object.update();
       }
 
-      // Call drag events
-      dragit.evt.drag.forEach(function(e, j) {
-        if(typeof(e) != "undefined")
-          e(d, i)
-      });
+      // Call drag events [REMOVE BECAUSE of PERFORMANCE ISSUES]
+      //dragit.evt.drag.forEach(function(e, j) {
+      //  if(typeof(e) != "undefined")
+      //    e(d, i)
+      //});
 
     })
     .on("dragend", function(d,i) {
