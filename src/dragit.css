@@ -1,5 +1,3 @@
-
-
 path.lineTrajectory {
   stroke-width: 2;
   stroke-opacity: 0.2;
@@ -15,28 +13,28 @@ path.lineTrajectoryMonotone {
   fill: none;   
   pointer-events: none;   
   stroke: lightgray;   
-/*  stroke-dasharray: 10,10; */
 }
 
-circle.pointsTrail {
+circle.pointTrajectory {
    pointer-events: none;
    stroke: lightgray;
-   fill: gray;
+   fill: black;
+   opacity: .5;
 }
 
 line.lineClosestTrajectory {
-  stroke: blue;
+  stroke: black;
   stroke-dasharray: 4,4;
   display: block;
 }
 
 line.lineClosestPoint {
-  stroke: blue;
+  stroke: black;
   opacity: .1;
   display: block;
 }
 
-circle.pointGuide {
+circle.pointClosestTrajectory {
   opacity: .1;
   display: block;
 }
