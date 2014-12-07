@@ -8,7 +8,8 @@
    var vars = {
       "dev": false,
       evt: [],
-      tc: []
+      tc: [],
+      list_q: []
     };
 
   dragit.statemachine = {current_state: "idle", current_id: -1};
@@ -260,11 +261,15 @@ dragit.object.activate = function(d, i) {
         list_lines.push(j);
 
         // Calling registered closestPoint events
-        dragit.evt.closestPoint.forEach(function(e, j) {
-          if(vars.dev) console.log("closestPoint", d, i)
-          if(typeof(e) != "undefined")
-            e(d, i, list_q, new_time)
-        });
+        if(!list_q.equals(vars.list_q)) {
+          dragit.evt.closestPoint.forEach(function(e, j) {
+            if(vars.dev) console.log("closestPoint", d, i)
+            if(typeof(e) != "undefined")
+              e(d, i, list_q, new_time)
+          });
+        }
+
+        vars.list_q = list_q;
       })
 
       // Find the index for the shortest distance
@@ -396,3 +401,13 @@ dragit.utils.closestValue  = function(p, points) {
   })
   return distances;
 }
+
+Array.prototype.equals = function (b) {
+    var a = this;
+    var i = a.length;
+    if (i != b.length) return false;
+    while (i--) {
+        if (a[i] !== b[i]) return false;
+    }
+    return true;
+};
