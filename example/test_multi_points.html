@@ -18,9 +18,15 @@
 
 <label><input type="radio" name="details" value="low" onchange="dragit.trajectory.toggleAll();" checked>drag one </label>
 <label><input type="radio" name="details" value="low" onchange="dragit.trajectory.toggleAll();">drag all </label><br>
-Current focus:<span id="current-focus"></span><br>
-Closest line:<span id="closest-line"></span><br>
-Closest point:<span id="closest-point"></span><br>
+
+<label><input type="radio" name="details" value="low" onchange="dragit.mouse.dragging = 'jump'" checked>jump drag</label>
+<label><input type="radio" name="details" value="low" onchange="dragit.mouse.dragging = 'horizontal'">horizontal drag</label>
+<label><input type="radio" name="details" value="low" onchange="dragit.mouse.dragging = 'free'">free drag</label>
+<br>
+
+current focus:<span id="current-focus"></span><br>
+closest line:<span id="closest-line"></span><br>
+closest point:<span id="closest-point"></span><br>
 <script>
 
 var margin = {top: 20, right: 20, bottom: 20, left: 20},
@@ -31,7 +37,7 @@ var time_steps = 20, nb_points = 5, current_time = Math.floor(Math.random()*time
 
 var timecube = d3.range(nb_points).map(function(d, i) {
 	return d3.range(time_steps).map(function(e, j) { 
-		return {x:j, y: Math.random(), t: j};
+		return {x: j, y: Math.random(), t: j};
 	});
 })
 
@@ -46,7 +52,8 @@ var yScale = d3.scale.linear()
 										 ])
 										 .range([margin.top, height]);
 
-var svg = d3.select("#viz").append("svg").attr({width: width, height:height})
+var svg = d3.select("#viz").append("svg")
+													 .attr({width: width, height:height})
 
 var points = svg.selectAll(".points")
 								.data(timecube)
@@ -55,7 +62,7 @@ var points = svg.selectAll(".points")
 								.attr("class", "points");
 
 // All other focus points
-points.attr({cx: function(d) { return xScale(d[current_time].x); }, 
+points.attr({cx: function(d) { return xScale(d[current_time].x)}, 
 						 cy: function(d) { return yScale(d[current_time].y)}, 
 						 r:10, 
 						 fill:"red"
@@ -89,6 +96,7 @@ function init() {
   
   dragit.time = {min:0, max:time_steps, step:1, current: current_time}
   dragit.object.update = update;
+
 }
 
 init();
