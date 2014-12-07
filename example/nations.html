@@ -32,6 +32,11 @@ text {
   fill: #ddd;
 }
 
+.country.label  {
+  font: 500 96px "Helvetica Neue";
+  fill: #ddd;
+}
+
 .year.label.active {
   fill: #aaa;
 }
@@ -119,6 +124,15 @@ var label = svg.append("text")
     .attr("x", width)
     .text(1800);
 
+// Add the country label; the value is set on transition.
+var countrylabel = svg.append("text")
+    .attr("class", "country label")
+    .attr("text-anchor", "start")
+    .attr("y", 80)
+    .attr("x", 20)
+    .text(" ");
+
+
 // Load the data.
 d3.json("../data/nations.json", function(nations) {
 
@@ -135,9 +149,19 @@ d3.json("../data/nations.json", function(nations) {
       .style("fill", function(d) { return colorScale(color(d)); })
      // .sort(order)
       .call(position)
-      .on("mouseenter", dragit.trajectory.display)
+      .on("mouseenter", function(d, i) {
+        dragit.trajectory.display(d, i);
+        countrylabel.text(d.name);
+      })
       //.on("mouseover", enableInteraction)
-      .on("mouseout", dragit.trajectory.remove)
+      .on("mouseleave", function(d, i) {
+
+        if(dragit.statemachine.current_state == "idle")
+          countrylabel.text("");
+  
+        dragit.trajectory.remove(d, i);
+
+      })
       .call(dragit.object.activate)
 
   // Add a title.
@@ -248,13 +272,13 @@ d3.json("../data/nations.json", function(nations) {
     dragit.time.current = v || dragit.time.current;
     displayYear(dragit.time.current)
     d3.select("#slider-time").property("value", dragit.time.current);
+
   }
 
   function init() {
 
     dragit.time = {min:1800, max:2009, step:1, current:1800}
     dragit.data = d3.range(nations.length).map(function() { return Array(); })
-
 
     for(var yy = 1800; yy<2009; yy++) {
 
@@ -265,13 +289,23 @@ d3.json("../data/nations.json", function(nations) {
     }
 
     dragit.object.update = update;
+
     d3.select("#slider-time").property("value", dragit.time.current);
 
-     d3.select("#slider-time").on("mousemove", function() { 
+    d3.select("#slider-time").on("mousemove", function() { 
 
       update(this.value, 500);
 
-     })
+    })
+
+    var f = function() {
+      countrylabel.text("");
+    }
+
+    dragit.evt.dragend.push(f)
+
+
+
   }
 
 });
