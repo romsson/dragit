@@ -195,19 +195,18 @@ dragit.object.activate = function(d, i) {
 
   d3.select(this)[0][0].node().addEventListener("mouseenter", function() {
     if(dragit.statemachine.current_state == "idle")
-      dragit.statemachine.current_state = "mouseenter";
+      dragit.statemachine.setState("mouseenter");
   }, false)
 
   d3.select(this)[0][0].node().addEventListener("mouseleave", function() {
     if(dragit.statemachine.current_state == "idle")
-      dragit.statemachine.current_state = "mouseleave";
+      dragit.statemachine.setState("mouseleave");
   }, false)
-
 
   d.call(d3.behavior.drag()
     .on("dragstart", function(d, i) {
 
-      dragit.statemachine.current_state = "dragstart";
+      dragit.statemachine.setState("dragstart");
       console.log("dragstart")
       // Initial coordinates for the dragged object of interest
       d.x = 0;
@@ -241,8 +240,7 @@ dragit.object.activate = function(d, i) {
 
     })
     .on("drag", function(d,i) {
-
-      dragit.statemachine.current_state = "drag";
+      dragit.statemachine.setState("drag");
 
       switch(dragit.mouse.dragging) {
 
@@ -344,8 +342,7 @@ dragit.object.activate = function(d, i) {
 
     })
     .on("dragend", function(d,i) {
-
-      dragit.statemachine.current_state = "dragend";
+      dragit.statemachine.setState("dragend");
 
       dragit.lineClosestTrajectory.remove();
       dragit.lineClosestPoint.remove();
@@ -383,6 +380,14 @@ dragit.object.activate = function(d, i) {
   )} 
   
 })()
+
+dragit.statemachine.addEventListener = function(state, evt) {
+
+}
+
+dragit.statemachine.setState = function(state) {
+  dragit.statemachine.current_state = state;
+}
 
 // Credits: http://bl.ocks.org/mbostock/8027637
 dragit.utils.closestPoint  = function(pathNode, point) {
