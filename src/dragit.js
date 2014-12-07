@@ -185,6 +185,11 @@ dragit.object.activate = function(d, i) {
       d.x = 0;
       d.y = 0;
 
+      switch(dragit.mouse.dragging) {
+        case "free":
+        case "horizontal":
+      }
+
       // Create the line guide to closest trajectory
       dragit.lineClosestTrajectory = gDragit.append("line")
                                             .attr("class", "lineClosestTrajectory");
@@ -225,10 +230,21 @@ dragit.object.activate = function(d, i) {
           d3.select(this).attr("transform", function(d,i) {
             return "translate(" + [ d.x,d.y ] + ")"
           })  
+          return;
+          break;
 
+        case "horizontal":
+
+          d.x += d3.event.dx
+          d.y = dragit.utils.findYgivenX(d.x, dragit.lineTrajectory)
+
+          d3.select(this).attr("transform", function(d,i) {
+            return "translate(" + [ d.x, d.y ] + ")"
+          })  
+
+          break;
 
         return
-
       }
 
       var list_distances = [], list_times = [], list_lines = [], list_p = [], list_q = [];
@@ -321,15 +337,6 @@ dragit.object.activate = function(d, i) {
       dragit.statemachine.setState("dragend");
       if (vars.dev) console.log("[dragend]", d, i)
 
-      dragit.lineClosestTrajectory.remove();
-      dragit.lineClosestPoint.remove();
-      dragit.pointClosestTrajectory.remove();
-      dragit.focusGuide.remove();
-
-      // Remove trajectory
-      d3.selectAll(".gDragit").remove();
-
-      // Snapping
       switch(dragit.mouse.dragging) {
 
         case "free":
@@ -343,7 +350,20 @@ dragit.object.activate = function(d, i) {
                           })
                          //.attr("cx", q[0])
                          //.attr("cy", q[1])
+          break;
+
+        case "horizontal":
+          break;
+          
       }
+
+      dragit.lineClosestTrajectory.remove();
+      dragit.lineClosestPoint.remove();
+      dragit.pointClosestTrajectory.remove();
+      dragit.focusGuide.remove();
+
+      // Remove trajectory
+      d3.selectAll(".gDragit").remove();
 
       // Call dragend events
       dragit.evt.dragend.forEach(function(e, j) {
