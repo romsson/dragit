@@ -193,9 +193,22 @@ dragit.object.activate = function(d, i) {
 
   if (vars.dev) console.log("Activate", d, i)
 
+  d3.select(this)[0][0].node().addEventListener("mouseenter", function() {
+    if(dragit.statemachine.current_state == "idle")
+      dragit.statemachine.current_state = "mouseenter";
+  }, false)
+
+  d3.select(this)[0][0].node().addEventListener("mouseleave", function() {
+    if(dragit.statemachine.current_state == "idle")
+      dragit.statemachine.current_state = "mouseleave";
+  }, false)
+
+
   d.call(d3.behavior.drag()
     .on("dragstart", function(d, i) {
 
+      dragit.statemachine.current_state = "dragstart";
+      console.log("dragstart")
       // Initial coordinates for the dragged object of interest
       d.x = 0;
       d.y = 0;
@@ -218,8 +231,6 @@ dragit.object.activate = function(d, i) {
                                  .attr({cx: -10, cy: -10, r: 5.5})
                                  .attr("class", "focusGuide")
 
-      dragit.statemachine.current_state = "drag";
-
       // Calling registered drastart events
       dragit.evt.dragstart.forEach(function(e, j) {
         if(vars.dev) console.log("dragstart", d, i)
@@ -230,6 +241,8 @@ dragit.object.activate = function(d, i) {
 
     })
     .on("drag", function(d,i) {
+
+      dragit.statemachine.current_state = "drag";
 
       switch(dragit.mouse.dragging) {
 
@@ -299,7 +312,8 @@ dragit.object.activate = function(d, i) {
       // Update the line guide to closest trajectory
       dragit.lineClosestTrajectory.attr("x1", list_p[index_min][0])
                                   .attr("y1", list_p[index_min][1])
-                                  .attr("x2", m[0]).attr("y2", m[1]);
+                                  .attr("x2", m[0])
+                                  .attr("y2", m[1]);
 
       // Update the point interesting guide line and closest trajectory
       dragit.pointClosestTrajectory.attr("cx", list_p[index_min][0])
@@ -308,7 +322,8 @@ dragit.object.activate = function(d, i) {
       // Update line guide to closest point
       dragit.lineClosestPoint.attr("x1", list_q[index_min][0])
                              .attr("y1", list_q[index_min][1])
-                             .attr("x2", m[0]).attr("y2", m[1]);
+                             .attr("x2", m[0])
+                             .attr("y2", m[1]);
       
       // Update the focus that follows the mouse cursor
       dragit.focusGuide.attr("cx", m[0])
@@ -321,6 +336,7 @@ dragit.object.activate = function(d, i) {
         dragit.object.update();
       }
 
+      // Call drag events
       dragit.evt.drag.forEach(function(e, j) {
         if(typeof(e) != "undefined")
           e(d, i)
@@ -328,6 +344,8 @@ dragit.object.activate = function(d, i) {
 
     })
     .on("dragend", function(d,i) {
+
+      dragit.statemachine.current_state = "dragend";
 
       dragit.lineClosestTrajectory.remove();
       dragit.lineClosestPoint.remove();
@@ -357,10 +375,8 @@ dragit.object.activate = function(d, i) {
       dragit.evt.dragend.forEach(function(e, j) {
         if(typeof(e) != "undefined")
           e(d, i)
-          //setTimeout(e(d, i), 100) 
       });     
 
-      dragit.statemachine.current_state = "idle";
       dragit.statemachine.current_id = -1;
     })
 
