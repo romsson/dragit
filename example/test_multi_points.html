@@ -61,7 +61,7 @@ points.attr({cx: function(d) { return xScale(d[current_time].x); },
 						 fill:"red"
 						})
 		  .on("mouseenter", dragit.trajectory.display)
-		  .on("mouseout", dragit.trajectory.remove)
+		  .on("mouseleave", dragit.trajectory.remove)
 		  .call(dragit.object.activate)
 
 // Time update callback function
