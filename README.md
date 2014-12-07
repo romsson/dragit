@@ -51,7 +51,7 @@ Here are a few concepts that are important to undersdant and that we'll refer to
 Here are the names using for the various objects:
 
 <p align="center">
-	<img src="img/points-trajectories-naming.png"/>
+	<img src="img/points-trajectories-naming.png" width=400/>
 </p>
 
 #### dragit.data
@@ -124,6 +124,11 @@ The object of interest, the handle the user interacts with to start the interact
 Events management mechanism.
 
 ### dragit.statemachine
+
+<p align="center">
+	<img src="img/diagram-state-machine.png" width=400/>
+</p>
+
 
 (not fully implemented yet)
 
