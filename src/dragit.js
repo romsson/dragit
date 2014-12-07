@@ -11,11 +11,11 @@
       tc: []
     };
 
-  dragit.statemachine = {current_state:"idle", current_id:-1};
-  dragit.time = {min:0, max:0, current:0, step:1}
+  dragit.statemachine = {current_state: "idle", current_id: -1};
+  dragit.time = {min:0, max:0, current:0, step:1};
   dragit.utils = {};
-  dragit.mouse = {dragging:"closest"};
-  dragit.object = {update: function() {}, accesor: function() {}, offsetX:0, offsetY:0}
+  dragit.mouse = {dragging: "closest"};
+  dragit.object = {update: function() {}, accesor: function() {}, offsetX: 0, offsetY: 0};
   dragit.partition = {};
   dragit.data = [];
 
@@ -24,9 +24,15 @@
   dragit.evt.register = null;
   dragit.evt.run = null;
 
-  dragit.evt.dragstart = [];      // dragstart: end of dragging
-  dragit.evt.drag = [];           // dragend: end of dragging
-  dragit.evt.dragend = [];        // dragend: end of dragging
+  dragit.evt.dragstart = [];                  // start dragging
+  dragit.evt.drag = [];                       // during dragging
+  dragit.evt.dragend = [];                    // end dragging
+          
+  dragit.evt.closestPoint = [];               // new closest point current element
+  dragit.evt.closestAllPoints = [];           // new closest point globally
+
+  dragit.evt.closestTrajectory = [];          // new closest trajectory current element
+  dragit.evt.closestAllTrajectories = [];     // new closest trajectory globally
 
   dragit.guide = {};
 
@@ -180,21 +186,21 @@ dragit.object.activate = function(d, i) {
 
       // Create the line guide to closest point
       dragit.lineClosestPoint = gDragit.append("line")
-                                             .attr("class", "lineClosestPoint");
+                                       .attr("class", "lineClosestPoint");
 
       // Create the point interesting guide line and closest trajectory
       dragit.pointClosestTrajectory = gDragit.append("circle")
-                                                .attr({cx: -10, cy: -10, r: 3.5})
-                                                .attr("class", "pointClosestTrajectory")
+                                              .attr({cx: -10, cy: -10, r: 3.5})
+                                              .attr("class", "pointClosestTrajectory")
 
       // Create the focus that follows the mouse cursor
       dragit.focusGuide = gDragit.append("circle")
-                                .attr({cx: -10, cy: -10, r: 5.5})
-                                .attr("class", "focusGuide")
+                                 .attr({cx: -10, cy: -10, r: 5.5})
+                                 .attr("class", "focusGuide")
 
       dragit.statemachine.current_state = "drag";
 
-      // Call dragend events
+      // Calling registered drastart events
       dragit.evt.dragstart.forEach(function(e, j) {
         if(vars.dev) console.log("dragstart", d, i)
         if(typeof(e) != "undefined")
@@ -222,18 +228,24 @@ dragit.object.activate = function(d, i) {
 
       var m = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
 
+      var type_closest = ".lineTrajectory"; // all trajectories
+
       // Browse all the .lineTrajectory trajectories
       d3.selectAll(".lineTrajectory")[0].forEach(function(e, j) {
 
         dragit.lineGraph = d3.select(e);
 
         var  p = dragit.utils.closestPoint(dragit.lineGraph.node(), m);
-        closest = dragit.utils.closestValue(m, dragit.data[i]);
+
+        var closest = dragit.utils.closestValue(m, dragit.data[i]);
 
         // Find the closest data point
         var q = dragit.data[i][[closest.indexOf(Math.min.apply(Math, closest))]];
 
+        // List of closest distances to trajectory
         list_p.push(p);
+
+        // List of closest distances to points
         list_q.push(q);
 
         // Store all the distances
@@ -246,6 +258,13 @@ dragit.object.activate = function(d, i) {
 
         // Store the current line
         list_lines.push(j);
+
+        // Calling registered closestPoint events
+        dragit.evt.closestPoint.forEach(function(e, j) {
+          if(vars.dev) console.log("closestPoint", d, i)
+          if(typeof(e) != "undefined")
+            e(d, i, list_q, new_time)
+        });
       })
 
       // Find the index for the shortest distance
