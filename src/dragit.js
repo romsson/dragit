@@ -74,11 +74,11 @@ dragit.trajectory.init = function(tc) {
 
 dragit.trajectory.display = function(d, i) {
 
-  // Making sure we do not display twice the same trajectory.
+  // Making sure we do not display twice the same trajectory
   if(dragit.statemachine.current_state == "drag" && dragit.statemachine.current_id == i)
     return;
 
-  if(vars.dev) console.log("display", dragit.statemachine.current_state, dragit.statemachine.current_id, i)
+  if(vars.dev) console.log("[display]", dragit.statemachine.current_state, dragit.statemachine.current_id, i)
 
   dragit.statemachine.current_id = i;
 
@@ -155,39 +155,6 @@ dragit.trajectory.removeAll = function() {
   d3.selectAll(".gDragit").remove();
 }
 
-// Automatically add an HTML slider for time navigation
-dragit.utils.slider = function(el) {
-
-  d3.select(el).append("p")
-               .style("clear", "both");
-
-  d3.select(el).append("span")
-               .attr("id", "min-time")
-               .text(dragit.time.min);
-
-  d3.select(el).append("input")
-                .attr("type", "range")
-                .property("min", dragit.time.min)
-                .property("max", dragit.time.max)
-                .property("value", 10)
-                .property("step", 1)
-                .on("oninput", function() { 
-                  dragit.evt.call("update", this.value, 0); 
-                })
-
-  d3.select(el).append("span")
-               .attr("id", "max-time")
-               .text(dragit.time.max);
-
-}
-
-// Calculate the centroid of a given SVG element
-dragit.utils.centroid = function(s) {
-  var e = selection.node(),
-  bbox = e.getBBox();
-  return [bbox.x + bbox.width/2, bbox.y + bbox.height/2];
-}
-
 // Main function that binds drag callbacks to the current element
 dragit.object.activate = function(d, i) {
 
@@ -207,7 +174,8 @@ dragit.object.activate = function(d, i) {
     .on("dragstart", function(d, i) {
 
       dragit.statemachine.setState("dragstart");
-      console.log("dragstart")
+      if (vars.dev) console.log("[dragstart]", d, i)
+
       // Initial coordinates for the dragged object of interest
       d.x = 0;
       d.y = 0;
@@ -241,6 +209,7 @@ dragit.object.activate = function(d, i) {
     })
     .on("drag", function(d,i) {
       dragit.statemachine.setState("drag");
+      if (vars.dev) console.log("[drag]", d, i)
 
       switch(dragit.mouse.dragging) {
 
@@ -343,6 +312,7 @@ dragit.object.activate = function(d, i) {
     })
     .on("dragend", function(d,i) {
       dragit.statemachine.setState("dragend");
+      if (vars.dev) console.log("[dragend]", d, i)
 
       dragit.lineClosestTrajectory.remove();
       dragit.lineClosestPoint.remove();
@@ -387,6 +357,39 @@ dragit.statemachine.addEventListener = function(state, evt) {
 
 dragit.statemachine.setState = function(state) {
   dragit.statemachine.current_state = state;
+}
+
+// Automatically add an HTML slider for time navigation
+dragit.utils.slider = function(el) {
+
+  d3.select(el).append("p")
+               .style("clear", "both");
+
+  d3.select(el).append("span")
+               .attr("id", "min-time")
+               .text(dragit.time.min);
+
+  d3.select(el).append("input")
+                .attr("type", "range")
+                .property("min", dragit.time.min)
+                .property("max", dragit.time.max)
+                .property("value", 10)
+                .property("step", 1)
+                .on("oninput", function() { 
+                  dragit.evt.call("update", this.value, 0); 
+                })
+
+  d3.select(el).append("span")
+               .attr("id", "max-time")
+               .text(dragit.time.max);
+
+}
+
+// Calculate the centroid of a given SVG element
+dragit.utils.centroid = function(s) {
+  var e = selection.node(),
+  bbox = e.getBBox();
+  return [bbox.x + bbox.width/2, bbox.y + bbox.height/2];
 }
 
 // Credits: http://bl.ocks.org/mbostock/8027637
