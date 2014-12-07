@@ -71,8 +71,8 @@ function update(v, t) {
 
 	points.transition().duration(100)
 				.attr({cx: function(d) { return xScale(d[dragit.time.current].x)}, 
-					 cy: function(d) { return yScale(d[dragit.time.current].y)}
-				  })
+							 cy: function(d) { return yScale(d[dragit.time.current].y)}
+						  })
   d3.select("#slider-time").property("value", dragit.time.current);
 }
 
