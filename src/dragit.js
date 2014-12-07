@@ -1,4 +1,4 @@
-(function(){
+(function() {
 
   var dragit = window.dragit || {};
   window.dragit = dragit;
@@ -9,11 +9,20 @@
       "dev": false,
       evt: [],
       tc: [],
-      list_q: []
+      list_q: [],
+      trajectory: {interpolate: "linear"},
+      svgLine: null
     };
 
+  vars.svgLine = d3.svg.line()
+                      .x(function(d) {return d[0]; })
+                      .y(function(d) { return d[1]; })
+                      .interpolate(vars.trajectory.interpolate);
+
+  dragit.trajectory = {};
+
   dragit.statemachine = {current_state: "idle", current_id: -1};
-  dragit.time = {min:0, max:0, current:0, step:1};
+  dragit.time = {min: 0, max: 0, current: 0, step: 1};
   dragit.utils = {};
   dragit.mouse = {dragging: "closest"};
   dragit.object = {update: function() {}, accesor: function() {}, offsetX: 0, offsetY: 0};
@@ -37,15 +46,12 @@
 
   dragit.guide = {};
 
-  dragit.trajectory = {interpolate: "linear"};
-
 dragit.evt.register = function(evt, f, d) {
 
   if(typeof vars.evt[evt] == "undefined")
     vars.evt[evt] = [];
   
   vars.evt[evt].push([f,d]);
-
 }
 
 dragit.evt.call = function(evt, p, q) {
@@ -60,7 +66,6 @@ dragit.evt.call = function(evt, p, q) {
     if(typeof(e[0]) != "undefined")
       e[0](e[1])
   });
-
 }
 
 dragit.trajectory.init = function(tc) {  
@@ -77,17 +82,12 @@ dragit.trajectory.display = function(d, i) {
 
   dragit.statemachine.current_id = i;
 
-  var svgLine = d3.svg.line()
-                      .x(function(d) {return d[0]; })
-                      .y(function(d) { return d[1]; })
-                      .interpolate(dragit.trajectory.interpolate);
-
   gDragit = svg.insert("g", ":first-child").attr("class", "gDragit")
 
   dragit.lineTrajectory = gDragit.selectAll(".lineTrajectory")
                   .data([dragit.data[i]])
                 .enter().append("path")
-                  .attr("d", svgLine)
+                  .attr("d", vars.svgLine)
                   .attr("class", "lineTrajectory")
 
   dragit.pointTrajectory  = gDragit.selectAll(".pointTrajectory")
@@ -102,8 +102,27 @@ dragit.trajectory.display = function(d, i) {
                   .data([dragit.data[i]])
                 .enter().append("path")
                   .attr("class", "lineTrajectoryMonotone")
-                  .attr("d", svgLine.interpolate("monotone"));
+                  .attr("d", vars.svgLine.interpolate("monotone"));
+}
 
+dragit.trajectory.displayUpdate = function(d, i) {
+
+  dragit.lineTrajectory.data([dragit.data[i]])
+                  .transition()
+                  .duration(0)
+                  .attr("d", vars.svgLine);
+
+  dragit.pointTrajectory.data(dragit.data[i])
+                    .transition()
+                    .duration(0)
+                    .attr('cx', function(d) { return d[0]; })
+                    .attr('cy', function(d) { return d[1]; })
+                    .attr('r', 3);
+
+  dragit.lineTrajectoryMonotone.data([dragit.data[i]])
+                  .transition()
+                  .duration(0)
+                  .attr("d", vars.svgLine.interpolate("monotone"));
 }
 
 dragit.trajectory.toggle = function() {
@@ -136,7 +155,7 @@ dragit.trajectory.removeAll = function() {
   d3.selectAll(".gDragit").remove();
 }
 
-// Automatically add an HTML slider to navigate in the timecube
+// Automatically add an HTML slider for time navigation
 dragit.utils.slider = function(el) {
 
   d3.select(el).append("p")
@@ -219,7 +238,7 @@ dragit.object.activate = function(d, i) {
           d.x += d3.event.dx
           d.y += d3.event.dy
 
-          d3.select(this).attr("transform", function(d,i){
+          d3.select(this).attr("transform", function(d,i) {
             return "translate(" + [ d.x,d.y ] + ")"
           })  
 
@@ -325,12 +344,13 @@ dragit.object.activate = function(d, i) {
           d.x = 0;
           d.y = 0;
 
-          d3.select(this).transition().duration(200).attr("transform", function(d,i){
-              return "translate(" + [ d.x, d.y ] + ")"
-          })
-          //.attr("cx", q[0])
-          //.attr("cy", q[1])
-
+          d3.select(this).transition()
+                         .duration(200)
+                         .attr("transform", function(d,i) {
+                            return "translate(" + [ d.x, d.y ] + ")"
+                          })
+                         //.attr("cx", q[0])
+                         //.attr("cy", q[1])
       }
 
       // Call dragend events
@@ -340,11 +360,11 @@ dragit.object.activate = function(d, i) {
           //setTimeout(e(d, i), 100) 
       });     
 
-        dragit.statemachine.current_state = "idle";
-        dragit.statemachine.current_id = -1;
-      })
-  )
-  } 
+      dragit.statemachine.current_state = "idle";
+      dragit.statemachine.current_id = -1;
+    })
+
+  )} 
   
 })()
 
