@@ -3,7 +3,7 @@
   var dragit = window.dragit || {};
   window.dragit = dragit;
 
-  dragit.version = "0.1.1";
+  dragit.version = "0.1.2";
 
    var vars = {
       "dev": false,
@@ -29,7 +29,7 @@
   dragit.partition = {};
   dragit.data = [];
 
-  dragit.evt = {};                // Events manager
+  dragit.evt = {};                            // events manager
 
   dragit.evt.register = null;
   dragit.evt.run = null;
@@ -125,10 +125,6 @@ dragit.trajectory.displayUpdate = function(d, i) {
 }
 
 dragit.trajectory.toggle = function() {
-
-  // Test if already visible or not
-
-  // Test if dragit object exists
 
 }
 
@@ -228,7 +224,7 @@ dragit.object.activate = function(d, i) {
           d.y += d3.event.dy
 
           d3.select(this).attr("transform", function(d,i) {
-            return "translate(" + [ d.x,d.y ] + ")"
+            return "translate(" + [ d.x,d.y ] + ")";
           })  
           return;
           break;
@@ -239,7 +235,7 @@ dragit.object.activate = function(d, i) {
           d.y = dragit.utils.findYgivenX(d.x, dragit.lineTrajectory)
 
           d3.select(this).attr("transform", function(d,i) {
-            return "translate(" + [ d.x, d.y ] + ")"
+            return "translate(" + [ d.x, d.y ] + ")";
           })  
 
           break;
@@ -250,8 +246,6 @@ dragit.object.activate = function(d, i) {
       var list_distances = [], list_times = [], list_lines = [], list_p = [], list_q = [];
 
       var m = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
-
-      //var type_closest = ".lineTrajectory"; // all trajectories
 
       // Browse all the .lineTrajectory trajectories
       d3.selectAll(".lineTrajectory")[0].forEach(function(e, j) {
@@ -329,7 +323,7 @@ dragit.object.activate = function(d, i) {
       // Call drag events
       dragit.evt.drag.forEach(function(e, j) {
         if(typeof(e) != "undefined")
-          e(d, i)
+          e(d, i);
       });
 
     })
