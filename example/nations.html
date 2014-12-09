@@ -9,8 +9,8 @@
   <meta name="twitter:title" content="Drag it if you can: GapMinder The Wealth & Health of Nations">
   <meta name="twitter:image:src" content="http://romsson.github.io/dragit/img/nations.png"/>
   <meta name="twitter:domain" content="http://romsson.github.io/dragit/">
-  <title>Drag it if you can: GapMinder The Wealth & Health of Nations</title>
-  <meta name="description" content="Drag it if you can: GapMinder The Wealth & Health of Nations">
+  <title>Drag & Drop World Countries (if you can)</title>
+  <meta name="description" content="Drag & Drop World Countries (if you can)">
   <link href="../src/dragit.css" rel="stylesheet"/>
   <script src="../lib/d3.v3.js"></script>
   <script src="../src/dragit.js"></script>
@@ -84,11 +84,15 @@ path.lineTrajectory {
   pointer-events: none;
 }
 
+.example {
+  color:inherit;
+  text-decoration: none; 
+  border-bottom:1px dashed;
+}
 </style>
 
 <h1>Drag & Drop World Countries (if you can)</h1>
-<p><b>GapMinder The Wealth & Health of Nations</b>.<br>
-Use your mouse to drag and drop countries along their trajectory, and, indirectly, change the current year.</p>
+<p>Use your mouse to drag and drop countries along their trajectory, and, indirectly, change the current year.</p>
 
 <div id="chart" style="margin:0px"></div>
 
@@ -343,17 +347,18 @@ d3.json("../data/nations.json", function(nations) {
 
     d3.select("#slider-time").property("value", dragit.time.current);
 
-    d3.select("#slider-time").on("mousemove", function() { 
-      update(this.value, 500);
-      clear_demo();
-    })
+    d3.select("#slider-time")
+      .on("mousemove", function() { 
+        update(this.value, 500);
+        clear_demo();
+      })
 
-    var f = function() {
+    var end_effect = function() {
       countrylabel.text("");
       dot.style("opacity", 1)
     }
 
-    dragit.evt.dragend.push(f)
+    dragit.evt.dragend.push(end_effect)
 
   }
 
@@ -369,7 +374,17 @@ function clear_demo() {
 
 function play_demo() {
 
-  var index_random_nation = Math.floor(Math.random() * nations.length);
+  var ex_nations = ["China", "India", "Indonesia", "Italy", "France", "Spain", "Germany", "United States"]
+
+  var index_random_nation = null;
+  var random_index = Math.floor(Math.random() * ex_nations.length);
+  var random_nation = nations.filter(function(d, i) { 
+    if(d.name == ex_nations[random_index]) {
+      index_random_nation = i;
+      return true;
+    }
+  })[0];
+
   var random_nation = nations[index_random_nation];
 
   dragit.trajectory.removeAll();
