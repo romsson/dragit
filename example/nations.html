@@ -223,17 +223,6 @@ d3.json("../data/nations.json", function(nations) {
   dot.append("title")
       .text(function(d) { return d.name; });
 
-  // Add an overlay for the year label.
-  var box = label.node().getBBox();
-
-  var overlay = svg.append("rect")
-        .attr("class", "overlay")
-        .attr("x", box.x)
-        .attr("y", box.y)
-        .attr("width", box.width)
-        .attr("height", box.height)
-        //.on("mouseover", enableInteraction);
-
   // Start a transition that interpolates the data based on year.
   svg.transition()
       .duration(30000)
@@ -262,12 +251,6 @@ d3.json("../data/nations.json", function(nations) {
 
     // Cancel the current transition, if any.
     svg.transition().duration(0);
-
-    overlay
-        .on("mouseover", mouseover)
-        .on("mouseout", mouseout)
-        .on("mousemove", mousemove)
-        .on("touchmove", mousemove);
 
     function mouseover() {
       label.classed("active", true);
