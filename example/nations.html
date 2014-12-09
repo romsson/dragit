@@ -1,15 +1,23 @@
 <!DOCTYPE html>
-<html class="ocks-org do-not-copy">
+<html>
+<head>
 <meta charset="utf-8">
+
+</head>
 <title>The Wealth & Health of Nations</title>
 <style>
 
 body {
   font-family: "PT Sans", sans-serif;
+  margin-left:40px;
+}
+
+h1 {
+  font-weight: 200;
 }
 
 #chart {
-  margin-left: -40px;
+  margin-left: -60px;
   height: 506px;
 }
 
@@ -53,19 +61,20 @@ text {
 
 </style>
 
-<h1>The Wealth & Health of Nations</h1>
-
+<h1>Drag it if you can: GapMinder The Wealth & Health of Nations</h1>
+<p>Use your mouse to drag and drop countries along their trajectory, and, indirectly, change time.</p>
 <div style="margin:50px">
   <div id="chart"></div>
-  <p style="clear:both"></p>
+  </div>
+
   <span id="min-time">1800</span> 
-  <input type="range" name="points" min="1800" max="2008" step="1" value="0" id="slider-time" style="width:500px">
+  <input type="range" name="points" min="1800" max="2008" step="1" value="0" id="slider-time" style="width:900px">
   <span id="max-time">2008</span>
-  <br><br>
-  Built with <a href="https://github.com/romsson/dragit">dragit.js</a> by <a href="http://romain.vuillemot.net/">Romain Vuillemot</a>. View <a href="https://github.com/romsson/dragit/blob/master/example/nations.html">source</a> on GitHub.
   <br>
-  Original code from <a href="http://bost.ocks.org/mike/nations/">The Wealth & Health of Nations</a> by <a href="http://bost.ocks.org/mike/">Mike Bostock</a>.
-</div>
+  <p>Built with <a href="https://github.com/romsson/dragit">dragit.js</a> by <a href="http://romain.vuillemot.net/">Romain Vuillemot</a>. View <a href="https://github.com/romsson/dragit/blob/master/example/nations.html">source</a> on GitHub.</p>
+  <p>Original code and design from <a href="http://bost.ocks.org/mike/nations/">The Wealth & Health of Nations</a> by <a href="http://bost.ocks.org/mike/">Mike Bostock</a>.</p>
+  <p>Source <a href="https://github.com/RandomEtc/mind-gapper-js">Tom Carden</a>, <a href="http://gapminder.org">Gapminder</a>.
+
 
   <link href="../src/dragit.css" rel="stylesheet"/>
   <script src="../lib/d3.v3.js"></script>
@@ -146,7 +155,6 @@ var countrylabel = svg.append("text")
     .attr("x", 20)
     .text(" ");
 
-
 // Load the data.
 d3.json("../data/nations.json", function(nations) {
 
@@ -166,14 +174,18 @@ d3.json("../data/nations.json", function(nations) {
       .on("mouseenter", function(d, i) {
         dragit.trajectory.display(d, i);
         countrylabel.text(d.name);
+        dot.style("opacity", .4)
+        d3.select(this).style("opacity", 1)
       })
       //.on("mouseover", enableInteraction)
       .on("mouseleave", function(d, i) {
 
-        if(dragit.statemachine.current_state == "idle")
+        if(dragit.statemachine.current_state == "idle") {
           countrylabel.text("");
+                  dot.style("opacity", 1)
+        }
   
-        dragit.trajectory.remove(d, i);
+        //dragit.trajectory.remove(d, i);
 
       })
       .call(dragit.object.activate)
@@ -318,9 +330,14 @@ d3.json("../data/nations.json", function(nations) {
 
     dragit.evt.dragend.push(f)
 
-
-
   }
+
+  setInterval(function() {
+
+    //var random_nation = nations[]
+
+  }, 2000)
+
 
 });
 
