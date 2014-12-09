@@ -9,14 +9,11 @@
   <meta name="twitter:title" content="Drag it if you can: GapMinder The Wealth & Health of Nations">
   <meta name="twitter:image:src" content="http://romsson.github.io/dragit/img/nations.png"/>
   <meta name="twitter:domain" content="http://romsson.github.io/dragit/">
-  <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Atlas of Economic Complexity"/>
   <title>Drag it if you can: GapMinder The Wealth & Health of Nations</title>
   <meta name="description" content="Drag it if you can: GapMinder The Wealth & Health of Nations">
-
   <link href="../src/dragit.css" rel="stylesheet"/>
   <script src="../lib/d3.v3.js"></script>
   <script src="../src/dragit.js"></script>
-
 </head>
 <title>The Wealth & Health of Nations</title>
 <style>
@@ -31,7 +28,6 @@ h1 {
 }
 
 #chart {
-  margin-left: -60px;
   height: 506px;
 }
 
@@ -93,19 +89,16 @@ path.lineTrajectory {
 <h1>Drag & Drop World Countries (if you can)</h1>
 <p><b>GapMinder The Wealth & Health of Nations</b>.<br>
 Use your mouse to drag and drop countries along their trajectory, and, indirectly, change the current year.</p>
-<div style="margin:50px">
-  <div id="chart"></div>
-  </div>
 
-  <span id="min-time">1800</span> 
-  <input type="range" name="points" min="1800" max="2008" step="1" value="0" id="slider-time" style="width:900px">
-  <span id="max-time">2008</span>
-  <br>
-  <p>Built with <a href="https://github.com/romsson/dragit">dragit.js</a> by <a href="http://romain.vuillemot.net/">Romain Vuillemot</a>. View <a href="https://github.com/romsson/dragit/blob/master/example/nations.html">source</a> on GitHub.<br>
-  Original code and design from <a href="http://bost.ocks.org/mike/nations/">The Wealth & Health of Nations</a> by <a href="http://bost.ocks.org/mike/">Mike Bostock</a>.<br>
-  Source <a href="https://github.com/RandomEtc/mind-gapper-js">Tom Carden</a>, <a href="http://gapminder.org">Gapminder</a>.
+<div id="chart" style="margin:0px"></div>
 
-
+<span id="min-time">1800</span> 
+<input type="range" name="points" min="1800" max="2008" step="1" value="0" id="slider-time" style="width:900px">
+<span id="max-time">2008</span>
+<br>
+<p>Built with <a href="https://github.com/romsson/dragit">dragit.js</a> by <a href="http://romain.vuillemot.net/">Romain Vuillemot</a>. View <a href="https://github.com/romsson/dragit/blob/master/example/nations.html">source</a> on GitHub.<br>
+Original code and design from <a href="http://bost.ocks.org/mike/nations/">The Wealth & Health of Nations</a> by <a href="http://bost.ocks.org/mike/">Mike Bostock</a>.<br>
+Source <a href="https://github.com/RandomEtc/mind-gapper-js">Tom Carden</a>, <a href="http://gapminder.org">Gapminder</a>.
 
 <script>
 
@@ -374,7 +367,6 @@ function clear_demo() {
   }
 }
 
-
 demo_interval = setInterval(function() {
 
   var index_random_nation = Math.floor(Math.random() * nations.length);
@@ -383,7 +375,6 @@ demo_interval = setInterval(function() {
   dragit.trajectory.removeAll();
   dragit.trajectory.display(random_nation, index_random_nation);
   countrylabel.text(random_nation.name);
-
 
   var totalLength = dragit.lineTrajectory.node().getTotalLength();
 
@@ -415,7 +406,6 @@ demo_interval = setInterval(function() {
 
   ga('create', 'UA-57485706-1', 'auto');
   ga('send', 'pageview');
-
 </script>
 </body>
 </html>
