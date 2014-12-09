@@ -367,7 +367,7 @@ function clear_demo() {
   }
 }
 
-demo_interval = setInterval(function() {
+function play_demo() {
 
   var index_random_nation = Math.floor(Math.random() * nations.length);
   var random_nation = nations[index_random_nation];
@@ -392,8 +392,10 @@ demo_interval = setInterval(function() {
   d3.selectAll(".dot").filter(function(d) {
     return d.name == random_nation.name;
   }).style("opacity", 1)
+}
 
-  }, 2000)
+play_demo();
+demo_interval = setInterval(play_demo, 2000)
 
 });
 
