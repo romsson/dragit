@@ -4,6 +4,10 @@
 <title>The Wealth & Health of Nations</title>
 <style>
 
+body {
+  font-family: "PT Sans", sans-serif;
+}
+
 #chart {
   margin-left: -40px;
   height: 506px;
@@ -51,7 +55,17 @@ text {
 
 <h1>The Wealth & Health of Nations</h1>
 
-<p id="chart"></p>
+<div style="margin:50px">
+  <div id="chart"></div>
+  <p style="clear:both"></p>
+  <span id="min-time">1800</span> 
+  <input type="range" name="points" min="1800" max="2008" step="1" value="0" id="slider-time" style="width:500px">
+  <span id="max-time">2008</span>
+  <br><br>
+  Built with <a href="https://github.com/romsson/dragit">dragit.js</a> by <a href="http://romain.vuillemot.net/">Romain Vuillemot</a>. View <a href="https://github.com/romsson/dragit/blob/master/example/nations.html">source</a> on GitHub.
+  <br>
+  Original code from <a href="http://bost.ocks.org/mike/nations/">The Wealth & Health of Nations</a> by <a href="http://bost.ocks.org/mike/">Mike Bostock</a>.
+</div>
 
   <link href="../src/dragit.css" rel="stylesheet"/>
   <script src="../lib/d3.v3.js"></script>
@@ -311,12 +325,5 @@ d3.json("../data/nations.json", function(nations) {
 });
 
 </script>
-<p style="clear:both"></p>
-<span id="min-time">1800</span> 
-<input type="range" name="points" min="1800" max="2008" step="1" value="0" id="slider-time">
-<span id="max-time">2008</span>
-<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll();"> Show complete trajectory (takes time to load)</label>
-<br><br><br>
-Original code: <a href="http://bost.ocks.org/mike/nations/">The Wealth & Health of Nations</a> by Mike Bostock.
 </body>
 </html>
