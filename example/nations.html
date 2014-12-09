@@ -1,9 +1,5 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8">
-
-</head>
 <title>The Wealth & Health of Nations</title>
 <style>
 
@@ -61,8 +57,9 @@ text {
 
 </style>
 
-<h1>Drag it if you can: GapMinder The Wealth & Health of Nations</h1>
-<p>Use your mouse to drag and drop countries along their trajectory, and, indirectly, change time.</p>
+<h1>Drag world countries if you can</h1>
+<p><b>GapMinder The Wealth & Health of Nations</b>.<br>
+Use your mouse to drag and drop countries along their trajectory, and, indirectly, change time.</p>
 <div style="margin:50px">
   <div id="chart"></div>
   </div>
@@ -172,20 +169,22 @@ d3.json("../data/nations.json", function(nations) {
      // .sort(order)
       .call(position)
       .on("mouseenter", function(d, i) {
-        dragit.trajectory.display(d, i);
-        countrylabel.text(d.name);
-        dot.style("opacity", .4)
-        d3.select(this).style("opacity", 1)
+        if(dragit.statemachine.current_state == "idle") {
+          dragit.trajectory.display(d, i);
+          countrylabel.text(d.name);
+          dot.style("opacity", .4)
+          d3.select(this).style("opacity", 1)
+        }
       })
       //.on("mouseover", enableInteraction)
       .on("mouseleave", function(d, i) {
 
         if(dragit.statemachine.current_state == "idle") {
           countrylabel.text("");
-                  dot.style("opacity", 1)
+          dot.style("opacity", 1)
         }
   
-        //dragit.trajectory.remove(d, i);
+        dragit.trajectory.remove(d, i);
 
       })
       .call(dragit.object.activate)
@@ -326,6 +325,7 @@ d3.json("../data/nations.json", function(nations) {
 
     var f = function() {
       countrylabel.text("");
+      dot.style("opacity", 1)
     }
 
     dragit.evt.dragend.push(f)
@@ -334,7 +334,19 @@ d3.json("../data/nations.json", function(nations) {
 
   setInterval(function() {
 
-    //var random_nation = nations[]
+    var index_random_nation = Math.floor(Math.random() * nations.length);
+    var random_nation = nations[index_random_nation];
+
+    console.log(random_nation)
+
+    dragit.trajectory.removeAll();
+    dragit.trajectory.display(random_nation, index_random_nation);
+    countrylabel.text(random_nation.name);
+
+    d3.selectAll(".dot").style("opacity", .4)
+    d3.selectAll(".dot").filter(function(d) {
+      return d.name == random_nation.name;
+    }).style("opacity", 1)
 
   }, 2000)
 
