@@ -70,9 +70,9 @@ text {
 
 </style>
 
-<h1>Drag world countries if you can</h1>
+<h1>Drag & Drop World Countries (if you can)</h1>
 <p><b>GapMinder The Wealth & Health of Nations</b>.<br>
-Use your mouse to drag and drop countries along their trajectory, and, indirectly, change time.</p>
+Use your mouse to drag and drop countries along their trajectory, and, indirectly, change the current year.</p>
 <div style="margin:50px">
   <div id="chart"></div>
   </div>
@@ -165,6 +165,8 @@ var countrylabel = svg.append("text")
     .attr("x", 20)
     .text(" ");
 
+var first_time = true;
+
 // Load the data.
 d3.json("../data/nations.json", function(nations) {
 
@@ -182,6 +184,7 @@ d3.json("../data/nations.json", function(nations) {
      // .sort(order)
       .call(position)
       .on("mouseenter", function(d, i) {
+        clear_demo();
         if(dragit.statemachine.current_state == "idle") {
           dragit.trajectory.display(d, i);
           countrylabel.text(d.name);
@@ -331,9 +334,8 @@ d3.json("../data/nations.json", function(nations) {
     d3.select("#slider-time").property("value", dragit.time.current);
 
     d3.select("#slider-time").on("mousemove", function() { 
-
       update(this.value, 500);
-
+      clear_demo();
     })
 
     var f = function() {
@@ -345,12 +347,21 @@ d3.json("../data/nations.json", function(nations) {
 
   }
 
-  setInterval(function() {
+function clear_demo() {
+  if(first_time) {
+    first_time = false;
+    window.clearInterval(demo_interval);
+    countrylabel.text("");
+    dragit.trajectory.removeAll();
+    d3.selectAll(".dot").style("opacity", 1)
+  }
+}
+
+
+demo_interval = setInterval(function() {
 
     var index_random_nation = Math.floor(Math.random() * nations.length);
     var random_nation = nations[index_random_nation];
-
-    console.log(random_nation)
 
     dragit.trajectory.removeAll();
     dragit.trajectory.display(random_nation, index_random_nation);
