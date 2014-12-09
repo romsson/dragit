@@ -12,6 +12,11 @@
   <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Atlas of Economic Complexity"/>
   <title>Drag it if you can: GapMinder The Wealth & Health of Nations</title>
   <meta name="description" content="Drag it if you can: GapMinder The Wealth & Health of Nations">
+
+  <link href="../src/dragit.css" rel="stylesheet"/>
+  <script src="../lib/d3.v3.js"></script>
+  <script src="../src/dragit.js"></script>
+
 </head>
 <title>The Wealth & Health of Nations</title>
 <style>
@@ -68,6 +73,21 @@ text {
 /*  cursor: ew-resize; */
 }
 
+circle.pointTrajectory {
+   pointer-events: none;
+   stroke: lightgray;
+   fill: black;
+   opacity: 0;
+}
+
+path.lineTrajectory {
+  stroke-width: 2;
+  stroke-opacity: 1;
+  stroke: black;
+  fill: none;
+  pointer-events: none;
+}
+
 </style>
 
 <h1>Drag & Drop World Countries (if you can)</h1>
@@ -81,14 +101,11 @@ Use your mouse to drag and drop countries along their trajectory, and, indirectl
   <input type="range" name="points" min="1800" max="2008" step="1" value="0" id="slider-time" style="width:900px">
   <span id="max-time">2008</span>
   <br>
-  <p>Built with <a href="https://github.com/romsson/dragit">dragit.js</a> by <a href="http://romain.vuillemot.net/">Romain Vuillemot</a>. View <a href="https://github.com/romsson/dragit/blob/master/example/nations.html">source</a> on GitHub.</p>
-  <p>Original code and design from <a href="http://bost.ocks.org/mike/nations/">The Wealth & Health of Nations</a> by <a href="http://bost.ocks.org/mike/">Mike Bostock</a>.</p>
-  <p>Source <a href="https://github.com/RandomEtc/mind-gapper-js">Tom Carden</a>, <a href="http://gapminder.org">Gapminder</a>.
+  <p>Built with <a href="https://github.com/romsson/dragit">dragit.js</a> by <a href="http://romain.vuillemot.net/">Romain Vuillemot</a>. View <a href="https://github.com/romsson/dragit/blob/master/example/nations.html">source</a> on GitHub.<br>
+  Original code and design from <a href="http://bost.ocks.org/mike/nations/">The Wealth & Health of Nations</a> by <a href="http://bost.ocks.org/mike/">Mike Bostock</a>.<br>
+  Source <a href="https://github.com/RandomEtc/mind-gapper-js">Tom Carden</a>, <a href="http://gapminder.org">Gapminder</a>.
 
 
-  <link href="../src/dragit.css" rel="stylesheet"/>
-  <script src="../lib/d3.v3.js"></script>
-  <script src="../src/dragit.js"></script>
 
 <script>
 
@@ -360,20 +377,32 @@ function clear_demo() {
 
 demo_interval = setInterval(function() {
 
-    var index_random_nation = Math.floor(Math.random() * nations.length);
-    var random_nation = nations[index_random_nation];
+  var index_random_nation = Math.floor(Math.random() * nations.length);
+  var random_nation = nations[index_random_nation];
 
-    dragit.trajectory.removeAll();
-    dragit.trajectory.display(random_nation, index_random_nation);
-    countrylabel.text(random_nation.name);
+  dragit.trajectory.removeAll();
+  dragit.trajectory.display(random_nation, index_random_nation);
+  countrylabel.text(random_nation.name);
 
-    d3.selectAll(".dot").style("opacity", .4)
-    d3.selectAll(".dot").filter(function(d) {
-      return d.name == random_nation.name;
-    }).style("opacity", 1)
+
+  var totalLength = dragit.lineTrajectory.node().getTotalLength();
+
+  dragit.lineTrajectory
+        .attr("stroke-width", "5")
+        .attr("stroke-dasharray", totalLength + " " + totalLength)
+        .attr("stroke-dashoffset", totalLength)
+      .transition()
+        .duration(1000)
+        .ease("linear")
+        .attr("stroke-dashoffset", 0);
+
+  d3.selectAll(".dot").style("opacity", .4)
+
+  d3.selectAll(".dot").filter(function(d) {
+    return d.name == random_nation.name;
+  }).style("opacity", 1)
 
   }, 2000)
-
 
 });
 
