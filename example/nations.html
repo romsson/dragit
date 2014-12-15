@@ -9,13 +9,13 @@
   <meta name="twitter:title" content="Drag it if you can: GapMinder The Wealth & Health of Nations">
   <meta name="twitter:image:src" content="http://romsson.github.io/dragit/img/nations.png"/>
   <meta name="twitter:domain" content="http://romsson.github.io/dragit/">
-  <title>Drag & Drop World Countries (if you can)</title>
+  <title>The Wealth & Health of Nations - Romain Vuillemo /dragitt</title>
   <meta name="description" content="Drag & Drop World Countries (if you can)">
   <link href="../src/dragit.css" rel="stylesheet"/>
   <script src="../lib/d3.v3.js"></script>
   <script src="../src/dragit.js"></script>
 </head>
-<title>The Wealth & Health of Nations</title>
+<title>The Wealth & Health of Nations  - Romain Vuillemot / dragit</title>
 <style>
 
 body {
@@ -88,7 +88,6 @@ path.lineTrajectory {
 The little twist is to use your mouse to drag and drop countries along their trajectory, over time.</p>
 
 <div id="chart" style="margin:0px"></div>
-
 <span id="min-time">1800</span> 
 <input type="range" name="points" min="1800" max="2008" step="1" value="0" id="slider-time" style="width:900px">
 <span id="max-time">2008</span>
@@ -188,7 +187,6 @@ d3.json("../data/nations.json", function(nations) {
     .enter().append("circle")
       .attr("class", "dot")
       .style("fill", function(d) { return colorScale(color(d)); })
-     // .sort(order)
       .call(position)
       .on("mouseenter", function(d, i) {
         clear_demo();
@@ -199,7 +197,6 @@ d3.json("../data/nations.json", function(nations) {
           d3.select(this).style("opacity", 1)
         }
       })
-      //.on("mouseover", enableInteraction)
       .on("mouseleave", function(d, i) {
 
         if(dragit.statemachine.current_state == "idle") {
@@ -208,7 +205,6 @@ d3.json("../data/nations.json", function(nations) {
         }
   
         dragit.trajectory.remove(d, i);
-
       })
       .call(dragit.object.activate)
 
@@ -220,8 +216,6 @@ d3.json("../data/nations.json", function(nations) {
   svg.transition()
       .duration(30000)
       .ease("linear")
-     //.tween("year", tweenYear)
-     //.each("end", enableInteraction);
 
   // Positions the dots based on data.
   function position(dot) {
@@ -303,7 +297,6 @@ d3.json("../data/nations.json", function(nations) {
     dragit.time.current = v || dragit.time.current;
     displayYear(dragit.time.current)
     d3.select("#slider-time").property("value", dragit.time.current);
-
   }
 
   function init() {
@@ -335,7 +328,6 @@ d3.json("../data/nations.json", function(nations) {
     }
 
     dragit.evt.dragend.push(end_effect)
-
   }
 
 function clear_demo() {
@@ -351,7 +343,6 @@ function clear_demo() {
 function play_demo() {
 
   var ex_nations = ["China", "India", "Indonesia", "Italy", "France", "Spain", "Germany", "United States"]
-
   var index_random_nation = null;
   var random_index = Math.floor(Math.random() * ex_nations.length);
   var random_nation = nations.filter(function(d, i) { 
@@ -396,7 +387,6 @@ demo_interval = setInterval(play_demo, 2000)
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
   ga('create', 'UA-57485706-1', 'auto');
   ga('send', 'pageview');
 </script>
