@@ -170,7 +170,7 @@ function init() {
     }) 
   });
 
-  dragit.object.update = update;
+  dragit.evt.register("update", update);
 
   d3.selectAll("#min-time").text(0)
   d3.selectAll("#max-time").text(dragit.time.step)

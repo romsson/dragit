@@ -69,7 +69,6 @@ points.attr({cx: function(d) {
 
 // Time update callback function
 function update(v, t) {
-
 	dragit.time.current = v || dragit.time.current;
 
 	points.transition().duration(100)
@@ -93,7 +92,7 @@ function init() {
   });
   
   dragit.time = {min:0, max:time_steps, step:1, current: current_time}
-  dragit.object.update = update;
+  dragit.evt.register("update", update);
 
   // Update the time slider
   d3.select("#slider-time").property("value", dragit.time.current);

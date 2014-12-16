@@ -312,7 +312,7 @@ d3.json("../data/nations.json", function(nations) {
       })
     }
 
-    dragit.object.update = update;
+    dragit.evt.register("update", update);
 
     d3.select("#slider-time").property("value", dragit.time.current);
 

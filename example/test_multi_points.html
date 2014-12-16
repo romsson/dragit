@@ -95,8 +95,7 @@ function init() {
   });
   
   dragit.time = {min:0, max:time_steps, step:1, current: current_time}
-  dragit.object.update = update;
-
+  dragit.evt.register("update", update);
 }
 
 init();
