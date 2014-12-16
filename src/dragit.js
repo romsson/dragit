@@ -3,7 +3,7 @@
   var dragit = window.dragit || {};
   window.dragit = dragit;
 
-  dragit.version = "0.1.2";
+  dragit.version = "0.1.3";
 
   var vars = {
       "dev": false,
@@ -72,7 +72,7 @@ dragit.evt.call = function(evt) {
 
 dragit.init = function(container) {
   vars.container = d3.select(container);
-}
+} 
 
 dragit.trajectory.display = function(d, i) {
 
@@ -81,7 +81,6 @@ dragit.trajectory.display = function(d, i) {
     return;
 
   if(vars.dev) console.log("[display]", dragit.statemachine.current_state, dragit.statemachine.current_id, i)
-
 
   gDragit = vars.container.insert("g", ":first-child").attr("class", "gDragit")
 
@@ -293,6 +292,8 @@ dragit.object.activate = function(d, i) {
 
       var new_time = list_times[index_min];
 
+      dragit.time.current = new_time;
+
       // Update the line guide to closest trajectory
       dragit.lineClosestTrajectory.attr("x1", list_p[index_min][0])
                                   .attr("y1", list_p[index_min][1])
@@ -366,7 +367,6 @@ dragit.object.activate = function(d, i) {
       });     
 
       dragit.statemachine.current_id = -1;
-
       dragit.statemachine.current_state = "idle";
     })
 
@@ -382,7 +382,7 @@ dragit.statemachine.setState = function(state) {
   dragit.statemachine.current_state = state;
 }
 
-// Automatically create and add a DOM HTML slider for time navigation
+// Create and add a DOM HTML slider for time navigation
 dragit.utils.slider = function(el) {
 
   d3.select(el).append("p")
@@ -394,11 +394,13 @@ dragit.utils.slider = function(el) {
 
   d3.select(el).append("input")
                 .attr("type", "range")
+                .attr("class", "slider-time")
                 .property("min", dragit.time.min)
                 .property("max", dragit.time.max)
                 .property("value", 10)
                 .property("step", 1)
                 .on("input", function() { 
+                  dragit.time.current = parseInt(this.value)-dragit.time.min;
                   dragit.evt.call("update", this.value, 0); 
                 })
 
