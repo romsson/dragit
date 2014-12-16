@@ -5,7 +5,7 @@
 
   dragit.version = "0.1.2";
 
-   var vars = {
+  var vars = {
       "dev": false,
       evt: [],
       tc: [],
@@ -34,6 +34,7 @@
   dragit.evt.register = null;
   dragit.evt.run = null;
 
+  dragit.evt.update = [];                     // update
   dragit.evt.dragstart = [];                  // start dragging
   dragit.evt.drag = [];                       // during dragging
   dragit.evt.dragend = [];                    // end dragging
@@ -317,7 +318,7 @@ dragit.object.activate = function(d, i) {
       if(dragit.time.current != new_time || dragit.trajectory.index_min != index_min) {
         dragit.trajectory.index_min = index_min;
         dragit.time.current = new_time;
-        dragit.object.update();
+        dragit.evt.call("update", new_time, 0); 
       }
 
       // Call drag events
