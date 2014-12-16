@@ -1,13 +1,13 @@
 dragit.js
 ==========
 
-**dragit** is an extension to the **D3** library to enable the direct manipulation of SVG data visualization. It is designed to be seamlessly included in an existing **D3** visualization and is aimed to be highly customizable.
+**dragit** is an extension to the **[D3.js](http://d3js.org/)** library to enable the [direct manipulation](https://en.wikipedia.org/wiki/Direct_manipulation_interface) of SVG data visualization. It is designed to be seamlessly included in an existing **D3** visualization and is aimed to be highly customizable.
 
 ### Examples
 
 * Interactive [soccer bracket](http://romain.vuillemot.net/projects/worldcup14/)
 * A series of [simple](http://romsson.github.io/dragit/example/test_single_point.html) [examples](http://romsson.github.io/dragit/example/test_multi_points.html)
-* [Gapminder / Wealth of Nations](http://romsson.github.io/dragit/example/nations.html) to drag countries to desired position instead of using the time slider
+* [A Re-Recreation of Gapminder's Wealth of Nations](http://romsson.github.io/dragit/example/nations.html) to drag countries to desired position instead of using the time slider
 
 #### Coming soon
 
@@ -17,7 +17,9 @@ dragit.js
 
 ### Getting Started
 
-One of the library design goal to be indluded quasi-seamlessly in a current data visualization, i.e. without much change. To use it, insert the following snippets in the header of your code, right after **D3**:
+#### Code Organization
+
+One of the library design goal to be included quasi-seamlessly in a current data visualization, i.e. without much change. To use it, insert the following snippets in the header of your code, right after **D3**:
 
 ```html
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -29,19 +31,27 @@ You are, however, very likely to structure the chart as follows to make sure **d
 * `init()` which is called only once during startup
 * `update()` which is called once time has changed
 
-Those two functions will make sure the library's internal state is always up to date, regardless how you udpate the data visualization (using regular slider or direct manipulation).
+Those two functions will make sure the library's internal state is always up to date, regardless how you update the data visualization (using regular slider or direct manipulation).
+
+#### Time Cube
 
 Then create an internal data structure (namely a time cube) where each row is a data point, and each column a time point.You may want to generate a random time cube (of `nb_data_points` by `nb_time_steps`) as below:
 
 ```
 var timecube = d3.range(nb_data_points).map(function(d, i) {
 	return d3.range(nb_time_steps).map(function(e, j) { 
-		return {x:i, y:Math.random(), t: j};
+		return {x: i, y: Math.random(), t: j};
 	});
 })
 ```
 
-Here are a few concepts that are important to undersdant and that we'll refer to later on:
+#### Combination Cube
+
+(to be detailed soon)
+
+#### Core Concepts
+
+Here are a few concepts that are important to grasp:
 
 * **Object (of Interest)**: the graphical marks (SVG node, div, ..) that can be dragged and will indirectly update the visualization.
 * **Focus**: the visual element that is being dragged (can be a simplified simplified such as into a point or shadow).
@@ -71,7 +81,9 @@ Where d<sub>i</sub> are dimensions, as t<sub>i</sub> are time points.
 
 ### dragit.vars
 
-A series of internal/private parameters
+A series of private variables for internal use. Can be set using publication functions, such as:
+
+* `dragit.init(container)`  :  set the DOM element containing all the trajectories (can be shared with the visualization)   
 
 ### dragit.time
 
@@ -79,15 +91,15 @@ A series of internal/private parameters
 * `dragit.time.min`		    : 	the minimal time point (default: 0)
 * `dragit.time.max`		    : 	the maximal time point (default: 0)
 * `dragit.time.step`	  	: 	increment (default: 1)
-* `dragit.time.speed`		  : 	for the playback (default:1)
+* `dragit.time.speed`		  : 	for the playback (default)
 
 Example:
 
 ```
-dragit.time = {min: d3.min(data, function(d) { return parseInt(d[i]);}), 
-							 max: d3.max(data, function(d) { return parseInt(d[i]);}), 
-							 step:1, 
-							 current:0
+dragit.time = {min: 		d3.min(data, function(d) { return parseInt(d[i]);}), 
+							 max: 		d3.max(data, function(d) { return parseInt(d[i]);}), 
+							 step: 		1, 
+							 current: 0
 							}
 ```
 
@@ -97,6 +109,8 @@ The object of interest, the handle the user interacts with to start the interact
 
 * `dragit.object.activate` activates dragging for the selected element. It creates the necessary mouse events (drag). Example: `.call(dragit.object.activate)`.
 
+### dragit.mouse
+
 #### dragit.mouse.dragging
 
 * `horizontal`
@@ -105,7 +119,7 @@ The object of interest, the handle the user interacts with to start the interact
 * `flow` flow dragging method. Usually well suited for background * motion.
 * `free` dragging with no constraints on the activated element, returns to its original position
 
-#### dragit.focus
+### dragit.focus
 
 * Functions related to the focus that is being 
 
@@ -124,7 +138,7 @@ The object of interest, the handle the user interacts with to start the interact
 Events management mechanism to register and trigger functions.
 
 * `dragit.evt.register(event, function, context)`    : register a function for a given `event` 
-* `dragit.evt.register(event)`                       : trigger registered functions
+* `dragit.evt.call(event)`                           : trigger registered functions
 
 
 ### dragit.statemachine
@@ -133,7 +147,8 @@ Events management mechanism to register and trigger functions.
 	<img src="img/diagram-state-machine.png" width=400/>
 </p>
 
-
 (not fully implemented yet)
 
-* `dragit.statemachine.current_state`   : the current state of the interaction
+* `dragit.statemachine.current_state`                  : return the current state of the interaction (e.g mouseenter, dragstart)
+* `dragit.statemachine.current_id`                     : return the id of the currently manipulated element
+* `dragit.statemachine.setState(event)`                : set the current state of the state machine
