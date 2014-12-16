@@ -55,7 +55,7 @@ dragit.evt.register = function(evt, f, d) {
   vars.evt[evt].push([f,d]);
 }
 
-dragit.evt.call = function(evt, p, q) {
+dragit.evt.call = function(evt) {
 
   if(typeof vars.evt[evt] == "undefined") {
     console.warn("No callback for event", evt)
@@ -157,11 +157,9 @@ dragit.object.activate = function(d, i) {
   if (vars.dev) console.log("Activate", d, i)
 
   d3.select(this)[0][0].node().addEventListener("mouseenter", function() {
-    console.log(dragit.statemachine.current_state)
     if(dragit.statemachine.current_state == "idle") {
       dragit.statemachine.setState("mouseenter");
       dragit.statemachine.current_id = i;
-      console.log("current id", dragit.statemachine.current_id)
     }
   }, false)
 

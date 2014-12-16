@@ -76,10 +76,10 @@ A series of internal/private parameters
 ### dragit.time
 
 * `dragit.time.current` 	: 	the current time (default: 0)
-* `dragit.time.min`		: 	the minimal time point (default: 0)
-* `dragit.time.max`		: 	the maximal time point (default: 0)
-* `dragit.time.step`		: 	increment (default: 1)
-* `dragit.time.speed`		: 	for the playback (default:1)
+* `dragit.time.min`		    : 	the minimal time point (default: 0)
+* `dragit.time.max`		    : 	the maximal time point (default: 0)
+* `dragit.time.step`	  	: 	increment (default: 1)
+* `dragit.time.speed`		  : 	for the playback (default:1)
 
 Example:
 
@@ -111,17 +111,21 @@ The object of interest, the handle the user interacts with to start the interact
 
 ### dragit.trajectory
 
-* `dragit.trajectory.display` displays the currently dragged element's trajectory
-* `dragit.trajectory.displayUpdate` update the trajectory
-* `dragit.trajectory.displayAll` displays all trajectories
-* `dragit.trajectory.toggle` toggle the display of current trajectory
-* `dragit.trajectory.toggleAll` toggle the display of all trajectories
-* `dragit.trajectory.remove` removes the created trajectory
-* `dragit.trajectory.removeAll` removes all trajectories
+* `dragit.trajectory.display`          : displays the currently dragged element's trajectory
+* `dragit.trajectory.displayUpdate`    : update the trajectory
+* `dragit.trajectory.displayAll`       : displays all trajectories
+* `dragit.trajectory.toggle`           : toggle the display of current trajectory
+* `dragit.trajectory.toggleAll`        : toggle the display of all trajectories
+* `dragit.trajectory.remove`           : removes the created trajectory
+* `dragit.trajectory.removeAll`        : removes all trajectories
 
 ### dragit.evt
 
-Events management mechanism.
+Events management mechanism to register and trigger functions.
+
+* `dragit.evt.register(event, function, context)`    : register a function for a given `event` 
+* `dragit.evt.register(event)`                       : trigger registered functions
+
 
 ### dragit.statemachine
 
@@ -132,4 +136,4 @@ Events management mechanism.
 
 (not fully implemented yet)
 
-* `dragit.statemachine.current_state` the current state of the interaction
+* `dragit.statemachine.current_state`   : the current state of the interaction
