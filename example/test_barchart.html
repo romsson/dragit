@@ -162,7 +162,8 @@ function update(t, duration) {
 }
 
 function init() {
-  d3.select("#slider-time")
+
+  dragit.init("svg");
 
   dragit.data = timecube.map(function(d, i) { 
     return d.map(function(e, i) { 

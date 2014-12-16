@@ -85,6 +85,8 @@ function update(v, t) {
 
 function init() {
 
+	dragit.init("svg");
+
 	d3.select("#min-time").text(0);
 	d3.select("#max-time").text(time_steps)
 

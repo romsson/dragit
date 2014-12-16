@@ -11,7 +11,8 @@
       tc: [],
       list_q: [],
       trajectory: {interpolate: "linear"},
-      svgLine: null
+      svgLine: null,
+      container: null
     };
 
   vars.svgLine = d3.svg.line()
@@ -69,8 +70,8 @@ dragit.evt.call = function(evt) {
   });
 }
 
-dragit.trajectory.init = function(tc) {  
-  vars.tc = tc;
+dragit.init = function(container) {
+  vars.container = d3.select(container);
 }
 
 dragit.trajectory.display = function(d, i) {
@@ -82,7 +83,7 @@ dragit.trajectory.display = function(d, i) {
   if(vars.dev) console.log("[display]", dragit.statemachine.current_state, dragit.statemachine.current_id, i)
 
 
-  gDragit = svg.insert("g", ":first-child").attr("class", "gDragit")
+  gDragit = vars.container.insert("g", ":first-child").attr("class", "gDragit")
 
   dragit.lineTrajectory = gDragit.selectAll(".lineTrajectory")
                   .data([dragit.data[i]])

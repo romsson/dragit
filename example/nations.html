@@ -151,7 +151,8 @@ var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .attr("class", "gRoot")
 
 // Add the x-axis.
 svg.append("g")
@@ -326,6 +327,8 @@ d3.json("../data/nations.json", function(nations) {
   }
 
   function init() {
+
+    dragit.init(".gRoot");
 
     dragit.time = {min:1800, max:2009, step:1, current:1800}
     dragit.data = d3.range(nations.length).map(function() { return Array(); })
