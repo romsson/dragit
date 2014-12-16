@@ -6,32 +6,28 @@
 	<link href="../src/dragit.css" rel="stylesheet"/>
 	<script src="../lib/d3.v3.js"></script>
 	<script src="../src/dragit.js"></script>
+<style>
+
+html, body, table, svg {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+</style>
 </head>
 <body>
 	<p style="clear:both"></p>
-	<!--
-	<span id="min-time">0</span> 
-	<input type="range" name="points" min="0" max="43" step="1" value="0" id="slider-time" oninput="update(this.value, 0)"> <span id="max-time">0</span>
--->
 	<div id="slider"></div>
 	<div id="viz"></div>
-
 <script>
 
 var margin = {top: 20, right: 20, bottom: 20, left: 20},
     width = 900 - margin.right - margin.left,
     height = 500 - margin.top - margin.bottom;
-
-
-/*
-// Create the SVG? Not now..
-var svg = d3.select("#viz").insert("svg", ":first-child")
-  .attr("width", width)
-  .attr("height", height)
-  .style("top", margin.top)
-  .style("left", margin.left)
-  .style("position", "absolute")
-*/
 
 var timecube = [];
 
@@ -64,15 +60,23 @@ d3.text("../data/rankings.csv", function(text) {
 	xScale = d3.scale.linear().domain([0, all_years.length]).range([margin.left, width]);
 	yScale = d3.scale.linear().domain([0, height]).range([margin.top, height]);
 
+	d3.select("#viz").append("div").attr("class", "table")
+
+	// Create the SVG
+  d3.select("#viz").insert("svg", ":first-child")
+	  .attr("width", width)
+	  .attr("height", 0)
+	  .style("top", margin.top)
+	  .style("left", margin.left)
+	  .style("position", "absolute")
+
 	init();
 
 });
 
 function update(v, duration) {
-	console.log("update", v, duration)
-	v = parseInt(v)
 
-	d3.select("#viz").select("table").remove();
+	d3.select("table").remove();
 
 	var table = d3.select("#viz").append("table"),
 			thead = table.append("thead"),
@@ -112,8 +116,7 @@ function update(v, duration) {
 
 	var rows = table.selectAll("tr")
 		    .data(data.filter(function(d) {
-		    	// Filter by time
-		    	return d[5] == (dragit.time.min+v);
+		    	return d[5] == dragit.time.min+dragit.time.current;
 		    }))
 		  .enter().append("tr")
 		    .attr("id", function(d) { return d[1]; })
@@ -135,9 +138,11 @@ function update(v, duration) {
 
 function init() {
 
- var margin = {top: d3.select("table").property("offsetTop"), right: d3.select("table").property("offsetRight"), bottom: 19.5, left: d3.select("table").property("offsetLeft")};
+	dragit.init("svg");
 
-  var  width = parseInt(d3.select("table").style("width").replace("px", "")),
+  var margin = {top: d3.select("table").property("offsetTop"), right: d3.select("table").property("offsetRight"), bottom: 19.5, left: d3.select("table").property("offsetLeft")};
+
+  var width = parseInt(d3.select("table").style("width").replace("px", "")),
     height = parseInt(d3.select("table").style("height").replace("px", ""));
 
   dragit.evt.register("update", update);
