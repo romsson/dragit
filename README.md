@@ -61,7 +61,7 @@ Here are a few concepts that are important to grasp:
 Here are the names using for the various objects:
 
 <p align="center">
-	<img src="img/points-trajectories-naming.png" width=400/>
+	<img src="img/points-trajectories-naming.png" width=600/>
 </p>
 
 #### dragit.data
@@ -144,7 +144,7 @@ Events management mechanism to register and trigger functions.
 ### dragit.statemachine
 
 <p align="center">
-	<img src="img/diagram-state-machine.png" width=400/>
+	<img src="img/diagram-state-machine.png" width=600/>
 </p>
 
 (not fully implemented yet)

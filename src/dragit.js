@@ -71,6 +71,7 @@ dragit.evt.call = function(evt) {
 }
 
 dragit.init = function(container) {
+  
   vars.container = d3.select(container);
 } 
 
@@ -97,12 +98,6 @@ dragit.trajectory.display = function(d, i) {
                     .attr('cx', function(d) { return d[0]; })
                     .attr('cy', function(d) { return d[1]; })
                     .attr('r', 3);
-
- // dragit.lineTrajectoryMonotone = gDragit.selectAll(".lineTrajectoryMonotone")
- //                 .data([dragit.data[i]])
- //               .enter().append("path")
- //                 .attr("class", "lineTrajectoryMonotone")
- //                 .attr("d", vars.svgLine.interpolate("monotone"));
 }
 
 dragit.trajectory.displayUpdate = function(d, i) {
@@ -123,10 +118,6 @@ dragit.trajectory.displayUpdate = function(d, i) {
                   .transition()
                   .duration(0)
                   .attr("d", vars.svgLine.interpolate("monotone"));
-}
-
-dragit.trajectory.toggle = function() {
-
 }
 
 dragit.trajectory.toggleAll = function() {
