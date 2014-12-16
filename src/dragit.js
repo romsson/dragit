@@ -382,7 +382,7 @@ dragit.statemachine.setState = function(state) {
   dragit.statemachine.current_state = state;
 }
 
-// Automatically add an HTML slider for time navigation
+// Automatically create and add a DOM HTML slider for time navigation
 dragit.utils.slider = function(el) {
 
   d3.select(el).append("p")
@@ -398,14 +398,13 @@ dragit.utils.slider = function(el) {
                 .property("max", dragit.time.max)
                 .property("value", 10)
                 .property("step", 1)
-                .on("oninput", function() { 
+                .on("input", function() { 
                   dragit.evt.call("update", this.value, 0); 
                 })
 
   d3.select(el).append("span")
                .attr("id", "max-time")
                .text(dragit.time.max);
-
 }
 
 // Calculate the centroid of a given SVG element
