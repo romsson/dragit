@@ -83,18 +83,15 @@ dragit.trajectory.display = function(d, i) {
 
   if(vars.dev) console.log("[display]", dragit.statemachine.current_state, dragit.statemachine.current_id, i)
 
-  if(vars.container[0][0] == null)
-    return;
-
   vars.gDragit = vars.container.insert("g", ":first-child").attr("class", "gDragit")
 
-  dragit.lineTrajectory = gDragit.selectAll(".lineTrajectory")
+  dragit.lineTrajectory = vars.gDragit.selectAll(".lineTrajectory")
                   .data([dragit.data[i]])
                 .enter().append("path")
                   .attr("d", vars.svgLine)
                   .attr("class", "lineTrajectory")
 
-  dragit.pointTrajectory  = gDragit.selectAll(".pointTrajectory")
+  dragit.pointTrajectory  = vars.gDragit.selectAll(".pointTrajectory")
                     .data(dragit.data[i])
                   .enter().append("svg:circle")
                     .attr("class", "pointTrajectory")
@@ -180,20 +177,20 @@ dragit.object.activate = function(d, i) {
       }
 
       // Create the line guide to closest trajectory
-      dragit.lineClosestTrajectory = gDragit.append("line")
+      dragit.lineClosestTrajectory = vars.gDragit.append("line")
                                             .attr("class", "lineClosestTrajectory");
 
       // Create the line guide to closest point
-      dragit.lineClosestPoint = gDragit.append("line")
+      dragit.lineClosestPoint = vars.gDragit.append("line")
                                        .attr("class", "lineClosestPoint");
 
       // Create the point interesting guide line and closest trajectory
-      dragit.pointClosestTrajectory = gDragit.append("circle")
+      dragit.pointClosestTrajectory = vars.gDragit.append("circle")
                                               .attr({cx: -10, cy: -10, r: 3.5})
                                               .attr("class", "pointClosestTrajectory")
 
       // Create the focus that follows the mouse cursor
-      dragit.focusGuide = gDragit.append("circle")
+      dragit.focusGuide = vars.gDragit.append("circle")
                                  .attr({cx: -10, cy: -10, r: 5.5})
                                  .attr("class", "focusGuide")
 
