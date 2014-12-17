@@ -71,7 +71,7 @@ dragit.evt.call = function(evt) {
 }
 
 dragit.init = function(container) {
-  
+
   vars.container = d3.select(container);
 } 
 
@@ -83,7 +83,10 @@ dragit.trajectory.display = function(d, i) {
 
   if(vars.dev) console.log("[display]", dragit.statemachine.current_state, dragit.statemachine.current_id, i)
 
-  gDragit = vars.container.insert("g", ":first-child").attr("class", "gDragit")
+  if(vars.container[0][0] == null)
+    return;
+
+  vars.gDragit = vars.container.insert("g", ":first-child").attr("class", "gDragit")
 
   dragit.lineTrajectory = gDragit.selectAll(".lineTrajectory")
                   .data([dragit.data[i]])
