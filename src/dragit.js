@@ -59,7 +59,7 @@ dragit.evt.register = function(evt, f, d) {
 dragit.evt.call = function(evt) {
 
   if(typeof vars.evt[evt] == "undefined") {
-    console.warn("No callback for event", evt)
+    if(vars.dev) console.warn("No callback for event", evt)
     return;
   }
 
@@ -194,12 +194,7 @@ dragit.object.activate = function(d, i) {
                                  .attr({cx: -10, cy: -10, r: 5.5})
                                  .attr("class", "focusGuide")
 
-      // Calling registered drastart events
-      dragit.evt.dragstart.forEach(function(e, j) {
-        if(vars.dev) console.log("dragstart", d, i)
-        if(typeof(e) != "undefined")
-          e(d, i)
-      });
+      dragit.evt.call("dragstart");
 
     })
     .on("drag", function(d,i) {
@@ -266,15 +261,6 @@ dragit.object.activate = function(d, i) {
         // Store the current line
         list_lines.push(j);
 
-        // Calling registered closestPoint events
-        //if(!list_q.equals(vars.list_q)) {
-        //  dragit.evt.closestPoint.forEach(function(e, j) {
-        //    if(vars.dev) console.log("closestPoint", d, i)
-        //    if(typeof(e) != "undefined")
-        //      e(d, i, list_q, new_time)
-        //  });
-        //}
-
         vars.list_q = list_q;
       })
 
@@ -282,8 +268,6 @@ dragit.object.activate = function(d, i) {
       var index_min = list_distances.indexOf(d3.min(list_distances));
 
       var new_time = list_times[index_min];
-
-      dragit.time.current = new_time;
 
       // Update the line guide to closest trajectory
       dragit.lineClosestTrajectory.attr("x1", list_p[index_min][0])
@@ -310,13 +294,10 @@ dragit.object.activate = function(d, i) {
         dragit.trajectory.index_min = index_min;
         dragit.time.current = new_time;
         dragit.evt.call("update", new_time, 0); 
+
       }
 
-      // Call drag events
-      dragit.evt.drag.forEach(function(e, j) {
-        if(typeof(e) != "undefined")
-          e(d, i);
-      });
+      dragit.evt.call("drag")
 
     })
     .on("dragend", function(d,i) {
@@ -351,11 +332,7 @@ dragit.object.activate = function(d, i) {
       // Remove trajectory
       d3.selectAll(".gDragit").remove();
 
-      // Call dragend events
-      dragit.evt.dragend.forEach(function(e, j) {
-        if(typeof(e) != "undefined")
-          e(d, i)
-      });     
+      dragit.evt.call("dragend");    
 
       dragit.statemachine.current_id = -1;
       dragit.statemachine.current_state = "idle";
