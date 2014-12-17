@@ -31,20 +31,8 @@
   dragit.data = [];
 
   dragit.evt = {};                            // events manager
-
   dragit.evt.register = null;
-  dragit.evt.run = null;
-
-  dragit.evt.update = [];                     // update
-  dragit.evt.dragstart = [];                  // start dragging
-  dragit.evt.drag = [];                       // during dragging
-  dragit.evt.dragend = [];                    // end dragging
-          
-  dragit.evt.closestPoint = [];               // new closest point current element
-  dragit.evt.closestAllPoints = [];           // new closest point globally
-
-  dragit.evt.closestTrajectory = [];          // new closest trajectory current element
-  dragit.evt.closestAllTrajectories = [];     // new closest trajectory globally
+  dragit.evt.call = null;
 
   dragit.guide = {};
 
@@ -301,7 +289,9 @@ dragit.object.activate = function(d, i) {
 
     })
     .on("dragend", function(d,i) {
+
       dragit.statemachine.setState("dragend");
+      
       if (vars.dev) console.log("[dragend]", d, i)
 
       switch(dragit.mouse.dragging) {
@@ -342,12 +332,14 @@ dragit.object.activate = function(d, i) {
   
 })()
 
-dragit.statemachine.addEventListener = function(state, evt) {
+dragit.statemachine.setState = function(state) {
 
+  dragit.statemachine.current_state = state;
 }
 
-dragit.statemachine.setState = function(state) {
-  dragit.statemachine.current_state = state;
+dragit.statemachine.getState = function(state) {
+
+  return dragit.statemachine.current_state;
 }
 
 // Create and add a DOM HTML slider for time navigation

@@ -369,7 +369,7 @@ d3.json("../data/nations.json", function(nations) {
       dot.style("opacity", 1)
     }
 
-    dragit.evt.dragend.push(end_effect)
+    dragit.evt.register("dragend", end_effect)
   }
 
 function clear_demo() {
