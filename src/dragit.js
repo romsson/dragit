@@ -115,14 +115,19 @@ dragit.trajectory.displayUpdate = function(d, i) {
                   .attr("d", vars.svgLine.interpolate("monotone"));
 }
 
-dragit.trajectory.toggleAll = function() {
-  if(d3.selectAll(".gDragit.focus")[0].length > 0)
-    dragit.trajectory.removeAll();
+dragit.trajectory.toggleAll = function(c) {
+  var c = c || "";
+  var class_c = ""
+  if(c.length > 0)
+    class_c = "." + c;
+  if(d3.selectAll(".gDragit"+class_c)[0].length > 0)
+    dragit.trajectory.removeAll(c);
   else
-    dragit.trajectory.displayAll();
+    dragit.trajectory.displayAll(c);
 }
 
 dragit.trajectory.displayAll = function(c) { 
+  var c = c || "";
   dragit.data.map(function(d, i) {
     dragit.trajectory.display({}, i, c)    
   })
@@ -133,8 +138,9 @@ dragit.trajectory.remove = function(d, i) {
     d3.select(".gDragit.focus").remove();
 }
 
-dragit.trajectory.removeAll = function() { 
-  d3.selectAll(".gDragit.focus").remove();
+dragit.trajectory.removeAll = function(c) { 
+  var c = c || "focus";
+  d3.selectAll(".gDragit."+c).remove();
 }
 
 // Main function that binds drag callbacks to the current element
@@ -327,7 +333,7 @@ dragit.object.activate = function(d, i) {
       dragit.focusGuide.remove();
 
       // Remove trajectory
-      d3.selectAll(".gDragit").remove();
+      d3.selectAll(".gDragit.focus").remove();
 
       dragit.evt.call("dragend");    
 
