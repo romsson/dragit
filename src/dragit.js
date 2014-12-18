@@ -34,14 +34,17 @@
   dragit.evt.register = null;
   dragit.evt.call = null;
 
-  dragit.guide = {};
-
 dragit.evt.register = function(evt, f, d) {
 
-  if(typeof vars.evt[evt] == "undefined")
-    vars.evt[evt] = [];
-  
-  vars.evt[evt].push([f,d]);
+  if(typeof evt == "string")
+    evt = [evt];
+
+  evt.forEach(function(e) {
+    if(typeof vars.evt[e] == "undefined")
+      vars.evt[e] = [];
+    
+    vars.evt[e].push([f,d]);
+  })
 }
 
 dragit.evt.call = function(evt) {
