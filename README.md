@@ -5,15 +5,20 @@ dragit.js
 
 ### Examples
 
-* Interactive [soccer bracket](http://romain.vuillemot.net/projects/worldcup14/)
-* A series of [simple](http://romsson.github.io/dragit/example/test_single_point.html) [examples](http://romsson.github.io/dragit/example/test_multi_points.html)
-* [A Re-Recreation of Gapminder's Wealth of Nations](http://romsson.github.io/dragit/example/nations.html) to drag countries to desired position instead of using the time slider
+
+* Single point drag ([demo](http://romsson.github.io/dragit/example/test_single_point.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_single_point.html))
+* Multiple points drag ([demo](http://romsson.github.io/dragit/example/test_multi_point.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_multi_point.html))
+
+* Interactive soccer bracket ([demo](http://romain.vuillemot.net/projects/worldcup14/)
+
+* A Re-Recreation of Gapminder's Wealth of Nations ([demo](http://romsson.github.io/dragit/example/nations.html) | [source](https://github.com/romsson/dragit/blob/master/example/nations.html))
 
 #### Coming soon
 
 * Ranking tables
 * Standard charts: [Bar chart](http://romsson.github.io/dragit/example/test_barchart.html), pie chart, scatterplot, ..
 * Node link diagrams
+* Maps navigation
 
 ### Getting Started
 
@@ -97,9 +102,9 @@ Example:
 
 ```
 dragit.time = {min: 		d3.min(data, function(d) { return parseInt(d[i]);}), 
-							 max: 		d3.max(data, function(d) { return parseInt(d[i]);}), 
-							 step: 		1, 
-							 current: 0
+							  max: 		d3.max(data, function(d) { return parseInt(d[i]);}), 
+							  step: 	1, 
+							  current:0
 							}
 ```
 
@@ -113,25 +118,33 @@ The object of interest, the handle the user interacts with to start the interact
 
 #### dragit.mouse.dragging
 
+Below are the different `drag-type` strategies:
+
 * `horizontal`
 * `vertical`
 * `curvilinear`
 * `flow` flow dragging method. Usually well suited for background * motion.
 * `free` dragging with no constraints on the activated element, returns to its original position
 
+### drag-scope
+
+
+
 ### dragit.focus
 
-* Functions related to the focus that is being 
+* Functions related to the focus that is being dragged
 
 ### dragit.trajectory
 
-* `dragit.trajectory.display`          : displays the currently dragged element's trajectory
-* `dragit.trajectory.displayUpdate`    : update the trajectory
-* `dragit.trajectory.displayAll`       : displays all trajectories
-* `dragit.trajectory.toggle`           : toggle the display of current trajectory
-* `dragit.trajectory.toggleAll`        : toggle the display of all trajectories
-* `dragit.trajectory.remove`           : removes the created trajectory
-* `dragit.trajectory.removeAll`        : removes all trajectories
+Handles trajectories 
+
+* `dragit.trajectory.display(class)`          : displays the currently dragged element's trajectory
+* `dragit.trajectory.displayUpdate`           : update the trajectory
+* `dragit.trajectory.displayAll(class)`       : displays all trajectories
+* `dragit.trajectory.toggle(class)`           : toggle the display of current trajectory
+* `dragit.trajectory.toggleAll(class)`        : toggle the display of all trajectories
+* `dragit.trajectory.remove(class)`           : removes the created trajectory
+* `dragit.trajectory.removeAll(class)`        : removes all trajectories
 
 ### dragit.evt
 
@@ -149,6 +162,6 @@ Events management mechanism to register and trigger functions.
 
 (not fully implemented yet)
 
-* `dragit.statemachine.current_state`                  : return the current state of the interaction (e.g mouseenter, dragstart)
-* `dragit.statemachine.current_id`                     : return the id of the currently manipulated element
-* `dragit.statemachine.setState(event)`                : set the current state of the state machine
+* `dragit.statemachine.current_state`                  : returns the current state of the interaction (e.g mouseenter, dragstart)
+* `dragit.statemachine.current_id`                     : returns the id of the currently manipulated element
+* `dragit.statemachine.setState(event)`                : sets the current state of the state machine
