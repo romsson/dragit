@@ -63,7 +63,7 @@ dragit.init = function(container) {
   vars.container = d3.select(container);
 } 
 
-dragit.trajectory.display = function(d, i) {
+dragit.trajectory.display = function(d, i, c) {
 
   // Making sure we do not display twice the same trajectory
   if(dragit.statemachine.current_state == "drag" && dragit.statemachine.current_id == i)
@@ -71,13 +71,20 @@ dragit.trajectory.display = function(d, i) {
 
   if(vars.dev) console.log("[display]", dragit.statemachine.current_state, dragit.statemachine.current_id, i)
 
-  vars.gDragit = vars.container.insert("g", ":first-child").attr("class", "gDragit")
+  vars.gDragit = vars.container.insert("g", ":first-child")
+                                .attr("class", "gDragit")
+
+  if(typeof c != "undefined" && c != 0) {
+    vars.gDragit.classed(c, true);                           
+  } else {
+    vars.gDragit.classed("focus", true);    
+  }
 
   dragit.lineTrajectory = vars.gDragit.selectAll(".lineTrajectory")
                   .data([dragit.data[i]])
                 .enter().append("path")
-                  .attr("d", vars.svgLine)
                   .attr("class", "lineTrajectory")
+                  .attr("d", vars.svgLine);
 
   dragit.pointTrajectory  = vars.gDragit.selectAll(".pointTrajectory")
                     .data(dragit.data[i])
@@ -109,25 +116,25 @@ dragit.trajectory.displayUpdate = function(d, i) {
 }
 
 dragit.trajectory.toggleAll = function() {
-  if(d3.selectAll(".gDragit")[0].length > 0)
+  if(d3.selectAll(".gDragit.focus")[0].length > 0)
     dragit.trajectory.removeAll();
   else
     dragit.trajectory.displayAll();
 }
 
-dragit.trajectory.displayAll = function() { 
+dragit.trajectory.displayAll = function(c) { 
   dragit.data.map(function(d, i) {
-    dragit.trajectory.display({}, i)    
+    dragit.trajectory.display({}, i, c)    
   })
 } 
 
 dragit.trajectory.remove = function(d, i) {
   if(dragit.statemachine.current_state != "drag")
-    d3.select(".gDragit").remove();
+    d3.select(".gDragit.focus").remove();
 }
 
 dragit.trajectory.removeAll = function() { 
-  d3.selectAll(".gDragit").remove();
+  d3.selectAll(".gDragit.focus").remove();
 }
 
 // Main function that binds drag callbacks to the current element

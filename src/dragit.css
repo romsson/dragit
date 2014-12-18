@@ -34,6 +34,10 @@ line.lineClosestPoint {
   display: block;
 }
 
+.selected {
+  opacity: .5;
+}
+
 circle.pointClosestTrajectory {
   opacity: .1;
   display: block;
