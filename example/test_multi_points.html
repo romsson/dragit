@@ -24,9 +24,10 @@
 <label><input type="radio" name="drag-direction" value="low" onchange="dragit.mouse.dragging = 'free'">free drag</label>
 <br>
 
-current focus:<span id="current-focus"></span><br>
-closest line:<span id="closest-line"></span><br>
-closest point:<span id="closest-point"></span><br>
+current focus: <span id="current-focus"></span><br>
+closest line: <span id="closest-line"></span><br>
+closest point: <span id="closest-point"></span><br>
+closest time: <span id="closest-time"></span><br>
 <script>
 
 var margin = {top: 20, right: 20, bottom: 20, left: 20},
@@ -97,7 +98,16 @@ function init() {
   });
   
   dragit.time = {min:0, max:time_steps, step:1, current: current_time}
+  
   dragit.evt.register("update", update);
+
+  dragit.evt.register("update", function() { 
+  	d3.select("#closest-time").text(dragit.time.current)
+  });
+
+  dragit.evt.register("new_focus", function() { 
+  	d3.select("#current-focus").text(dragit.time.current)
+  });
 }
 
 init();
