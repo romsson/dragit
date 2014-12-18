@@ -57,7 +57,9 @@ points.attr({cx: function(d) {
 						 r:10, 
 						 fill:"red"
 						})
-		  .on("mouseout", dragit.trajectory.remove)
+		  .on("mouseleave", function(d) { 
+		  	dragit.evt.call("mouseleave", d); 
+		  })
 		  .on("mouseenter", function(d) { 
 		  	dragit.evt.call("mouseenter", d); 
 		  })
@@ -78,6 +80,8 @@ function update(v, t) {
 
 function init() {
 
+	dragit.init(null);
+
 	d3.select("#min-time").text(config.time.min);
 	d3.select("#max-time").text(config.time.max);
 
@@ -96,9 +100,14 @@ function init() {
 init();
 
 
+function mouseenter(d) {
+	d3.select("#events").insert("div", ":first-child").text(Date.now() + " - [mouseenter]")
 
-function mouseover(d) {
-	d3.select("#events").insert("div").text("mouse hover")
+}
+
+function mouseleave(d) {
+	d3.select("#events").insert("div", ":first-child").text(Date.now() + " - [mouseleave]")
+
 }
 
 function mouse_click() {
@@ -117,8 +126,8 @@ function mouse_drag_end() {
 
 }
 
-dragit.evt.register("mouseover", mouseover)
-dragit.evt.register("mouseenter", dragit.trajectory.display)
+dragit.evt.register("mouseenter", mouseenter)
+dragit.evt.register("mouseleave", mouseleave)
 
 
 </script>

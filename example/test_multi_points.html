@@ -14,14 +14,14 @@
 
 <input type="range" name="points" min="0" max="19" step="1" value="0" id="slider-time" oninput="update(this.value, 100)"><span id="max-time">0</span>
 
-<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');"> Show trajectories</label>
+<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');"> Show all trajectories</label>
 
-<label><input type="radio" name="details" value="low" onchange="" checked>drag one </label>
-<label><input type="radio" name="details" value="low" onchange="">drag all </label><br>
+<label><input type="radio" name="drag-scope" value="low" onchange="dragit.mouse.scope = 'focus'" checked>drag focus</label>
+<label><input type="radio" name="drag-scope" value="low" onchange="dragit.mouse.scope = 'selected'">drag all</label><br>
 
-<label><input type="radio" name="details" value="low" onchange="dragit.mouse.dragging = 'jump'" checked>jump drag</label>
-<label><input type="radio" name="details" value="low" onchange="dragit.mouse.dragging = 'horizontal'">horizontal drag</label>
-<label><input type="radio" name="details" value="low" onchange="dragit.mouse.dragging = 'free'">free drag</label>
+<label><input type="radio" name="drag-direction" value="low" onchange="dragit.mouse.dragging = 'jump'" checked>jump drag</label>
+<label><input type="radio" name="drag-direction" value="low" onchange="dragit.mouse.dragging = 'horizontal'">horizontal drag</label>
+<label><input type="radio" name="drag-direction" value="low" onchange="dragit.mouse.dragging = 'free'">free drag</label>
 <br>
 
 current focus:<span id="current-focus"></span><br>
