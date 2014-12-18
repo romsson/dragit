@@ -109,10 +109,6 @@ dragit.trajectory.displayUpdate = function(d, i) {
                     .attr('cy', function(d) { return d[1]; })
                     .attr('r', 3);
 
-  dragit.lineTrajectoryMonotone.data([dragit.data[i]])
-                  .transition()
-                  .duration(0)
-                  .attr("d", vars.svgLine.interpolate("monotone"));
 }
 
 dragit.trajectory.toggleAll = function(c) {
@@ -151,7 +147,6 @@ dragit.object.activate = function(d, i) {
   d3.select(this)[0][0].node().addEventListener("mouseenter", function() {
     if(dragit.statemachine.current_state == "idle") {
       dragit.statemachine.setState("mouseenter");
-      dragit.statemachine.current_id = i;
     }
   }, false)
 
@@ -164,6 +159,7 @@ dragit.object.activate = function(d, i) {
     .on("dragstart", function(d, i) {
 
       dragit.statemachine.setState("dragstart");
+
       if (vars.dev) console.log("[dragstart]", d, i)
 
       dragit.statemachine.current_id = i;
@@ -233,6 +229,8 @@ dragit.object.activate = function(d, i) {
 
       var m = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
 
+      var new_id = -1;
+
       // Browse all the .lineTrajectory trajectories
       d3.selectAll("."+dragit.mouse.scope).selectAll(".lineTrajectory").forEach(function(e, j) {
 
@@ -268,6 +266,8 @@ dragit.object.activate = function(d, i) {
         list_lines.push(j);
 
         vars.list_q = list_q;
+
+        console.log(d3.select(this), j)
       })
 
       // Find the index for the shortest distance
@@ -295,12 +295,18 @@ dragit.object.activate = function(d, i) {
       dragit.focusGuide.attr("cx", m[0])
                        .attr("cy", m[1]);
 
-      // Update to the closest snapshot
+      // Time is updated
       if(dragit.time.current != new_time || dragit.trajectory.index_min != index_min) {
         dragit.trajectory.index_min = index_min;
         dragit.time.current = new_time;
-        dragit.evt.call("update", new_time, 0); 
+        dragit.evt.call("update", new_time, 0);
+      }
 
+      var new_id = dragit.statemachine.current_id;
+
+      // Focus is updated
+      if(dragit.statemachine.current_id != new_id) {
+        dragit.evt.call("new_focus", new_id);
       }
 
       dragit.evt.call("drag")
@@ -342,7 +348,7 @@ dragit.object.activate = function(d, i) {
 
       dragit.evt.call("dragend");    
 
-      dragit.statemachine.current_id = -1;
+     // dragit.statemachine.current_id = -1;
       dragit.statemachine.current_state = "idle";
     })
 
