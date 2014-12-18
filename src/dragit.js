@@ -25,7 +25,7 @@
   dragit.statemachine = {current_state: "idle", current_id: -1};
   dragit.time = {min: 0, max: 0, current: 0, step: 1};
   dragit.utils = {};
-  dragit.mouse = {dragging: "closest"};
+  dragit.mouse = {scope: "focus"};
   dragit.object = {update: function() {}, accesor: function() {}, offsetX: 0, offsetY: 0};
   dragit.partition = {};
   dragit.data = [];
@@ -234,13 +234,18 @@ dragit.object.activate = function(d, i) {
       var m = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
 
       // Browse all the .lineTrajectory trajectories
-      d3.selectAll(".lineTrajectory")[0].forEach(function(e, j) {
+      d3.selectAll("."+dragit.mouse.scope).selectAll(".lineTrajectory").forEach(function(e, j) {
 
-        dragit.lineGraph = d3.select(e);
+        var thisTrajectory = d3.select(e[0]);
 
-        var  p = dragit.utils.closestPoint(dragit.lineGraph.node(), m);
+        var  p = dragit.utils.closestPoint(thisTrajectory.node(), m);
 
-        var closest = dragit.utils.closestValue(m, dragit.data[i]);
+        var closest = null;
+
+        if(dragit.mouse.scope == "focus")
+          closest = dragit.utils.closestValue(m, dragit.data[i]);
+        else if(dragit.mouse.scope == "selected")
+          closest = dragit.utils.closestValue(m, dragit.data[j]);
 
         // Find the closest data point
         var q = dragit.data[i][[closest.indexOf(Math.min.apply(Math, closest))]];
@@ -254,10 +259,10 @@ dragit.object.activate = function(d, i) {
         // Store all the distances
         list_distances.push(Math.sqrt((p[0] - m[0]) * (p[0] - m[0]) + (p[1] - m[1]) * (p[1] - m[1])));
 
-        var new_time = closest.indexOf(Math.min.apply(Math, closest)) + dragit.time.min;
+        var thisMewTime = closest.indexOf(Math.min.apply(Math, closest)) + dragit.time.min;
 
         // Store the closest time
-        list_times.push(new_time);
+        list_times.push(thisMewTime);
 
         // Store the current line
         list_lines.push(j);
