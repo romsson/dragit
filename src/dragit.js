@@ -12,7 +12,8 @@
       list_q: [],
       trajectory: {interpolate: "linear"},
       svgLine: null,
-      container: null
+      container: null,
+      accessor_x: 
     };
 
   vars.svgLine = d3.svg.line()
@@ -21,14 +22,20 @@
                       .interpolate(vars.trajectory.interpolate);
 
   dragit.trajectory = {};
+  dragit.statemachine = {};
+  dragit.utils = {};
+  dragit.customize = {};
+  dragit.evt = {};
+  dragit.mouse = {};
+  dragit.time = {};
+  dragit.object = {};
+
   dragit.statemachine = {current_state: "idle", current_id: -1};
   dragit.time = {min: 0, max: 0, current: 0, step: 1};
-  dragit.utils = {};
   dragit.mouse = {scope: "focus"};
   dragit.object = {update: function() {}, accesor: function() {}, offsetX: 0, offsetY: 0};
   dragit.data = [];
 
-  dragit.evt = {};                            // events manager
   dragit.evt.register = null;
   dragit.evt.call = null;
 
@@ -500,6 +507,19 @@ dragit.utils.animateTrajectory = function(path, start_time, duration) {
       .attr("stroke-dashoffset", 0)
 }
 
+dragit.customize.line = function() {
+
+  return {
+          'default': {'mark': 'svg:path', 'style': {'stroke': 'black', 'stroke-width': 2}, 'interpolate': 'linear'}
+          }
+}
+
+dragit.customize.point = function() {
+
+  return  {
+          'default': {'mark': 'svg:circle', 'style': {'stroke': 'black', 'stroke-width': 2}, 'attr': {'cx': accessor_x, 'cy': accessor_y, 'r': 3}}
+          }
+} 
 
 Array.prototype.equals = function (b) {
     var a = this;
