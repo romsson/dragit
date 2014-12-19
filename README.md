@@ -166,3 +166,10 @@ Events management mechanism to register and trigger functions.
 * `dragit.statemachine.current_state`                  : returns the current state of the interaction (e.g mouseenter, dragstart)
 * `dragit.statemachine.current_id`                     : returns the id of the currently manipulated element
 * `dragit.statemachine.setState(event)`                : sets the current state of the state machine
+
+### dragit.utils
+
+* `dragit.utils.animateTrajectory(path, star_time, duration)`  : animates the path from start_time and with a given duration
+* `dragit.utils.closestPoint`
+* `dragit.utils.closestValue`
+* `dragit.utils.findYgivenX `
