@@ -14,7 +14,9 @@
       svgLine: null,
       container: null,
       accessor_x: function(d) {return d[0]; },
-      accessor_y: function(d) {return d[1]; }
+      accessor_y: function(d) {return d[1]; },
+      type_focus: 'default',
+      type_trajectory: 'default'
     };
 
   vars.svgLine = d3.svg.line()
@@ -25,11 +27,11 @@
   dragit.trajectory = {};
   dragit.statemachine = {};
   dragit.utils = {};
-  dragit.customize = {};
   dragit.evt = {};
   dragit.mouse = {};
   dragit.time = {};
   dragit.object = {};
+  dragit.custom = {};
 
   dragit.statemachine = {current_state: "idle", current_id: -1};
   dragit.time = {min: 0, max: 0, current: 0, step: 1};
@@ -97,11 +99,9 @@ dragit.trajectory.display = function(d, i, c) {
 
   dragit.pointTrajectory  = vars.gDragit.selectAll(".pointTrajectory")
                     .data(dragit.data[i])
-                  .enter().append("svg:circle")
+                  .enter().append(dragit.custom.point[vars.type_focus].mark)
                     .attr("class", "pointTrajectory")
-                    .attr('cx', vars.accessor_x)
-                    .attr('cy', vars.accessor_y)
-                    .attr('r', 3);
+                    .attr(dragit.custom.point[vars.type_focus].attr);
 
   dragit.trajectory.displayUpdate(d, i);
 }
@@ -116,9 +116,7 @@ dragit.trajectory.displayUpdate = function(d, i) {
   dragit.pointTrajectory.data(dragit.data[i])
                     .transition()
                     .duration(0)
-                    .attr('cx', vars.accessor_x)
-                    .attr('cy', vars.accessor_y)
-                    .attr('r', 3);
+                    .attr(dragit.custom.point[vars.type_focus].attr);
 }
 
 dragit.trajectory.toggleAll = function(c) {
@@ -360,6 +358,15 @@ dragit.object.activate = function(d, i) {
     })
 
   )} 
+
+
+  dragit.custom.line = {
+            'default': {'mark': 'svg:path', 'style': {'stroke': 'black', 'stroke-width': 2}, 'interpolate': 'linear'}
+  }
+
+  dragit.custom.point = {
+            'default': {'mark': 'svg:circle', 'style': {'stroke': 'black', 'stroke-width': 2}, 'attr': {'cx': vars.accessor_x, 'cy': vars.accessor_y, 'r': 3}}
+            }
   
 })()
 
@@ -493,13 +500,11 @@ dragit.utils.findYgivenX = function(x, path) {
   return pos.y-200;
 }
 
-
 dragit.utils.animateTrajectory = function(path, start_time, duration) {
 
   var totalLength = path.node().getTotalLength();
 
-  path
-      .attr("stroke-width", "5")
+  path.attr("stroke-width", "5")
       .attr("stroke-dasharray", totalLength + " " + totalLength)
       .attr("stroke-dashoffset", totalLength)
     .transition()
@@ -507,20 +512,6 @@ dragit.utils.animateTrajectory = function(path, start_time, duration) {
       .ease("linear")
       .attr("stroke-dashoffset", 0)
 }
-
-dragit.customize.line = function() {
-
-  return {
-          'default': {'mark': 'svg:path', 'style': {'stroke': 'black', 'stroke-width': 2}, 'interpolate': 'linear'}
-          }
-}
-
-dragit.customize.point = function() {
-
-  return  {
-          'default': {'mark': 'svg:circle', 'style': {'stroke': 'black', 'stroke-width': 2}, 'attr': {'cx': vars.accessor_x, 'cy': vars.accessor_y, 'r': 3}}
-          }
-} 
 
 Array.prototype.equals = function (b) {
     var a = this;
