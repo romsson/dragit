@@ -126,9 +126,10 @@ Below are the different `drag-type` strategies:
 * `flow` flow dragging method. Usually well suited for background * motion.
 * `free` dragging with no constraints on the activated element, returns to its original position
 
-### drag-scope
+#### dragit.mouse.scope
 
-
+* `focus`		    restricts closest point finding to the current trajectory, thus only change time.
+* `selected`		expands the scope to all currently displayed trajectories, thus may change time and the current focus.
 
 ### dragit.focus
 
@@ -150,7 +151,7 @@ Handles trajectories
 
 Events management mechanism to register and trigger functions.
 
-* `dragit.evt.register(event, function, context)`    : register a function for a given `event` 
+* `dragit.evt.register(event, function, context)`    : register a function for a given `event` or an array of multiple `event` 
 * `dragit.evt.call(event)`                           : trigger registered functions
 
 
