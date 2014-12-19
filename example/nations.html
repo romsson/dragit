@@ -93,6 +93,10 @@ path.lineTrajectory {
   pointer-events: none;
 }
 
+.selected {
+  stroke-width: 4;
+}
+
 </style>
 
 <h1>A Re-Recreation of Gapminder’s Wealth & Health of Nations</h1>
@@ -228,6 +232,11 @@ d3.json("../data/nations.json", function(nations) {
       .attr("class", "dot")
       .style("fill", function(d) { return colorScale(color(d)); })
       .call(position)
+      .on("click", function(d, i) {
+        dot.classed("selected", false);
+        d3.select(this).classed("selected", !d3.select(this).classed("selected"));
+        dragit.trajectory.display(d, i, "selected");
+      })
       .on("mouseenter", function(d, i) {
         clear_demo();
         if(dragit.statemachine.current_state == "idle") {
@@ -235,13 +244,14 @@ d3.json("../data/nations.json", function(nations) {
           countrylabel.text(d.name);
           dot.style("opacity", .4)
           d3.select(this).style("opacity", 1)
+          d3.selectAll(".selected").style("opacity", 1)
         }
       })
       .on("mouseleave", function(d, i) {
 
         if(dragit.statemachine.current_state == "idle") {
           countrylabel.text("");
-          dot.style("opacity", 1)
+          dot.style("opacity", 1);
         }
   
         dragit.trajectory.remove(d, i);
@@ -374,6 +384,7 @@ d3.json("../data/nations.json", function(nations) {
 
 function clear_demo() {
   if(first_time) {
+     svg.transition().duration(0);
     first_time = false;
     window.clearInterval(demo_interval);
     countrylabel.text("");
@@ -407,9 +418,9 @@ function play_demo() {
         .attr("stroke-dasharray", totalLength + " " + totalLength)
         .attr("stroke-dashoffset", totalLength)
       .transition()
-        .duration(1000)
+        .duration(2000)
         .ease("linear")
-        .attr("stroke-dashoffset", 0);
+        .attr("stroke-dashoffset", 0)
 
   d3.selectAll(".dot").style("opacity", .4)
 
@@ -418,8 +429,13 @@ function play_demo() {
   }).style("opacity", 1)
 }
 
-play_demo();
-demo_interval = setInterval(play_demo, 2000)
+var demo_interval = null;
+
+setTimeout(function() {
+  play_demo()
+  demo_interval = setInterval(play_demo, 3000)
+}, 1000);
+
 
 });
 
