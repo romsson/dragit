@@ -380,7 +380,7 @@ dragit.utils.slider = function(el) {
                 .attr("class", "slider-time")
                 .property("min", dragit.time.min)
                 .property("max", dragit.time.max)
-                .property("value", 10)
+                .property("value", 0)
                 .property("step", 1)
                 .on("input", function() { 
                   dragit.time.current = parseInt(this.value)-dragit.time.min;
@@ -390,6 +390,10 @@ dragit.utils.slider = function(el) {
   d3.select(el).append("span")
                .attr("id", "max-time")
                .text(dragit.time.max);
+
+  dragit.evt.register("update", function() {
+    d3.select(".slider-time").property("value", dragit.time.current);
+  });
 }
 
 // Calculate the centroid of a given SVG element
@@ -491,7 +495,7 @@ dragit.utils.animateTrajectory = function(path, start_time, duration) {
       .attr("stroke-dasharray", totalLength + " " + totalLength)
       .attr("stroke-dashoffset", totalLength)
     .transition()
-      .duration(2000)
+      .duration(duration)
       .ease("linear")
       .attr("stroke-dashoffset", 0)
 }
