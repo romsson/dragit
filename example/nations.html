@@ -113,7 +113,6 @@ Original creation by <a href="http://www.gapminder.org/world/">Gapminder</a> usi
 Recreation by <a href="http://bost.ocks.org/mike/nations/">Mike Bostock</a> with <a href="http://d3js.org/">D3.js</a>.<br>
 Re-Recreation using <a href="http://romsson.github.io/dragit/">dragit.js</a> by <a href="http://romain.vuillemot.net/">Romain Vuillemot</a> (view <a href="https://github.com/romsson/dragit/blob/master/example/nations.html">source</a> on GitHub).
 
-
 <div class="twitter-share-container">
   <a href="https://twitter.com/share" class="twitter-share-button" data-via="romsson" data-url="http://romsson.github.io/dragit/example/nations.html">Tweet</a>
   <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
@@ -279,36 +278,6 @@ d3.json("../data/nations.json", function(nations) {
     return radius(b) - radius(a);
   }
 
-  // After the transition finishes, you can mouseover to change the year.
-  function enableInteraction() {
-    var yearScale = d3.scale.linear()
-        .domain([1800, 2009])
-        .range([box.x + 10, box.x + box.width - 10])
-        .clamp(true);
-
-    // Cancel the current transition, if any.
-    svg.transition().duration(0);
-
-    function mouseover() {
-      label.classed("active", true);
-    }
-
-    function mouseout() {
-      label.classed("active", false);
-    }
-
-    function mousemove() {
-      displayYear(yearScale.invert(d3.mouse(this)[0]));
-    }
-  }
-
-  // Tweens the entire chart by first tweening the year, and then the data.
-  // For the interpolated data, the dots and label are redrawn.
-  function tweenYear() {
-    var year = d3.interpolateNumber(1800, 2009);
-    return function(t) { displayYear(year(t)); };
-  }
-
   // Updates the display to show the specified year.
   function displayYear(year) {
     dot.data(interpolateData(year), key).call(position).sort(order);
@@ -411,16 +380,7 @@ function play_demo() {
   dragit.trajectory.display(random_nation, index_random_nation);
   countrylabel.text(random_nation.name);
 
-  var totalLength = dragit.lineTrajectory.node().getTotalLength();
-
-  dragit.lineTrajectory
-        .attr("stroke-width", "5")
-        .attr("stroke-dasharray", totalLength + " " + totalLength)
-        .attr("stroke-dashoffset", totalLength)
-      .transition()
-        .duration(2000)
-        .ease("linear")
-        .attr("stroke-dashoffset", 0)
+  dragit.utils.animateTrajectory(dragit.lineTrajectory, dragit.time.min, 2000)
 
   d3.selectAll(".dot").style("opacity", .4)
 
@@ -435,7 +395,6 @@ setTimeout(function() {
   play_demo()
   demo_interval = setInterval(play_demo, 3000)
 }, 1000);
-
 
 });
 
