@@ -21,13 +21,11 @@
                       .interpolate(vars.trajectory.interpolate);
 
   dragit.trajectory = {};
-
   dragit.statemachine = {current_state: "idle", current_id: -1};
   dragit.time = {min: 0, max: 0, current: 0, step: 1};
   dragit.utils = {};
   dragit.mouse = {scope: "focus"};
   dragit.object = {update: function() {}, accesor: function() {}, offsetX: 0, offsetY: 0};
-  dragit.partition = {};
   dragit.data = [];
 
   dragit.evt = {};                            // events manager
@@ -96,6 +94,8 @@ dragit.trajectory.display = function(d, i, c) {
                     .attr('cx', function(d) { return d[0]; })
                     .attr('cy', function(d) { return d[1]; })
                     .attr('r', 3);
+
+  dragit.trajectory.displayUpdate(d, i);
 }
 
 dragit.trajectory.displayUpdate = function(d, i) {
@@ -111,7 +111,6 @@ dragit.trajectory.displayUpdate = function(d, i) {
                     .attr('cx', function(d) { return d[0]; })
                     .attr('cy', function(d) { return d[1]; })
                     .attr('r', 3);
-
 }
 
 dragit.trajectory.toggleAll = function(c) {
@@ -269,8 +268,6 @@ dragit.object.activate = function(d, i) {
         list_lines.push(j);
 
         vars.list_q = list_q;
-
-        console.log(d3.select(this), j)
       })
 
       // Find the index for the shortest distance
@@ -349,9 +346,8 @@ dragit.object.activate = function(d, i) {
       // Remove trajectory
       d3.selectAll(".gDragit.focus").remove();
 
-      dragit.evt.call("dragend");    
+      dragit.evt.call("dragend");
 
-     // dragit.statemachine.current_id = -1;
       dragit.statemachine.current_state = "idle";
     })
 
@@ -483,7 +479,23 @@ dragit.utils.findYgivenX = function(x, path) {
       break;
   }
   return pos.y-200;
-},
+}
+
+
+dragit.utils.animateTrajectory = function(path, start_time, duration) {
+
+  var totalLength = path.node().getTotalLength();
+
+  path
+      .attr("stroke-width", "5")
+      .attr("stroke-dasharray", totalLength + " " + totalLength)
+      .attr("stroke-dashoffset", totalLength)
+    .transition()
+      .duration(2000)
+      .ease("linear")
+      .attr("stroke-dashoffset", 0)
+}
+
 
 Array.prototype.equals = function (b) {
     var a = this;
