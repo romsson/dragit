@@ -10,9 +10,7 @@
 <body>
 <div id="viz"></div>
 <p style="clear:both"></p>
-<span id="min-time">0</span> 
-	<input type="range" name="points" min="0" max="19" step="1" value="0" id="slider-time" oninput="update(this.value, 100)">
-<span id="max-time">0</span>
+<div id="slider"></div>
 <label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');"> Show complete trajectory</label>
 
 <script>
@@ -35,13 +33,13 @@ var timecube = d3.range(nb_points).map(function(d, i) {
 
 var xScale = d3.scale.linear().domain([0, time_steps]).range([margin.left, width]);
 var yScale = d3.scale.linear()
-										 .domain([0, d3.max(timecube, function(d) { 
-										 																return d3.max(d, function(e) { 
-										 																	return e.y; 
-										 																});
-										 															})
-										 ])
-										 .range([margin.top, height]);
+					 .domain([0, d3.max(timecube, function(d) { 
+							return d3.max(d, function(e) { 
+								return e.y; 
+							});
+						})
+					 ])
+					 .range([margin.top, height]);
 
 var svg = d3.select("#viz")
 		.append("svg")
@@ -75,8 +73,6 @@ function update(v, t) {
 				.attr({cx: function(d) { return xScale(d[dragit.time.current].x)}, 
 					     cy: function(d) { return yScale(d[dragit.time.current].y)}
 				})
-
-  d3.select("#slider-time").property("value", dragit.time.current);
 }
 
 function init() {
@@ -96,8 +92,7 @@ function init() {
   dragit.time = {min:0, max:time_steps, step:1, current: current_time}
   dragit.evt.register("update", update);
 
-  // Update the time slider
-  d3.select("#slider-time").property("value", dragit.time.current);
+  dragit.utils.slider("#slider")
 }
 
 init();
