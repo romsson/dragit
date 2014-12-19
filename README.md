@@ -8,7 +8,7 @@ dragit.js
 
 * Single point drag ([demo](http://romsson.github.io/dragit/example/test_single_point.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_single_point.html))
 * Multiple points drag ([demo](http://romsson.github.io/dragit/example/test_multi_point.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_multi_point.html))
-
+* Spiral shape ([demo](http://romsson.github.io/dragit/example/test_spiral.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_spiral.html))
 * Interactive soccer bracket ([demo](http://romain.vuillemot.net/projects/worldcup14/)
 
 * A Re-Recreation of Gapminder's Wealth of Nations ([demo](http://romsson.github.io/dragit/example/nations.html) | [source](https://github.com/romsson/dragit/blob/master/example/nations.html))
@@ -50,9 +50,11 @@ var timecube = d3.range(nb_data_points).map(function(d, i) {
 })
 ```
 
-#### Combination Cube
+#### Other Ways to Create a  Cube
 
-(to be detailed soon)
+* Using SVG shapes (see the Spiral example)
+* Using a combinatory space (see the World Cup Brackets example)
+* Using any other combinatory space
 
 #### Core Concepts
 
@@ -139,20 +141,20 @@ Below are the different `drag-type` strategies:
 
 Handles trajectories 
 
-* `dragit.trajectory.display(class)`          : displays the currently dragged element's trajectory
-* `dragit.trajectory.displayUpdate`           : update the trajectory
-* `dragit.trajectory.displayAll(class)`       : displays all trajectories
-* `dragit.trajectory.toggle(class)`           : toggle the display of current trajectory
-* `dragit.trajectory.toggleAll(class)`        : toggle the display of all trajectories
-* `dragit.trajectory.remove(class)`           : removes the created trajectory
-* `dragit.trajectory.removeAll(class)`        : removes all trajectories
+* `dragit.trajectory.display(class)`                   : displays the currently dragged element's trajectory
+* `dragit.trajectory.displayUpdate`                    : update the trajectory
+* `dragit.trajectory.displayAll(class)`                : displays all trajectories
+* `dragit.trajectory.toggle(class)`                    : toggle the display of current trajectory
+* `dragit.trajectory.toggleAll(class)`                 : toggle the display of all trajectories
+* `dragit.trajectory.remove(class)`                    : removes the created trajectory
+* `dragit.trajectory.removeAll(class)`                 : removes all trajectories
 
 ### dragit.evt
 
 Events management mechanism to register and trigger functions.
 
-* `dragit.evt.register(event, function, context)`    : register a function for a given `event` or an array of multiple `event` 
-* `dragit.evt.call(event)`                           : trigger registered functions
+* `dragit.evt.register(event, function, context)`      : register a function for a given `event` or an array of multiple `event` 
+* `dragit.evt.call(event)`                             : trigger registered functions
 
 
 ### dragit.statemachine
