@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>dragit example with a spiral</title>
+	<link href="../src/dragit.css" rel="stylesheet"/>
+	<script src="../lib/d3.v3.js"></script>
+	<script src="../src/dragit.js"></script>
+	<style>
+ path.spiral {
+        fill: none;
+        stroke: #ee8d18;
+        stroke-width: 3px;
+      }
+	</style>
+</head>
+<body>
+<div id="viz"></div>
+<p style="clear:both"></p>
+<div id="slider"></div>
+<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');"> Show complete trajectory</label>
+
+<script>
+
+// Credits for original spiral code: http://bl.ocks.org/syntagmatic/3543186
+
+var margin = {top: 20, right: 20, bottom: 20, left: 20},
+    width = 900 - margin.right - margin.left,
+    height = 500 - margin.top - margin.bottom;
+
+var svg = d3.select("#viz")
+		.append("svg")
+			.attr({width: width, height: height})
+
+var num_axes = 8,
+    start = 0,
+    end = 10;
+
+var theta = function(r) {
+  return -2*Math.PI*r;
+};
+
+var arc = d3.svg.arc()
+  .startAngle(0)
+  .endAngle(2*Math.PI);
+
+var radius = d3.scale.linear()
+  .domain([start, end])
+  .range([0, d3.min([width,height])/2-20]);
+
+var angle = d3.scale.linear()
+  .domain([0,num_axes])
+  .range([0, 360])
+
+var pieces = d3.range(start, end+0.001, (end-start)/1000);
+
+var spiral = d3.svg.line.radial()
+  .interpolate("cardinal")
+  .angle(theta)
+  .radius(radius);
+
+var path_spiral = svg.selectAll(".spiral")
+    .data([pieces])
+  .enter().append("path")
+    .attr("class", "spiral")
+    .attr("d", spiral)
+    .attr("transform", function(d) { return "translate("+width/2+", "+height/2+")rotate(" + 90 + ")" });
+
+var time_steps = 200, nb_points = 1, current_time = 0;
+
+var config = {
+	time: {min: 0, max: 20, step: 1, current: 0}		
+}
+
+var total_length = path_spiral.node().getTotalLength();
+var share_length = total_length / time_steps;
+
+// Partition of the SVG shape into equal distances to create a time cube
+var timecube = d3.range(nb_points).map(function(d, i) {
+	return d3.range(time_steps).map(function(e, j) { 
+		var current_point = path_spiral.node(0).getPointAtLength(share_length*j);
+		return {x: current_point.x+width/2, y: current_point.y+height/2, t: j};
+	});
+})
+
+var points = svg.selectAll(".points")
+								.data(timecube)
+							.enter()
+								.append("circle")
+								.attr("class", "points");
+
+points.attr({cx: function(d) { 
+									return d[current_time].x; 
+						}, 
+						 cy: function(d) { 
+						 			return d[current_time].y;
+						}, 
+						 r:10, 
+						 fill:"red"
+						})
+		  .on("mouseenter", dragit.trajectory.display)
+		  .on("mouseleave", dragit.trajectory.remove)
+		  .call(dragit.object.activate);
+
+function update(v, t) {
+	dragit.time.current = v || dragit.time.current;
+
+	points.transition().duration(100)
+				.attr({cx: function(d) { return d[dragit.time.current].x}, 
+					     cy: function(d) { return d[dragit.time.current].y}
+				})
+}
+
+function init() {
+
+	dragit.init("svg");
+
+	// Convert the timecube for dragit
+  dragit.data = timecube.map(function(d, i) { 
+  	return d.map(function(e, i) { 
+  		return [e.x, e.y]; 
+  	}) 
+  });
+  
+  dragit.time = {min:0, max:time_steps, step:1, current: current_time}
+  dragit.evt.register("update", update);
+
+	dragit.utils.slider("#slider")
+}
+
+init();
+
+</script>
+</body>
+</html>
