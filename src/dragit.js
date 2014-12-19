@@ -13,12 +13,13 @@
       trajectory: {interpolate: "linear"},
       svgLine: null,
       container: null,
-      accessor_x: 
+      accessor_x: function(d) {return d[0]; },
+      accessor_y: function(d) {return d[1]; }
     };
 
   vars.svgLine = d3.svg.line()
-                      .x(function(d) {return d[0]; })
-                      .y(function(d) { return d[1]; })
+                      .x(vars.accessor_x)
+                      .y(vars.accessor_y)
                       .interpolate(vars.trajectory.interpolate);
 
   dragit.trajectory = {};
@@ -33,7 +34,7 @@
   dragit.statemachine = {current_state: "idle", current_id: -1};
   dragit.time = {min: 0, max: 0, current: 0, step: 1};
   dragit.mouse = {scope: "focus"};
-  dragit.object = {update: function() {}, accesor: function() {}, offsetX: 0, offsetY: 0};
+  dragit.object = {update: function() {}, offsetX: 0, offsetY: 0};
   dragit.data = [];
 
   dragit.evt.register = null;
@@ -98,8 +99,8 @@ dragit.trajectory.display = function(d, i, c) {
                     .data(dragit.data[i])
                   .enter().append("svg:circle")
                     .attr("class", "pointTrajectory")
-                    .attr('cx', function(d) { return d[0]; })
-                    .attr('cy', function(d) { return d[1]; })
+                    .attr('cx', vars.accessor_x)
+                    .attr('cy', vars.accessor_y)
                     .attr('r', 3);
 
   dragit.trajectory.displayUpdate(d, i);
@@ -115,8 +116,8 @@ dragit.trajectory.displayUpdate = function(d, i) {
   dragit.pointTrajectory.data(dragit.data[i])
                     .transition()
                     .duration(0)
-                    .attr('cx', function(d) { return d[0]; })
-                    .attr('cy', function(d) { return d[1]; })
+                    .attr('cx', vars.accessor_x)
+                    .attr('cy', vars.accessor_y)
                     .attr('r', 3);
 }
 
@@ -517,7 +518,7 @@ dragit.customize.line = function() {
 dragit.customize.point = function() {
 
   return  {
-          'default': {'mark': 'svg:circle', 'style': {'stroke': 'black', 'stroke-width': 2}, 'attr': {'cx': accessor_x, 'cy': accessor_y, 'r': 3}}
+          'default': {'mark': 'svg:circle', 'style': {'stroke': 'black', 'stroke-width': 2}, 'attr': {'cx': vars.accessor_x, 'cy': vars.accessor_y, 'r': 3}}
           }
 } 
 
