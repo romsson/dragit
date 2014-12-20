@@ -10,7 +10,6 @@
       evt: [],
       tc: [],
       list_q: [],
-      trajectory: {interpolate: "linear"},
       svgLine: null,
       container: null,
       accessor_x: function(d) {return d[0]; },
@@ -19,10 +18,23 @@
       type_trajectory: 'default'
     };
 
+  dragit.custom = {};
+  dragit.custom.line = {
+            'default': {'mark': 'svg:path', 'style': {'stroke': 'black', 'stroke-width': 2}, 'interpolate': 'linear'},
+            'monotone': {'mark': 'svg:path', 'style': {'stroke': 'black', 'stroke-width': 2}, 'interpolate': 'monotone'}
+  }
+
+  dragit.custom.point = {
+            'default': {'mark': 'svg:circle', 'style': {'stroke': 'black', 'stroke-width': 2}, 
+                        'attr': {'cx': vars.accessor_x, 'cy': vars.accessor_y, 'r': 3},
+                        'attr_static': {'cx': -10, 'cy': -10, 'r': 10}
+                      }
+            }
+  
   vars.svgLine = d3.svg.line()
                       .x(vars.accessor_x)
                       .y(vars.accessor_y)
-                      .interpolate(vars.trajectory.interpolate);
+                      .interpolate(dragit.custom.line[vars.type_trajectory].interpolate);
 
   dragit.trajectory = {};
   dragit.statemachine = {};
@@ -31,7 +43,7 @@
   dragit.mouse = {};
   dragit.time = {};
   dragit.object = {};
-  dragit.custom = {};
+
 
   dragit.statemachine = {current_state: "idle", current_id: -1};
   dragit.time = {min: 0, max: 0, current: 0, step: 1};
@@ -95,7 +107,7 @@ dragit.trajectory.display = function(d, i, c) {
                   .data([dragit.data[i]])
                 .enter().append("path")
                   .attr("class", "lineTrajectory")
-                  .attr("d", vars.svgLine);
+                  .attr("d", vars.svgLine.interpolate(dragit.custom.line[vars.type_trajectory].interpolate));
 
   dragit.pointTrajectory  = vars.gDragit.selectAll(".pointTrajectory")
                     .data(dragit.data[i])
@@ -190,14 +202,14 @@ dragit.object.activate = function(d, i) {
                                        .attr("class", "lineClosestPoint");
 
       // Create the point interesting guide line and closest trajectory
-      dragit.pointClosestTrajectory = vars.gDragit.append("circle")
-                                              .attr({cx: -10, cy: -10, r: 3.5})
+      dragit.pointClosestTrajectory = vars.gDragit.append(dragit.custom.point[vars.type_focus].mark)
+                                              .attr(dragit.custom.point[vars.type_focus].attr_static)
                                               .attr("class", "pointClosestTrajectory")
 
       // Create the focus that follows the mouse cursor
-      dragit.focusGuide = vars.gDragit.append("circle")
-                                 .attr({cx: -10, cy: -10, r: 5.5})
-                                 .attr("class", "focusGuide")
+      dragit.focusGuide = vars.gDragit.append(dragit.custom.point[vars.type_focus].mark)
+                                      .attr(dragit.custom.point[vars.type_focus].attr_static)
+                                      .attr("class", "focusGuide")
 
       dragit.evt.call("dragstart");
 
@@ -359,15 +371,6 @@ dragit.object.activate = function(d, i) {
 
   )} 
 
-
-  dragit.custom.line = {
-            'default': {'mark': 'svg:path', 'style': {'stroke': 'black', 'stroke-width': 2}, 'interpolate': 'linear'}
-  }
-
-  dragit.custom.point = {
-            'default': {'mark': 'svg:circle', 'style': {'stroke': 'black', 'stroke-width': 2}, 'attr': {'cx': vars.accessor_x, 'cy': vars.accessor_y, 'r': 3}}
-            }
-  
 })()
 
 dragit.statemachine.setState = function(state) {
