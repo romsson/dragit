@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>dragit example with a spiral</title>
+  <link href="../src/dragit.css" rel="stylesheet"/>
+  <script src="../lib/d3.v3.js"></script>
+  <script src="../src/dragit.js"></script>
+<style>
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+</style>
+<body>
+<!--<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');"> Show complete trajectory</label>-->
+<script>
+
+// Original code: http://bl.ocks.org/mbostock/4063550
+var root = {
+ "name": "flare",
+ "children": [
+  {
+   "name": "analytics",
+   "children": [
+    {
+     "name": "cluster",
+     "children": [
+      {"name": "AgglomerativeCluster", "size": 3938},
+      {"name": "CommunityStructure", "size": 3812},
+      {"name": "HierarchicalCluster", "size": 6714},
+      {"name": "MergeEdge", "size": 743}
+     ]
+    },
+    {
+     "name": "graph",
+     "children": [
+      {"name": "BetweennessCentrality", "size": 3534},
+      {"name": "LinkDistance", "size": 5731},
+      {"name": "MaxFlowMinCut", "size": 7840},
+      {"name": "ShortestPaths", "size": 5914},
+      {"name": "SpanningTree", "size": 3416}
+     ]
+    },
+    {
+     "name": "optimization",
+     "children": [
+      {"name": "AspectRatioBanker", "size": 7074}
+     ]
+    }
+   ]
+  }]}
+
+var diameter = 960;
+
+var tree = d3.layout.tree()
+    .size([360, diameter / 2 - 120])
+    .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+var diagonal = d3.svg.diagonal.radial()
+    .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
+
+var svg_root = d3.select("body").append("svg")
+    .attr("width", diameter)
+    .attr("height", diameter - 150)
+    .append("g")
+    .attr("class", "layer")
+
+var svg = svg_root.append("g")
+    .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+
+
+var nodes = tree.nodes(root),
+    links = tree.links(nodes);
+
+var link = svg.selectAll(".link")
+    .data(links)
+  .enter().append("path")
+    .attr("class", "link")
+    .attr("d", diagonal);
+
+var node = svg.selectAll(".node")
+    .data(nodes)
+  .enter().append("g")
+    .attr("class", "node")
+    .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+
+node.append("circle")
+    .attr("r", 4.5);
+
+node.append("text")
+    .attr("dy", ".31em")
+    .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+    .attr("transform", function(d) { return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
+    .text(function(d) { return d.name; });
+
+d3.select(self.frameElement).style("height", diameter - 150 + "px");
+
+var time_steps = 200, nb_points = 1, current_time = 0;
+
+
+// Basic tree 
+var timecube = d3.range(nb_points).map(function(d, i) {
+  return d3.selectAll(".node")[0].map(function(d, j) { 
+    var current_point = d.children[0].getBoundingClientRect();
+    return {x: current_point.left, y: current_point.top, t: j};
+  });
+})
+
+var points = svg_root.selectAll(".points")
+                .data(timecube)
+              .enter()
+                .append("circle")
+                .attr("class", "points");
+
+points.attr({cx: function(d) { 
+                  return d[current_time].x; 
+            }, 
+             cy: function(d) { 
+                  return d[current_time].y;
+            }, 
+             r:10, 
+             fill:"red"
+            })
+      .on("mouseenter", function(d, i) {
+        dragit.utils.animateTrajectory(dragit.trajectory.display(d, i), 0, 1000)
+      })
+      .on("mouseleave", dragit.trajectory.remove)
+      .call(dragit.object.activate);
+
+function update(v, t) {
+  dragit.time.current = v || dragit.time.current;
+
+  points.transition().duration(200)
+        .attr({cx: function(d) { return d[dragit.time.current].x}, 
+               cy: function(d) { return d[dragit.time.current].y}
+        })
+}
+
+function init() {
+
+  dragit.init("svg");
+
+  // Convert the timecube for dragit
+  dragit.data = timecube.map(function(d, i) { 
+    return d.map(function(e, i) { 
+      return [e.x, e.y]; 
+    }) 
+  });
+  
+  dragit.time = {min:0, max:time_steps, step:1, current: current_time}
+  dragit.evt.register("update", update);
+
+  dragit.utils.slider("#slider")
+}
+
+init();
+
+</script>
