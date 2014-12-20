@@ -528,6 +528,17 @@ dragit.utils.animateTrajectory = function(path, start_time, duration) {
       .attr("stroke-dashoffset", 0)
 }
 
+// Credits: http://bl.ocks.org/mbostock/1705868
+dragit.utils.translateAlong = function(path) {
+  var l = path.getTotalLength();
+  return function(d, i, a) {
+    return function(t) {
+      var p = path.getPointAtLength(t * l);
+      return "translate(" + p.x + "," + p.y + ")";
+    };
+  };
+}
+
 Array.prototype.equals = function (b) {
     var a = this;
     var i = a.length;
