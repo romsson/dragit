@@ -392,8 +392,10 @@ function play_demo() {
 var demo_interval = null;
 
 setTimeout(function() {
-  play_demo()
-  demo_interval = setInterval(play_demo, 3000)
+  if(first_time) {
+    play_demo()
+    demo_interval = setInterval(play_demo, 3000)
+  }
 }, 1000);
 
 });
