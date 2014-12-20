@@ -92,7 +92,7 @@ function init() {
   dragit.time = {min:0, max:time_steps, step:1, current: current_time}
   dragit.evt.register("update", update);
 
-  dragit.utils.slider("#slider")
+  dragit.utils.slider("#slider", true)
 }
 
 init();

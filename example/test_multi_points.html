@@ -10,10 +10,7 @@
 <body>
 <div id="viz"></div>
 <p style="clear:both"></p>
-<span id="min-time">0</span> 
-
-<input type="range" name="points" min="0" max="19" step="1" value="0" id="slider-time" oninput="update(this.value, 100)"><span id="max-time">0</span>
-
+<div id="slider"></div>
 <label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');"> Show all trajectories</label>
 
 <label><input type="radio" name="drag-scope" value="low" onchange="dragit.mouse.scope = 'focus'" checked>drag focus</label>
@@ -24,6 +21,7 @@
 <label><input type="radio" name="drag-direction" value="low" onchange="dragit.mouse.dragging = 'free'">free drag</label>
 <br>
 
+current state: <span id="current-state"></span><br>
 current focus: <span id="current-focus"></span><br>
 closest line: <span id="closest-line"></span><br>
 closest point: <span id="closest-point"></span><br>
@@ -81,15 +79,11 @@ function update(v, t) {
 				.attr({cx: function(d) { return xScale(d[dragit.time.current].x)}, 
 							 cy: function(d) { return yScale(d[dragit.time.current].y)}
 						  })
-  d3.select("#slider-time").property("value", dragit.time.current);
 }
 
 function init() {
 
 	dragit.init("svg");
-
-	d3.select("#min-time").text(0);
-	d3.select("#max-time").text(time_steps)
 
   dragit.data = timecube.map(function(d, i) { 
   	return d.map(function(e, i) { 
@@ -101,17 +95,22 @@ function init() {
   
   dragit.evt.register("update", update);
 
+  dragit.evt.register("new_state", function() {
+  	d3.select("#current-state").text(dragit.statemachine.current_state);
+  });
+
   dragit.evt.register("update", function() { 
-  	d3.select("#closest-time").text(dragit.time.current)
+  	d3.select("#closest-time").text(dragit.time.current);
   });
 
   dragit.evt.register("new_focus", function() { 
-  	d3.select("#current-focus").text(dragit.time.current)
+  	d3.select("#current-focus").text(dragit.statemachine.current_id);
   });
+
+  dragit.utils.slider("#slider", true)
 }
 
 init();
-
 </script>
 </body>
 </html>

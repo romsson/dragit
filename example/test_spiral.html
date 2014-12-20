@@ -19,11 +19,9 @@
 <p style="clear:both"></p>
 <div id="slider"></div>
 <label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');"> Show complete trajectory</label>
-
 <script>
 
 // Credits for original spiral code: http://bl.ocks.org/syntagmatic/3543186
-
 var margin = {top: 20, right: 20, bottom: 20, left: 20},
     width = 900 - margin.right - margin.left,
     height = 500 - margin.top - margin.bottom;
@@ -98,14 +96,16 @@ points.attr({cx: function(d) {
 						 r:10, 
 						 fill:"red"
 						})
-		  .on("mouseenter", dragit.trajectory.display)
+		  .on("mouseenter", function(d, i) {
+		  	dragit.utils.animateTrajectory(dragit.trajectory.display(d, i), 0, 1000)
+		  })
 		  .on("mouseleave", dragit.trajectory.remove)
 		  .call(dragit.object.activate);
 
 function update(v, t) {
 	dragit.time.current = v || dragit.time.current;
 
-	points.transition().duration(100)
+	points.transition().duration(200)
 				.attr({cx: function(d) { return d[dragit.time.current].x}, 
 					     cy: function(d) { return d[dragit.time.current].y}
 				})
