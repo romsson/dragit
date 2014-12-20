@@ -87,7 +87,7 @@ circle.pointTrajectory {
 
 path.lineTrajectory {
   stroke-width: 2;
-  stroke-opacity: 1;
+  stroke-opacity: .5;
   stroke: black;
   fill: none;
   pointer-events: none;
@@ -239,7 +239,8 @@ d3.json("../data/nations.json", function(nations) {
       .on("mouseenter", function(d, i) {
         clear_demo();
         if(dragit.statemachine.current_state == "idle") {
-          dragit.trajectory.display(d, i);
+          dragit.trajectory.display(d, i)
+          dragit.utils.animateTrajectory(dragit.trajectory.display(d, i), dragit.time.current, 1000)
           countrylabel.text(d.name);
           dot.style("opacity", .4)
           d3.select(this).style("opacity", 1)
@@ -268,9 +269,9 @@ d3.json("../data/nations.json", function(nations) {
 
   // Positions the dots based on data.
   function position(dot) {
-    dot .attr("cx", function(d) { return xScale(x(d)); })
-        .attr("cy", function(d) { return yScale(y(d)); })
-        .attr("r", function(d) { return radiusScale(radius(d)); });
+    dot.attr("cx", function(d) { return xScale(x(d)); })
+       .attr("cy", function(d) { return yScale(y(d)); })
+       .attr("r", function(d) { return radiusScale(radius(d)); });
   }
 
   // Defines a sort order so that the smallest dots are drawn on top.
