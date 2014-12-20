@@ -266,21 +266,24 @@ dragit.object.activate = function(d, i) {
 
         var  p = dragit.utils.closestPoint(thisTrajectory.node(), m);
 
-        var closest = null;
+        var current_index = null;
 
-        if(dragit.mouse.scope == "focus")
-          closest = dragit.utils.closestValue(m, dragit.data[i]);
-        else if(dragit.mouse.scope == "selected")
-          closest = dragit.utils.closestValue(m, dragit.data[j]);
+        if(dragit.mouse.scope == "focus") {
+          current_index = i;
+        } else if(dragit.mouse.scope == "selected") {
+          current_index = j;
+        }
+
+        var closest = dragit.utils.closestValue(m, dragit.data[current_index]);
 
         // Find the closest data point
-        var q = dragit.data[i][[closest.indexOf(Math.min.apply(Math, closest))]];
+        var q = dragit.data[current_index][[closest.indexOf(Math.min.apply(Math, closest))]];
 
-        // List of closest distances to trajectory
-        list_p.push(p);
+        // List of closest distances to trajectory + current trajectory id
+        list_p.push(p.concat([current_index]));
 
-        // List of closest distances to points
-        list_q.push(q);
+        // List of closest distances to points + current trajectory id
+        list_q.push(q.concat([current_index]));
 
         // Store all the distances
         list_distances.push(Math.sqrt((p[0] - m[0]) * (p[0] - m[0]) + (p[1] - m[1]) * (p[1] - m[1])));
@@ -293,7 +296,6 @@ dragit.object.activate = function(d, i) {
         // Store the current line
         list_lines.push(j);
 
-        vars.list_q = list_q;
       })
 
       // Find the index for the shortest distance
@@ -332,7 +334,7 @@ dragit.object.activate = function(d, i) {
         dragit.evt.call("update", new_time, 0);
       }
 
-      var new_id = dragit.statemachine.current_id;
+      var new_id = list_times[index_min][3];
 
       // Focus is updated
       if(dragit.statemachine.current_id != new_id) {
