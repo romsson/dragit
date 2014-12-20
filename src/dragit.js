@@ -115,7 +115,7 @@ dragit.trajectory.display = function(d, i, c) {
                     .attr("class", "pointTrajectory")
                     .attr(dragit.custom.point[vars.type_focus].attr);
 
-  dragit.trajectory.displayUpdate(d, i);
+  return dragit.trajectory.displayUpdate(d, i);
 }
 
 dragit.trajectory.displayUpdate = function(d, i) {
@@ -129,6 +129,8 @@ dragit.trajectory.displayUpdate = function(d, i) {
                     .transition()
                     .duration(0)
                     .attr(dragit.custom.point[vars.type_focus].attr);
+
+  return dragit.lineTrajectory;
 }
 
 dragit.trajectory.toggleAll = function(c) {
@@ -151,7 +153,7 @@ dragit.trajectory.displayAll = function(c) {
 
 dragit.trajectory.remove = function(d, i) {
   if(dragit.statemachine.current_state != "drag")
-    d3.select(".gDragit.focus").remove();
+    d3.selectAll(".gDragit.focus").remove();
 }
 
 dragit.trajectory.removeAll = function(c) { 
