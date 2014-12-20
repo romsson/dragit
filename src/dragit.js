@@ -378,7 +378,7 @@ dragit.object.activate = function(d, i) {
 
       dragit.evt.call("dragend");
 
-      dragit.statemachine.current_state = "idle";
+      dragit.statemachine.setState("idle");
     })
 
   )} 
@@ -386,8 +386,8 @@ dragit.object.activate = function(d, i) {
 })()
 
 dragit.statemachine.setState = function(state) {
-
   dragit.statemachine.current_state = state;
+  dragit.evt.call("new_state"); 
 }
 
 dragit.statemachine.getState = function(state) {
@@ -396,10 +396,24 @@ dragit.statemachine.getState = function(state) {
 }
 
 // Create and add a DOM HTML slider for time navigation
-dragit.utils.slider = function(el) {
+dragit.utils.slider = function(el, play_button) {
 
   d3.select(el).append("p")
                .style("clear", "both");
+
+  if(play_button) {
+    d3.select(el).append("button")
+                 .style({"height": "25px", "width": "25px"})
+                 .text("▶")
+                 .attr("class", "stop")
+                 .on("click", function() {
+                   if(d3.select(this).attr("class") == "stop") {
+                     d3.select(this).text("| |").attr("class", "playing")
+                   } else {
+                     d3.select(this).text("▶").attr("class", "stop")
+                   }
+                 })
+  }
 
   d3.select(el).append("span")
                .attr("id", "min-time")
@@ -410,7 +424,7 @@ dragit.utils.slider = function(el) {
                 .attr("class", "slider-time")
                 .property("min", dragit.time.min)
                 .property("max", dragit.time.max)
-                .property("value", 0)
+                .property("value", dragit.time.current)
                 .property("step", 1)
                 .on("input", function() { 
                   dragit.time.current = parseInt(this.value)-dragit.time.min;
@@ -529,7 +543,7 @@ dragit.utils.animateTrajectory = function(path, start_time, duration) {
 }
 
 // Credits: http://bl.ocks.org/mbostock/1705868
-dragit.utils.translateAlong = function(path) {
+dragit.utils.translateAlong = function(path, duration) {
   var l = path.getTotalLength();
   return function(d, i, a) {
     return function(t) {
