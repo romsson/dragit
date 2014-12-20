@@ -27,7 +27,7 @@
   dragit.custom.point = {
             'default': {'mark': 'svg:circle', 'style': {'stroke': 'black', 'stroke-width': 2}, 
                         'attr': {'cx': vars.accessor_x, 'cy': vars.accessor_y, 'r': 3},
-                        'attr_static': {'cx': -10, 'cy': -10, 'r': 10}
+                        'attr_static': {'cx': -10, 'cy': -10, 'r': 3}
                       }
             }
   
@@ -193,6 +193,8 @@ dragit.object.activate = function(d, i) {
         case "horizontal":
       }
 
+      var m = d3.mouse(this);
+
       // Create the line guide to closest trajectory
       dragit.lineClosestTrajectory = vars.gDragit.append("line")
                                             .attr("class", "lineClosestTrajectory");
@@ -205,11 +207,15 @@ dragit.object.activate = function(d, i) {
       dragit.pointClosestTrajectory = vars.gDragit.append(dragit.custom.point[vars.type_focus].mark)
                                               .attr(dragit.custom.point[vars.type_focus].attr_static)
                                               .attr("class", "pointClosestTrajectory")
+                                              .attr("cx", m[0])
+                                              .attr("cy", m[1]);
 
       // Create the focus that follows the mouse cursor
       dragit.focusGuide = vars.gDragit.append(dragit.custom.point[vars.type_focus].mark)
                                       .attr(dragit.custom.point[vars.type_focus].attr_static)
                                       .attr("class", "focusGuide")
+                                      .attr("cx", m[0])
+                                      .attr("cy", m[1]);
 
       dragit.evt.call("dragstart");
 
@@ -290,6 +296,10 @@ dragit.object.activate = function(d, i) {
 
       // Find the index for the shortest distance
       var index_min = list_distances.indexOf(d3.min(list_distances));
+
+      // It can happens the trajectory is not fully displayed yet
+      if(index_min == -1)
+        return;
 
       var new_time = list_times[index_min];
 
