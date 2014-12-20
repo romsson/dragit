@@ -7,10 +7,10 @@ dragit.js
 
 
 * Single point drag ([demo](http://romsson.github.io/dragit/example/test_single_point.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_single_point.html))
-* Multiple points drag ([demo](http://romsson.github.io/dragit/example/test_multi_point.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_multi_point.html))
+* Multiple points drag ([demo](http://romsson.github.io/dragit/example/test_multi_points.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_multi_points.html))
 * Spiral shape ([demo](http://romsson.github.io/dragit/example/test_spiral.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_spiral.html))
-* Interactive soccer bracket ([demo](http://romain.vuillemot.net/projects/worldcup14/)
-
+* Radial tree ([demo](http://romsson.github.io/dragit/example/test_radial_tree.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_radial_tree.html))
+* Interactive soccer bracket ([demo](http://romain.vuillemot.net/projects/worldcup14/))
 * A Re-Recreation of Gapminder's Wealth of Nations ([demo](http://romsson.github.io/dragit/example/nations.html) | [source](https://github.com/romsson/dragit/blob/master/example/nations.html))
 
 #### Coming soon
@@ -18,7 +18,7 @@ dragit.js
 * Ranking tables
 * Standard charts: [Bar chart](http://romsson.github.io/dragit/example/test_barchart.html), pie chart, scatterplot, ..
 * Node link diagrams
-* Maps navigation
+* Geo maps navigation
 
 ### Getting Started
 
@@ -40,7 +40,7 @@ Those two functions will make sure the library's internal state is always up to 
 
 #### Time Cube
 
-Then create an internal data structure (namely a time cube) where each row is a data point, and each column a time point.You may want to generate a random time cube (of `nb_data_points` by `nb_time_steps`) as below:
+The internal data structure where each row is a data point, and each column a time point.You may want to generate a random time cube (of `nb_data_points` x `nb_time_steps`) as below:
 
 ```
 var timecube = d3.range(nb_data_points).map(function(d, i) {
@@ -53,6 +53,7 @@ var timecube = d3.range(nb_data_points).map(function(d, i) {
 #### Other Ways to Create a  Cube
 
 * Using SVG shapes (see the Spiral example)
+* Use a non-temporal data structure (e.g. paths in a tree)
 * Using a combinatory space (see the World Cup Brackets example)
 * Using any other combinatory space
 
@@ -103,10 +104,10 @@ A series of private variables for internal use. Can be set using publication fun
 Example:
 
 ```
-dragit.time = {min: 		d3.min(data, function(d) { return parseInt(d[i]);}), 
-							  max: 		d3.max(data, function(d) { return parseInt(d[i]);}), 
-							  step: 	1, 
-							  current:0
+dragit.time = {min: d3.min(data, function(d) { return parseInt(d[i]);}), 
+							  max: d3.max(data, function(d) { return parseInt(d[i]);}), 
+							  step: 1, 
+							  current: 0
 							}
 ```
 
@@ -165,9 +166,10 @@ Events management mechanism to register and trigger functions.
 
 (not fully implemented yet)
 
-* `dragit.statemachine.current_state`                  : returns the current state of the interaction (e.g mouseenter, dragstart)
-* `dragit.statemachine.current_id`                     : returns the id of the currently manipulated element
+* `dragit.statemachine.current_state`                  : the current state of the interaction (e.g mouseenter, dragstart)
+* `dragit.statemachine.current_id`                     : the id of the currently manipulated element
 * `dragit.statemachine.setState(event)`                : sets the current state of the state machine
+* `dragit.statemachine.getState()`                     : gets the current state of the state machine
 
 ### dragit.utils
 
@@ -175,3 +177,8 @@ Events management mechanism to register and trigger functions.
 * `dragit.utils.closestPoint`
 * `dragit.utils.closestValue`
 * `dragit.utils.findYgivenX `
+* `dragit.utils.translateAlong(path, duration)`
+
+
+### dragit.utils
+
