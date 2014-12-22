@@ -157,14 +157,11 @@ Events management mechanism to register and trigger functions.
 * `dragit.evt.register(event, function, context)`      : register a function for a given `event` or an array of multiple `event` 
 * `dragit.evt.call(event)`                             : trigger registered functions
 
-
 ### dragit.statemachine
 
 <p align="center">
 	<img src="img/diagram-state-machine.png" width=600/>
 </p>
-
-(not fully implemented yet)
 
 * `dragit.statemachine.current_state`                  : the current state of the interaction (e.g mouseenter, dragstart)
 * `dragit.statemachine.current_id`                     : the id of the currently manipulated element
@@ -178,7 +175,9 @@ Events management mechanism to register and trigger functions.
 * `dragit.utils.closestValue`
 * `dragit.utils.findYgivenX `
 * `dragit.utils.translateAlong(path, duration)`
+* `dragit.utils.slider(el, play_button)`  : automatically creates a slider to browse all the time points
 
+### dragit.custom
 
-### dragit.utils
-
+* `dragit.custom.line`
+* `dragit.custom.point`

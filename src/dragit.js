@@ -389,7 +389,7 @@ dragit.object.activate = function(d, i) {
 
 dragit.statemachine.setState = function(state) {
   dragit.statemachine.current_state = state;
-  dragit.evt.call("new_state"); 
+  dragit.evt.call("new_state");
 }
 
 dragit.statemachine.getState = function(state) {
