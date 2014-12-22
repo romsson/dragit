@@ -123,14 +123,26 @@ function traverse(t, path, ret) {
   return ret;
 }        
 
-var root_leaf_paths = traverse(root, ["flare"], [])
+function find_node_by_name(name) {
+  return d3.selectAll(".node").filter(function(d) { return d.name == name; })[0]
+}
 
 // Basic tree traverse
-var timecube = d3.range(nb_points).map(function(d, i) {
-  return d3.selectAll(".node")[0].map(function(d, j) { 
-    var current_point = d.children[0].getBoundingClientRect();
+//var timecube = d3.range(nb_points).map(function(d, i) {
+//  return d3.selectAll(".node")[0].map(function(d, j) { 
+//    var current_point = d.children[0].getBoundingClientRect();
+//    return {x: current_point.left, y: current_point.top, t: j};
+//  });
+//})
+
+// Root to leaf traverse
+var root_leaf_paths = traverse(root, ["flare"], [])
+
+var timecube = root_leaf_paths.map(function(path, i) {
+  return path.map(function(p, j) {
+    var current_point = find_node_by_name(p)[0].getBoundingClientRect();
     return {x: current_point.left, y: current_point.top, t: j};
-  });
+  })
 })
 
 var points = svg_root.selectAll(".points")
@@ -181,5 +193,5 @@ function init() {
 }
 
 init();
-
+dragit.trajectory.toggleAll('selected');
 </script>
