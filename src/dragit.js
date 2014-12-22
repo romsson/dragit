@@ -19,6 +19,21 @@
     };
 
   dragit.custom = {};
+  dragit.trajectory = {};
+  dragit.statemachine = {};
+  dragit.utils = {};
+  dragit.evt = {};
+  dragit.mouse = {};
+  dragit.time = {};
+  dragit.object = {};
+  dragit.data = [];
+
+  dragit.statemachine = {current_state: "idle", current_id: -1};
+  dragit.time = {min: 0, max: 0, current: 0, step: 1};
+  dragit.mouse = {scope: "focus"};
+  dragit.object = {update: function() {}, offsetX: 0, offsetY: 0};
+  dragit.evt = {register: function() {}, call: function() {}};
+
   dragit.custom.line = {
             'default': {'mark': 'svg:path', 'style': {'stroke': 'black', 'stroke-width': 2}, 'interpolate': 'linear'},
             'monotone': {'mark': 'svg:path', 'style': {'stroke': 'black', 'stroke-width': 2}, 'interpolate': 'monotone'}
@@ -36,25 +51,10 @@
                       .y(vars.accessor_y)
                       .interpolate(dragit.custom.line[vars.type_trajectory].interpolate);
 
-  dragit.trajectory = {};
-  dragit.statemachine = {};
-  dragit.utils = {};
-  dragit.evt = {};
-  dragit.mouse = {};
-  dragit.time = {};
-  dragit.object = {};
-
-
-  dragit.statemachine = {current_state: "idle", current_id: -1};
-  dragit.time = {min: 0, max: 0, current: 0, step: 1};
-  dragit.mouse = {scope: "focus"};
-  dragit.object = {update: function() {}, offsetX: 0, offsetY: 0};
-  dragit.data = [];
-
-  dragit.evt.register = null;
-  dragit.evt.call = null;
 
 dragit.evt.register = function(evt, f, d) {
+
+  if(vars.dev) console.log("[register]", evt)
 
   if(typeof evt == "string")
     evt = [evt];
@@ -68,6 +68,8 @@ dragit.evt.register = function(evt, f, d) {
 }
 
 dragit.evt.call = function(evt) {
+
+  if(vars.dev) console.log("[call]", evt)
 
   if(typeof vars.evt[evt] == "undefined") {
     if(vars.dev) console.warn("No callback for event", evt)
@@ -164,7 +166,7 @@ dragit.trajectory.removeAll = function(c) {
 // Main function that binds drag callbacks to the current element
 dragit.object.activate = function(d, i) {
 
-  if (vars.dev) console.log("Activate", d, i)
+  if (vars.dev) console.log("[activate]", d, i)
 
   d3.select(this)[0][0].node().addEventListener("mouseenter", function() {
     if(dragit.statemachine.current_state == "idle") {
@@ -223,7 +225,9 @@ dragit.object.activate = function(d, i) {
 
     })
     .on("drag", function(d,i) {
+
       dragit.statemachine.setState("drag");
+      
       if (vars.dev) console.log("[drag]", d, i)
 
       switch(dragit.mouse.dragging) {
@@ -385,17 +389,18 @@ dragit.object.activate = function(d, i) {
 
   )} 
 
-})()
+  dragit.statemachine.setState = function(state) {
 
-dragit.statemachine.setState = function(state) {
-  dragit.statemachine.current_state = state;
-  dragit.evt.call("new_state");
-}
+    if(vars.dev) console.log("[setState]", state)
 
-dragit.statemachine.getState = function(state) {
+    dragit.statemachine.current_state = state;
+    dragit.evt.call("new_state");
+  }
 
-  return dragit.statemachine.current_state;
-}
+  dragit.statemachine.getState = function(state) {
+
+    return dragit.statemachine.current_state;
+  }
 
 // Create and add a DOM HTML slider for time navigation
 dragit.utils.slider = function(el, play_button) {
@@ -554,6 +559,9 @@ dragit.utils.translateAlong = function(path, duration) {
     };
   };
 }
+
+})()
+
 
 Array.prototype.equals = function (b) {
     var a = this;
