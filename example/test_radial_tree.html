@@ -6,8 +6,10 @@
   <link href="../src/dragit.css" rel="stylesheet"/>
   <script src="../lib/d3.v3.js"></script>
   <script src="../src/dragit.js"></script>
-<style>
 
+<div id="viz"></div>
+<div id="slider"></div>
+<style>
 .node circle {
   fill: #fff;
   stroke: steelblue;
@@ -26,7 +28,6 @@
 
 </style>
 <body>
-<!--<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');"> Show complete trajectory</label>-->
 <script>
 
 // Original code: http://bl.ocks.org/mbostock/4063550
@@ -73,9 +74,9 @@ var tree = d3.layout.tree()
 var diagonal = d3.svg.diagonal.radial()
     .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
 
-var svg_root = d3.select("body").append("svg")
+var svg_root = d3.select("#viz").append("svg")
     .attr("width", diameter)
-    .attr("height", diameter - 150)
+    .attr("height", diameter)
     .append("g")
     .attr("class", "layer")
 
@@ -106,9 +107,7 @@ node.append("text")
     .attr("transform", function(d) { return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
     .text(function(d) { return d.name; });
 
-d3.select(self.frameElement).style("height", diameter - 150 + "px");
-
-var time_steps = 200, nb_points = 1, current_time = 0;
+var current_time = 0;
 
 function traverse(t, path, ret) {
   t.children.forEach(function(d, i) {
@@ -138,6 +137,8 @@ function find_node_by_name(name) {
 // Root to leaf traverse
 var root_leaf_paths = traverse(root, ["flare"], [])
 
+var time_steps = root_leaf_paths[0].length;
+
 var timecube = root_leaf_paths.map(function(path, i) {
   return path.map(function(p, j) {
     var current_point = find_node_by_name(p)[0].getBoundingClientRect();
@@ -157,8 +158,8 @@ points.attr({cx: function(d) {
              cy: function(d) { 
                   return d[current_time].y;
             }, 
-             r:10, 
-             fill:"red"
+              r:10, 
+              fill:"red"
             })
       .on("mouseenter", function(d, i) {
         dragit.utils.animateTrajectory(dragit.trajectory.display(d, i), 0, 1000)
@@ -189,7 +190,8 @@ function init() {
   dragit.time = {min:0, max:time_steps, step:1, current: current_time}
   dragit.evt.register("update", update);
 
-  dragit.utils.slider("#slider")
+  dragit.mouse.scope = 'selected'
+  dragit.utils.slider("#slider", true);
 }
 
 init();

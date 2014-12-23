@@ -97,7 +97,7 @@ dragit.trajectory.display = function(d, i, c) {
   if(vars.dev) console.log("[display]", dragit.statemachine.current_state, dragit.statemachine.current_id, i)
 
   vars.gDragit = vars.container.insert("g", ":first-child")
-                                .attr("class", "gDragit")
+                               .attr("class", "gDragit")
 
   if(typeof c != "undefined" && c != 0) {
     vars.gDragit.classed(c, true);                           
