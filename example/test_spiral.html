@@ -103,7 +103,16 @@ points.attr({cx: function(d) {
 		  .call(dragit.object.activate);
 
 function update(v, t) {
+
+	var previous_current = dragit.time.currentl
 	dragit.time.current = v || dragit.time.current;
+
+
+  // Calculate path between the previous and current time point
+
+	dragit.utils.getSubPath(previous_current, dragit.time.current)
+
+  // dragit.utils.translateAlong 
 
 	points.transition().duration(200)
 				.attr({cx: function(d) { return d[dragit.time.current].x}, 

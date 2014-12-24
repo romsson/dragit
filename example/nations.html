@@ -231,10 +231,17 @@ d3.json("../data/nations.json", function(nations) {
       .attr("class", "dot")
       .style("fill", function(d) { return colorScale(color(d)); })
       .call(position)
-      .on("click", function(d, i) {
+      .on("mousedow", function(d, i) {
+
+      })
+      .on("mouseup", function(d, i) {
         dot.classed("selected", false);
         d3.select(this).classed("selected", !d3.select(this).classed("selected"));
         dragit.trajectory.display(d, i, "selected");
+
+        //TODO: test if has been dragged
+        // Look at the state machine history and find a drag event in it?
+
       })
       .on("mouseenter", function(d, i) {
         clear_demo();
@@ -281,8 +288,8 @@ d3.json("../data/nations.json", function(nations) {
 
   // Updates the display to show the specified year.
   function displayYear(year) {
-    dot.data(interpolateData(year), key).call(position).sort(order);
-    label.text(Math.round(year));
+    dot.data(interpolateData(year+dragit.time.min), key).call(position).sort(order);
+    label.text(dragit.time.min + Math.round(year));
   }
 
   // Interpolates the dataset for the given (fractional) year.
@@ -313,7 +320,6 @@ d3.json("../data/nations.json", function(nations) {
   init();
 
   function update(v, duration) {
-
     dragit.time.current = v || dragit.time.current;
     displayYear(dragit.time.current)
     d3.select("#slider-time").property("value", dragit.time.current);

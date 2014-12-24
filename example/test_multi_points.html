@@ -86,8 +86,8 @@ function init() {
 	dragit.init("svg");
 
   dragit.data = timecube.map(function(d, i) { 
-  	return d.map(function(e, i) { 
-  		return [xScale(e.x), yScale(e.y)]; 
+  	return d.map(function(e, j) { 
+  		return [xScale(e.x), yScale(e.y), i]; 
   	}) 
   });
   
@@ -101,9 +101,6 @@ function init() {
 
   dragit.evt.register("update", function() { 
   	d3.select("#closest-time").text(dragit.time.current);
-  });
-
-  dragit.evt.register("new_focus", function() { 
   	d3.select("#current-focus").text(dragit.statemachine.current_id);
   });
 
