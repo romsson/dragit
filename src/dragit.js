@@ -186,8 +186,8 @@ dragit.object.activate = function(d, i) {
 
       if (vars.dev) console.log("[dragstart]", d, i)
 
-      dragit.statemachine.current_id = i;
-
+      dragit.trajectory.index_closest_trajectorypoint = -1;
+      dragit.trajectory.index_closest_datapoint = -1;
       // Initial coordinates for the dragged object of interest
       d.x = 0;
       d.y = 0;
@@ -257,7 +257,7 @@ dragit.object.activate = function(d, i) {
         return
       }
 
-      var list_distances = [], list_times = [], list_lines = [];
+      var list_distances_datapoint = [], list_distances_trajectorypoint = [], list_times = [];
       var list_closest_trajectorypoint = [], list_closest_datapoint = [];
 
       var mousepoint = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
@@ -271,8 +271,6 @@ dragit.object.activate = function(d, i) {
 
         var thisTrajectory = d3.select(e[0]);
 
-        var closest_trajectorypoint = dragit.utils.closestPoint(thisTrajectory.node(), mousepoint);
-
         var current_index = null;
 
         if(dragit.mouse.scope == "focus") {
@@ -281,52 +279,52 @@ dragit.object.activate = function(d, i) {
           current_index = j;
         }
 
-        var closest = dragit.utils.closestValue(mousepoint, dragit.data[current_index]);
+        var closest_trajectorypoint = dragit.utils.closestPointToTrajectory(thisTrajectory.node(), mousepoint);
+
+        var closest_datapoints = dragit.utils.closestDataPoint(mousepoint, dragit.data[current_index]);
+
+        var index_closest_time = closest_datapoints.indexOf(Math.min.apply(Math, closest_datapoints));// + dragit.time.min;
 
         // Find the closest data point
-        var closest_datapoint = dragit.data[current_index][[closest.indexOf(Math.min.apply(Math, closest))]];
+        var closest_datapoint = dragit.data[current_index][index_closest_time];
 
-        // List of closest distances to trajectory + current trajectory id
         list_closest_trajectorypoint.push(closest_trajectorypoint.concat([current_index]));
-
-        // List of closest distances to points + current trajectory id
         list_closest_datapoint.push(closest_datapoint.concat([current_index]));
 
-        // Store all the distances
-        list_distances.push(Math.sqrt((closest_trajectorypoint[0] - mousepoint[0]) * (closest_trajectorypoint[0] - mousepoint[0]) + (closest_trajectorypoint[1] - mousepoint[1]) * (closest_trajectorypoint[1] - mousepoint[1])));
+        // Store all the closest distances between the mouse and the current trajectory point
+        // Will be further used to find out the closest index (if scope is broader than 1 trajectory)
+        list_distances_datapoint.push(Math.sqrt((closest_datapoint[0] - mousepoint[0]) * (closest_datapoint[0] - mousepoint[0]) + (closest_datapoint[1] - mousepoint[1]) * (closest_datapoint[1] - mousepoint[1])));
+        list_distances_trajectorypoint.push(Math.sqrt((closest_trajectorypoint[0] - mousepoint[0]) * (closest_trajectorypoint[0] - mousepoint[0]) + (closest_trajectorypoint[1] - mousepoint[1]) * (closest_trajectorypoint[1] - mousepoint[1])));
 
-        var thisMewTime = closest.indexOf(Math.min.apply(Math, closest)) + dragit.time.min;
-
-        // Store the closest time
-        list_times.push(thisMewTime);
-
-        // Store the current line
-        list_lines.push(j);
+        // Store the list of all closest times (one per trajectory)
+        list_times.push(index_closest_time);
 
       })
 
-      // Find the index for the shortest distance
-      var index_min = list_distances.indexOf(d3.min(list_distances));
+      // Find the index of the closest trajectory by looking at the shortest distance
+      // index_min should be used to retrieve the dragit.data[min_index] data
+      var index_closest_datapoint = list_distances_datapoint.indexOf(d3.min(list_distances_datapoint));
+      var index_closest_trajectorypoint = list_distances_trajectorypoint.indexOf(d3.min(list_distances_trajectorypoint));
 
-      // It can happens the trajectory is not fully displayed yet
-      if(index_min == -1)
+      // It can happens the trajectory is not fully displayed yet, then leave because no closest one
+      if(index_closest_trajectorypoint == -1)
         return;
 
-      var new_time = list_times[index_min];
+      var new_time = list_times[index_closest_datapoint];
 
       // Update the line guide to closest trajectory
-      dragit.lineClosestTrajectory.attr("x1", list_closest_trajectorypoint[index_min][0])
-                                  .attr("y1", list_closest_trajectorypoint[index_min][1])
+      dragit.lineClosestTrajectory.attr("x1", list_closest_trajectorypoint[index_closest_trajectorypoint][0])
+                                  .attr("y1", list_closest_trajectorypoint[index_closest_trajectorypoint][1])
                                   .attr("x2", mousepoint[0])
                                   .attr("y2", mousepoint[1]);
 
       // Update the point interesting guide line and closest trajectory
-      dragit.pointClosestTrajectory.attr("cx", list_closest_trajectorypoint[index_min][0])
-                                   .attr("cy", list_closest_trajectorypoint[index_min][1]);
+      dragit.pointClosestTrajectory.attr("cx", list_closest_trajectorypoint[index_closest_trajectorypoint][0])
+                                   .attr("cy", list_closest_trajectorypoint[index_closest_trajectorypoint][1]);
 
       // Update line guide to closest point
-      dragit.lineClosestPoint.attr("x1", list_closest_datapoint[index_min][0])
-                             .attr("y1", list_closest_datapoint[index_min][1])
+      dragit.lineClosestPoint.attr("x1", list_closest_datapoint[index_closest_datapoint][0])
+                             .attr("y1", list_closest_datapoint[index_closest_datapoint][1])
                              .attr("x2", mousepoint[0])
                              .attr("y2", mousepoint[1]);
       
@@ -335,18 +333,26 @@ dragit.object.activate = function(d, i) {
                        .attr("cy", mousepoint[1]);
 
       // Time is updated
-      if(dragit.time.current != new_time || dragit.trajectory.index_min != index_min) {
-        dragit.trajectory.index_min = index_min;
+      if(dragit.time.current != new_time || dragit.trajectory.current_id != index_closest_trajectorypoint) {
+        dragit.trajectory.index_closest_trajectorypoint = index_closest_trajectorypoint;
         dragit.time.current = new_time;
+        dragit.statemachine.current_id = 
         dragit.evt.call("update", new_time, 0);
       }
 
-      var new_id = list_times[index_min][3];
 
-      // Focus is updated
-      if(dragit.statemachine.current_id != new_id) {
+      dragit.statemachine.current_id = index_closest_trajectorypoint;
+
+      // We have a new focus
+      if(dragit.statemachine.current_id != index_closest_trajectorypoint && dragit.mouse.scope != "focus") {
+
+        // Update the current trajectory focus
+       // dragit.trajectory.removeAll("focus");
+       // dragit.trajectory.display({}, index_min);
+
         dragit.evt.call("new_focus", new_id);
       }
+
 
       dragit.evt.call("drag")
 
@@ -458,7 +464,7 @@ dragit.utils.centroid = function(s) {
 }
 
 // Credits: http://bl.ocks.org/mbostock/8027637
-dragit.utils.closestPoint  = function(pathNode, point) {
+dragit.utils.closestPointToTrajectory  = function(pathNode, point) {
 
   var pathLength = pathNode.getTotalLength(),
       precision = pathLength / pathNode.pathSegList.numberOfItems * .125,
@@ -502,7 +508,7 @@ dragit.utils.closestPoint  = function(pathNode, point) {
   }
 }
 
-dragit.utils.closestValue  = function(p, points) {
+dragit.utils.closestDataPoint  = function(p, points) {
   var distances = points.map(function(d, i) { 
     var dx = d[0]-p[0];
     var dy = d[1]-p[1];
