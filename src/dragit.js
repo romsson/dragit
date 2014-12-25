@@ -67,19 +67,19 @@ dragit.evt.register = function(evt, f, d) {
   })
 }
 
-dragit.evt.call = function(evt) {
+dragit.evt.call = function(evt, a) {
 
-  if(vars.dev) console.log("[call]", evt)
+  if(vars.dev) console.log("[call]", evt, a)
 
   if(typeof vars.evt[evt] == "undefined") {
-    if(vars.dev) console.warn("No callback for event", evt)
+    if(vars.dev) console.warn("No callback for event", evt, a)
     return;
   }
 
   vars.evt[evt].forEach(function(e) {
     if(vars.dev) console.log("update", e)
     if(typeof(e[0]) != "undefined")
-      e[0](e[1])
+      e[0](a)
   });
 }
 
@@ -332,29 +332,20 @@ dragit.object.activate = function(d, i) {
       dragit.focusGuide.attr("cx", mousepoint[0])
                        .attr("cy", mousepoint[1]);
 
-      // Time is updated
+      // We have a new time point
       if(dragit.time.current != new_time || dragit.trajectory.current_id != index_closest_trajectorypoint) {
         dragit.trajectory.index_closest_trajectorypoint = index_closest_trajectorypoint;
         dragit.time.current = new_time;
-        dragit.statemachine.current_id = 
         dragit.evt.call("update", new_time, 0);
       }
 
-
-      dragit.statemachine.current_id = index_closest_trajectorypoint;
-
-      // We have a new focus
+      // We have a new trajectoy focus
       if(dragit.statemachine.current_id != index_closest_trajectorypoint && dragit.mouse.scope != "focus") {
-
-        // Update the current trajectory focus
-       // dragit.trajectory.removeAll("focus");
-       // dragit.trajectory.display({}, index_min);
-
-        dragit.evt.call("new_focus", new_id);
+        dragit.statemachine.current_id = index_closest_trajectorypoint;
+        dragit.evt.call("new_focus", dragit.statemachine.current_id);
       }
 
-
-      dragit.evt.call("drag")
+      dragit.evt.call("drag");
 
     })
     .on("dragend", function(d,i) {
@@ -570,7 +561,6 @@ dragit.utils.translateAlong = function(path, duration) {
 }
 
 })()
-
 
 Array.prototype.equals = function (b) {
     var a = this;
