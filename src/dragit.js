@@ -551,13 +551,32 @@ dragit.utils.animateTrajectory = function(path, start_time, duration) {
 
 // Credits: http://bl.ocks.org/mbostock/1705868
 dragit.utils.translateAlong = function(path, duration) {
-  var l = path.getTotalLength();
+  var l = path.node().getTotalLength();
   return function(d, i, a) {
     return function(t) {
-      var p = path.getPointAtLength(t * l);
+      var p = path.node().getPointAtLength(t * l);
       return "translate(" + p.x + "," + p.y + ")";
     };
   };
+}
+
+dragit.utils.getSubPath = function(start_time, end_time) {
+
+  console.log(dragit.statemachine.current_id)
+
+  var sub_data = dragit.data[dragit.statemachine.current_id].filter(function(d, i) {
+    return i >= start_time && i <= end_time;
+  });
+
+  dragit.subTrajectory = vars.gDragit.selectAll(".subTrajectory")
+                  .data([sub_data])
+                .enter().append("path")
+                  .attr("class", "subTrajectory")
+                  .style({'stroke': 'black', 'stroke-width': 4})
+                  .attr("d", vars.svgLine.interpolate(dragit.custom.line[vars.type_trajectory].interpolate));
+
+  return dragit.subTrajectory;
+
 }
 
 })()

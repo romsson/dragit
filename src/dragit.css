@@ -1,4 +1,4 @@
-path.lineTrajectory {
+path.lineTrajectory, path.subTrajectory {
   stroke-width: 2;
   stroke-opacity: 0.2;
   opacity: 0.5;
