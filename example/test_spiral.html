@@ -18,7 +18,7 @@
 <div id="viz"></div>
 <p style="clear:both"></p>
 <div id="slider"></div>
-<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');"> Show complete trajectory</label>
+<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');" checked> Show complete trajectory</label>
 <script>
 
 // Credits for original spiral code: http://bl.ocks.org/syntagmatic/3543186
@@ -81,43 +81,35 @@ var timecube = d3.range(nb_points).map(function(d, i) {
 	});
 })
 
-var points = svg.selectAll(".points")
+var gPoints = svg.selectAll(".points")
 								.data(timecube)
 							.enter()
-								.append("circle")
-								.attr("class", "points");
+								.append("g")
+								.on("mouseenter", function(d, i) {
+							  	dragit.utils.animateTrajectory(dragit.trajectory.display(d, i), 0, 1000)
+							  })
+							  .on("mouseleave", dragit.trajectory.remove)
+							  .call(dragit.object.activate)
+								.attr("transform", function(d) {
+									return "translate("+d[current_time].x+", "+d[current_time].y+")";
+								});
 
-points.attr({cx: function(d) { 
-									return d[current_time].x; 
-						}, 
-						 cy: function(d) { 
-						 			return d[current_time].y;
-						}, 
-						 r:10, 
-						 fill:"red"
-						})
-		  .on("mouseenter", function(d, i) {
-		  	dragit.utils.animateTrajectory(dragit.trajectory.display(d, i), 0, 1000)
-		  })
-		  .on("mouseleave", dragit.trajectory.remove)
-		  .call(dragit.object.activate);
+gPoints.append("circle")
+			.attr("class", "points")
+			.attr({r:10, fill:"red"})
+
 
 function update(v, t) {
 
 	var previous_current = dragit.time.currentl
 	dragit.time.current = v || dragit.time.current;
 
+	gPoints.transition()
+	.duration(200)
+	.attr("transform", function(d) {
+		return "translate("+d[dragit.time.current].x+", "+d[dragit.time.current].y+")";
+	})
 
-  // Calculate path between the previous and current time point
-
-	dragit.utils.getSubPath(previous_current, dragit.time.current)
-
-  // dragit.utils.translateAlong 
-
-	points.transition().duration(200)
-				.attr({cx: function(d) { return d[dragit.time.current].x}, 
-					     cy: function(d) { return d[dragit.time.current].y}
-				})
 }
 
 function init() {
@@ -134,6 +126,7 @@ function init() {
   dragit.time = {min:0, max:time_steps, step:1, current: current_time}
   dragit.evt.register("update", update);
 
+	dragit.trajectory.toggleAll('selected');
 	dragit.utils.slider("#slider")
 }
 
