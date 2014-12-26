@@ -183,7 +183,7 @@ dragit.object.activate = function(d, i) {
     .on("dragstart", function(d, i) {
 
       dragit.statemachine.setState("dragstart");
-
+      
       if (vars.dev) console.log("[dragstart]", d, i)
 
       dragit.trajectory.index_closest_trajectorypoint = -1;
@@ -228,19 +228,19 @@ dragit.object.activate = function(d, i) {
 
       dragit.time.previous = dragit.time.current;
       dragit.statemachine.setState("drag");
-      
+
+      var mousepoint = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
+
       if (vars.dev) console.log("[drag]", d, i)
 
       switch(dragit.mouse.dragging) {
 
         case "free":
 
-          d.x += d3.event.dx
-          d.y += d3.event.dy
-
           d3.select(this).attr("transform", function(d,i) {
-            return "translate(" + [ d.x,d.y ] + ")";
+            return "translate(" + [mousepoint[0], mousepoint[1]] + ")";
           })  
+
           return;
           break;
 
@@ -261,7 +261,6 @@ dragit.object.activate = function(d, i) {
       var list_distances_datapoint = [], list_distances_trajectorypoint = [], list_times = [];
       var list_closest_trajectorypoint = [], list_closest_datapoint = [];
 
-      var mousepoint = [d3.event.x+dragit.object.offsetX, d3.event.y+dragit.object.offsetY];
 
       var new_id = -1;
 
@@ -358,15 +357,13 @@ dragit.object.activate = function(d, i) {
       switch(dragit.mouse.dragging) {
 
         case "free":
-          d.x = 0;
-          d.y = 0;
 
           d3.select(this).transition()
                          .duration(200)
                          .attr("transform", function(d,i) {
-                            return "translate(" + [ d.x, d.y ] + ")"
+                            return "translate(" + [dragit.data[dragit.statemachine.current_id][dragit.time.current][0], dragit.data[dragit.statemachine.current_id][dragit.time.current][1]] + ")"
                           })
-                         //.attr("cx", q[0])
+                         //.attr_staticr("cx", q[0])
                          //.attr("cy", q[1])
           break;
 
