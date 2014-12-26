@@ -29,7 +29,7 @@
   dragit.data = [];
 
   dragit.statemachine = {current_state: "idle", current_id: -1};
-  dragit.time = {min: 0, max: 0, current: 0, step: 1};
+  dragit.time = {min: 0, max: 0, current: 0, step: 1, previous: 0};
   dragit.mouse = {scope: "focus"};
   dragit.object = {update: function() {}, offsetX: 0, offsetY: 0};
   dragit.evt = {register: function() {}, call: function() {}};
@@ -77,7 +77,7 @@ dragit.evt.call = function(evt, a) {
   }
 
   vars.evt[evt].forEach(function(e) {
-    if(vars.dev) console.log("update", e)
+    if(vars.dev) console.log("[calling evt]", e)
     if(typeof(e[0]) != "undefined")
       e[0](a)
   });
@@ -226,6 +226,7 @@ dragit.object.activate = function(d, i) {
     })
     .on("drag", function(d,i) {
 
+      dragit.time.previous = dragit.time.current;
       dragit.statemachine.setState("drag");
       
       if (vars.dev) console.log("[drag]", d, i)
@@ -433,7 +434,8 @@ dragit.utils.slider = function(el, play_button) {
                 .property("max", dragit.time.max)
                 .property("value", dragit.time.current)
                 .property("step", 1)
-                .on("input", function() { 
+                .on("input", function() {
+                  dragit.time.previous = dragit.time.current;
                   dragit.time.current = parseInt(this.value)-dragit.time.min;
                   dragit.evt.call("update", this.value, 0); 
                 })
@@ -564,7 +566,7 @@ dragit.utils.getSubPath = function(start_time, end_time) {
 
   console.log(dragit.statemachine.current_id)
 
-  var sub_data = dragit.data[dragit.statemachine.current_id].filter(function(d, i) {
+  sub_data = dragit.data[dragit.statemachine.current_id].filter(function(d, i) {
     return i >= start_time && i <= end_time;
   });
 
