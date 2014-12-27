@@ -363,8 +363,6 @@ dragit.object.activate = function(d, i) {
                          .attr("transform", function(d,i) {
                             return "translate(" + [dragit.data[dragit.statemachine.current_id][dragit.time.current][0], dragit.data[dragit.statemachine.current_id][dragit.time.current][1]] + ")"
                           })
-                         //.attr_staticr("cx", q[0])
-                         //.attr("cy", q[1])
           break;
 
         case "horizontal":
@@ -444,6 +442,15 @@ dragit.utils.slider = function(el, play_button) {
   dragit.evt.register("update", function() {
     d3.select(".slider-time").property("value", dragit.time.current);
   });
+}
+
+dragit.utils.sliderUpdate = function(el) {
+  d3.select(el).select("#max-time")
+               .text(dragit.time.max);
+
+  d3.select(el).select(".slider-time")
+              .property("max", dragit.time.max)
+              .property("value", dragit.time.current)
 }
 
 // Calculate the centroid of a given SVG element
