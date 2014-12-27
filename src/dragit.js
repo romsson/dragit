@@ -14,8 +14,8 @@
       container: null,
       accessor_x: function(d) {return d[0]; },
       accessor_y: function(d) {return d[1]; },
-      type_focus: 'default',
-      type_trajectory: 'default'
+      custom_focus: 'default',
+      custom_trajectory: 'default'
     };
 
   dragit.custom = {};
@@ -49,7 +49,7 @@
   vars.svgLine = d3.svg.line()
                       .x(vars.accessor_x)
                       .y(vars.accessor_y)
-                      .interpolate(dragit.custom.line[vars.type_trajectory].interpolate);
+                      .interpolate(dragit.custom.line[vars.custom_trajectory].interpolate);
 
 
 dragit.evt.register = function(evt, f, d) {
@@ -109,13 +109,13 @@ dragit.trajectory.display = function(d, i, c) {
                   .data([dragit.data[i]])
                 .enter().append("path")
                   .attr("class", "lineTrajectory")
-                  .attr("d", vars.svgLine.interpolate(dragit.custom.line[vars.type_trajectory].interpolate));
+                  .attr("d", vars.svgLine.interpolate(dragit.custom.line[vars.custom_trajectory].interpolate));
 
   dragit.pointTrajectory  = vars.gDragit.selectAll(".pointTrajectory")
                     .data(dragit.data[i])
-                  .enter().append(dragit.custom.point[vars.type_focus].mark)
+                  .enter().append(dragit.custom.point[vars.custom_focus].mark)
                     .attr("class", "pointTrajectory")
-                    .attr(dragit.custom.point[vars.type_focus].attr);
+                    .attr(dragit.custom.point[vars.custom_focus].attr);
 
   return dragit.trajectory.displayUpdate(d, i);
 }
@@ -130,7 +130,7 @@ dragit.trajectory.displayUpdate = function(d, i) {
   dragit.pointTrajectory.data(dragit.data[i])
                     .transition()
                     .duration(0)
-                    .attr(dragit.custom.point[vars.type_focus].attr);
+                    .attr(dragit.custom.point[vars.custom_focus].attr);
 
   return dragit.lineTrajectory;
 }
@@ -208,15 +208,15 @@ dragit.object.activate = function(d, i) {
                                        .attr("class", "lineClosestPoint");
 
       // Create the point interesting guide line and closest trajectory
-      dragit.pointClosestTrajectory = vars.gDragit.append(dragit.custom.point[vars.type_focus].mark)
-                                              .attr(dragit.custom.point[vars.type_focus].attr_static)
+      dragit.pointClosestTrajectory = vars.gDragit.append(dragit.custom.point[vars.custom_focus].mark)
+                                              .attr(dragit.custom.point[vars.custom_focus].attr_static)
                                               .attr("class", "pointClosestTrajectory")
                                               .attr("cx", mousepoint[0])
                                               .attr("cy", mousepoint[1]);
 
       // Create the focus that follows the mouse cursor
-      dragit.focusGuide = vars.gDragit.append(dragit.custom.point[vars.type_focus].mark)
-                                      .attr(dragit.custom.point[vars.type_focus].attr_static)
+      dragit.focusGuide = vars.gDragit.append(dragit.custom.point[vars.custom_focus].mark)
+                                      .attr(dragit.custom.point[vars.custom_focus].attr_static)
                                       .attr("class", "focusGuide")
                                       .attr("cx", mousepoint[0])
                                       .attr("cy", mousepoint[1]);
@@ -579,7 +579,7 @@ dragit.utils.getSubPath = function(start_time, end_time) {
                 .enter().append("path")
                   .attr("class", "subTrajectory")
                   .style({'stroke': 'black', 'stroke-width': 4})
-                  .attr("d", vars.svgLine.interpolate(dragit.custom.line[vars.type_trajectory].interpolate));
+                  .attr("d", vars.svgLine.interpolate(dragit.custom.line[vars.custom_trajectory].interpolate));
 
   return dragit.subTrajectory;
 
