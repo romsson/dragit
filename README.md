@@ -1,10 +1,9 @@
 dragit.js
 ==========
 
-**dragit** is an extension to the **[D3.js](http://d3js.org/)** library to enable the [direct manipulation](https://en.wikipedia.org/wiki/Direct_manipulation_interface) of SVG data visualization. It is designed to be seamlessly included in an existing **D3** visualization and is aimed to be highly customizable.
+**dragit** is an extension to the **[D3.js](http://d3js.org/)** library to enable the [direct manipulation](https://en.wikipedia.org/wiki/Direct_manipulation_interface) of SVG data visualization. It is designed to be seamlessly included in an existing **D3** visualization. It is also designed to be highly customizable and extensible.
 
 ### Examples
-
 
 * Single point drag ([demo](http://romsson.github.io/dragit/example/test_single_point.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_single_point.html))
 * Multiple points drag ([demo](http://romsson.github.io/dragit/example/test_multi_points.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_multi_points.html))
@@ -52,10 +51,9 @@ var timecube = d3.range(nb_data_points).map(function(d, i) {
 
 #### Other Ways to Create a  Cube
 
-* Using SVG shapes (see the Spiral example)
-* Use a non-temporal data structure (e.g. paths in a tree)
-* Using a combinatory space (see the World Cup Brackets example)
-* Using any other combinatory space
+* Sampling a SVG shapes (see the spiral example)
+* Browsing paths of a tree data structure (see the radial tree example or the World Cup Brackets example)
+* Or more generally, use any other combinatorial space.
 
 #### Core Concepts
 
@@ -64,7 +62,7 @@ Here are a few concepts that are important to grasp:
 * **Object (of Interest)**: the graphical marks (SVG node, div, ..) that can be dragged and will indirectly update the visualization.
 * **Focus**: the visual element that is being dragged (can be a simplified simplified such as into a point or shadow).
 * **Trajectory**: the visual path along which the **Object of Interest** can be dragged. It is represented as a line.
-* **Data points**: series of points the focus can reach along its trajectory.
+* **Data points**: series of points the focus can reach on the trajectory.
 
 Here are the names using for the various objects:
 
@@ -119,15 +117,16 @@ The object of interest, the handle the user interacts with to start the interact
 
 ### dragit.mouse
 
+
 #### dragit.mouse.dragging
 
 Below are the different `drag-type` strategies:
 
-* `horizontal`
-* `vertical`
-* `curvilinear`
+* `horizontal` or `vertical`
 * `flow` flow dragging method. Usually well suited for background * motion.
 * `free` dragging with no constraints on the activated element, returns to its original position
+* `curvilinear` (not implemented)
+
 
 #### dragit.mouse.scope
 
@@ -140,7 +139,7 @@ Below are the different `drag-type` strategies:
 
 ### dragit.trajectory
 
-Handles trajectories 
+Handles trajectories drawing.
 
 * `dragit.trajectory.display(class)`                   : displays the currently dragged element's trajectory
 * `dragit.trajectory.displayUpdate`                    : update the trajectory
@@ -168,7 +167,18 @@ Events management mechanism to register and trigger functions.
 * `dragit.statemachine.setState(event)`                : sets the current state of the state machine
 * `dragit.statemachine.getState()`                     : gets the current state of the state machine
 
+
+### dragit.custom
+
+Define the type of design for the focus point `vars.custom_focus` (default) and trajectories `vars.custom_trajectory` (default).
+
+* `dragit.custom.line`
+* `dragit.custom.point`
+
+
 ### dragit.utils
+
+A collection of useful functions for path calculation and animation.
 
 * `dragit.utils.animateTrajectory(path, star_time, duration)`  : animates the path from start_time and with a given duration
 * `dragit.utils.closestPoint`
@@ -177,7 +187,3 @@ Events management mechanism to register and trigger functions.
 * `dragit.utils.translateAlong(path, duration)`
 * `dragit.utils.slider(el, play_button)`  : automatically creates a slider to browse all the time points
 
-### dragit.custom
-
-* `dragit.custom.line`
-* `dragit.custom.point`
