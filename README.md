@@ -5,10 +5,16 @@ dragit.js
 
 ### Examples
 
+#### Simple 
+
 * Single point drag ([demo](http://romsson.github.io/dragit/example/test_single_point.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_single_point.html))
 * Multiple points drag ([demo](http://romsson.github.io/dragit/example/test_multi_points.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_multi_points.html))
 * Spiral shape ([demo](http://romsson.github.io/dragit/example/test_spiral.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_spiral.html))
 * Radial tree ([demo](http://romsson.github.io/dragit/example/test_radial_tree.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_radial_tree.html))
+* Pan and zoom ([demo](http://romsson.github.io/dragit/example/test_pan_zoom.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_pan_zoom.html))
+
+#### Complex
+
 * Interactive soccer bracket ([demo](http://romain.vuillemot.net/projects/worldcup14/))
 * A Re-Recreation of Gapminder's Wealth of Nations ([demo](http://romsson.github.io/dragit/example/nations.html) | [source](https://github.com/romsson/dragit/blob/master/example/nations.html))
 

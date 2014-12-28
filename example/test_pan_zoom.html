@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>dragit example with pan & zoom</title>
+  <link href="../src/dragit.css" rel="stylesheet"/>
+  <script src="../lib/d3.v3.js"></script>
+  <script src="../src/dragit.js"></script>
+<style>
+
+body {
+  position: relative;
+  width: 960px;
+}
+
+svg {
+  font: 10px sans-serif;
+  shape-rendering: crispEdges;
+}
+
+rect {
+  fill: white;
+  opacity: .3
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #ddd;
+}
+
+button {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+}
+
+</style>
+</head>
+<body>
+<div id="viz"></div>
+<p style="clear:both"></p>
+<div id="slider"></div>
+<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');" checked> Show complete trajectory</label>
+<script>
+
+// Based on http://bl.ocks.org/mbostock/3892928
+
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var svg = d3.select("#viz")
+		.append("svg")
+			.attr({width: width, height: height})
+
+var x = d3.scale.linear()
+    .domain([-width / 2, width / 2])
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .domain([-height / 2, height / 2])
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+    .tickSize(-height);
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(5)
+    .tickSize(-width);
+
+var zoom = d3.behavior.zoom()
+    .x(x)
+    .y(y)
+    .scaleExtent([1, 10])
+    .on("zoom", zoomed);
+
+var gSvg = svg.append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .call(zoom);
+
+gSvg.append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
+gSvg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+gSvg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
+
+d3.select("button").on("click", reset);
+
+function zoomed() {
+  gSvg.select(".x.axis").call(xAxis);
+  gSvg.select(".y.axis").call(yAxis);
+  gDragit.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+}
+
+function reset() {
+  d3.transition().duration(750).tween("zoom", function() {
+    var ix = d3.interpolate(x.domain(), [-width / 2, width / 2]),
+        iy = d3.interpolate(y.domain(), [-height / 2, height / 2]);
+    return function(t) {
+      zoom.x(x.domain(ix(t))).y(y.domain(iy(t)));
+      zoomed();
+    };
+  });
+}
+
+var time_steps = 3, nb_points = 3, current_time = 0;
+
+var timecube = [[{x: width/3, y: height/2, t: 0}, {x: width/2, y: 2*height/3, t: 1}, {x: 2*width/3, y: height/2, t: 1}]];
+
+
+var gDragit = gSvg.append("g").attr("class", "gDragit");
+
+var gPoints = gDragit.selectAll(".points")
+								.data(timecube)
+							.enter()
+								.append("g")
+								.on("mouseenter", function(d, i) {
+							  	dragit.trajectory.display(d, i);
+							  })
+							  .on("mouseleave", dragit.trajectory.remove)
+							  .call(dragit.object.activate)
+								.attr("transform", function(d) {
+									return "translate("+d[dragit.time.current].x+", "+d[dragit.time.current].y+")";
+								})
+								.on("mousemove", function() {
+
+								})
+
+gPoints.append("circle")
+			.attr("class", "points")
+			.attr({r:10, fill:"red"})
+
+var color = d3.scale.linear()
+    .domain([0, 20])
+    .range(["black", "red"]);
+
+function update(v, t) {
+  dragit.time.current = v || dragit.time.current;
+
+  gPoints.transition().duration(200)
+								.attr("transform", function(d) {
+									return "translate("+d[dragit.time.current].x+", "+d[dragit.time.current].y+")";
+								})
+
+}
+
+function init() {
+
+	dragit.init(".gDragit");
+
+	// Convert the timecube for dragit
+  dragit.data = timecube.map(function(d, i) { 
+  	return d.map(function(e, i) { 
+  		return [e.x, e.y]; 
+  	}) 
+  });
+  
+  dragit.time = {min:0, max: 3, step:1, current: current_time}
+  dragit.evt.register("update", update);
+
+  dragit.statemachine.current_id = 0;
+
+	dragit.utils.slider("#slider")
+	dragit.trajectory.toggleAll('selected');
+}
+
+init();
+
+</script>
+</body>
+</html>
