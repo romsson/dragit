@@ -111,9 +111,16 @@ dragit.time = {min: d3.min(data, function(d) { return parseInt(d[i]);}),
 
 ### dragit.object
 
-The object of interest, the handle the user interacts with to start the interaction and thus start the time change.
+The object of interest, or the handle the user interacts with to start the interaction and thus start the time change.
 
 * `dragit.object.activate` activates dragging for the selected element. It creates the necessary mouse events (drag). Example: `.call(dragit.object.activate)`.
+
+
+#### dragit.object.dragging
+
+* `absolute (default)` does not translate the current chart 
+* `relative` does translate the current chart to keep it centered around the current focus point
+
 
 ### dragit.mouse
 
