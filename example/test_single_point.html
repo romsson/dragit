@@ -19,19 +19,18 @@ var margin = {top: 20, right: 20, bottom: 20, left: 20},
     width = 900 - margin.right - margin.left,
     height = 500 - margin.top - margin.bottom;
 
-var time_steps = 20, nb_points = 1, current_time = Math.floor(Math.random()*time_steps);
+var nb_points = 1;
 
-var config = {
-	time: {min: 0, max: 20, step: 1, current: 0}		
-}
+dragit.time = {min: 0, max: 20, step: 1, current: 0};
+dragit.time.current = Math.floor(Math.random()*dragit.time.max);
 
 var timecube = d3.range(nb_points).map(function(d, i) {
-	return d3.range(time_steps).map(function(e, j) { 
+	return d3.range(dragit.time.max).map(function(e, j) { 
 		return {x: j, y: Math.random(), t: j};
 	});
 })
 
-var xScale = d3.scale.linear().domain([0, time_steps]).range([margin.left, width]);
+var xScale = d3.scale.linear().domain([0, dragit.time.max]).range([margin.left, width]);
 var yScale = d3.scale.linear()
 					 .domain([0, d3.max(timecube, function(d) { 
 							return d3.max(d, function(e) { 
@@ -45,53 +44,42 @@ var svg = d3.select("#viz")
 		.append("svg")
 			.attr({width: width, height: height})
 
-var points = svg.selectAll(".points")
+var gPoints = svg.selectAll(".points")
 								.data(timecube)
 							.enter()
-								.append("circle")
-								.attr("class", "points");
+								.append("g")
+							  .on("mouseenter", dragit.trajectory.display)
+							  .on("mouseleave", dragit.trajectory.remove)
+							  .call(dragit.object.activate)
+								.attr("transform", function(d) {
+									return "translate("+xScale(d[dragit.time.current].x)+", "+yScale(d[dragit.time.current].y)+")";
+								});
 
-// All other focus points
-points.attr({cx: function(d) { 
-									return xScale(d[current_time].x); 
-						}, 
-						 cy: function(d) { 
-						 			return yScale(d[current_time].y)
-						}, 
-						 r:10, 
-						 fill:"red"
-						})
-		  .on("mouseenter", dragit.trajectory.display)
-		  .on("mouseleave", dragit.trajectory.remove)
-		  .call(dragit.object.activate);
+gPoints.append("circle")
+			.attr("class", "points")
+			.attr({r:10, fill:"red"})
 
-// Time update callback function
 function update(v, t) {
-	dragit.time.current = v || dragit.time.current;
 
-	points.transition().duration(100)
-				.attr({cx: function(d) { return xScale(d[dragit.time.current].x)}, 
-					     cy: function(d) { return yScale(d[dragit.time.current].y)}
-				})
+	dragit.time.current = v || dragit.time.current;
+	
+	gPoints.transition().duration(100)
+								.attr("transform", function(d) {
+									return "translate("+xScale(d[dragit.time.current].x)+", "+yScale(d[dragit.time.current].y)+")";
+								});
 }
 
 function init() {
 
 	dragit.init("svg");
 
-	d3.select("#min-time").text(config.time.min);
-	d3.select("#max-time").text(config.time.max);
-
-	// Convert the timecube for dragit
   dragit.data = timecube.map(function(d, i) { 
   	return d.map(function(e, i) { 
   		return [xScale(e.x), yScale(e.y)]; 
   	}) 
   });
   
-  dragit.time = {min:0, max:time_steps, step:1, current: current_time}
   dragit.evt.register("update", update);
-
   dragit.utils.slider("#slider", true)
 }
 
