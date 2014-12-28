@@ -31,7 +31,7 @@
   dragit.statemachine = {current_state: "idle", current_id: -1};
   dragit.time = {min: 0, max: 0, current: 0, step: 1, previous: 0};
   dragit.mouse = {scope: "focus"};
-  dragit.object = {update: function() {}, offsetX: 0, offsetY: 0};
+  dragit.object = {update: function() {}, offsetX: 0, offsetY: 0, dragging: "absolute"};
   dragit.evt = {register: function() {}, call: function() {}};
 
   dragit.custom.line = {
@@ -168,6 +168,7 @@ dragit.object.activate = function(d, i) {
 
   if (vars.dev) console.log("[activate]", d, i)
 
+
   d3.select(this)[0][0].node().addEventListener("mouseenter", function() {
     if(dragit.statemachine.current_state == "idle") {
       dragit.statemachine.setState("mouseenter");
@@ -182,6 +183,7 @@ dragit.object.activate = function(d, i) {
   d.call(d3.behavior.drag()
     .on("dragstart", function(d, i) {
 
+      d3.event.sourceEvent.stopPropagation();
       dragit.statemachine.setState("dragstart");
       
       if (vars.dev) console.log("[dragstart]", d, i)
@@ -226,6 +228,7 @@ dragit.object.activate = function(d, i) {
     })
     .on("drag", function(d,i) {
 
+      d3.event.sourceEvent.stopPropagation();
       dragit.time.previous = dragit.time.current;
       dragit.statemachine.setState("drag");
 
@@ -332,6 +335,13 @@ dragit.object.activate = function(d, i) {
       dragit.focusGuide.attr("cx", mousepoint[0])
                        .attr("cy", mousepoint[1]);
 
+
+      if(dragit.object.dragging == "relative") {
+         svg.style("cursor", "none")
+         // console.log("relative", list_closest_trajectorypoint[index_closest_trajectorypoint][0])
+
+      }
+
       // We have a new time point
       if(dragit.time.current != new_time || dragit.trajectory.current_id != index_closest_trajectorypoint) {
         dragit.trajectory.index_closest_trajectorypoint = index_closest_trajectorypoint;
@@ -350,6 +360,7 @@ dragit.object.activate = function(d, i) {
     })
     .on("dragend", function(d,i) {
 
+      d3.event.sourceEvent.stopPropagation();
       dragit.statemachine.setState("dragend");
       
       if (vars.dev) console.log("[dragend]", d, i)
