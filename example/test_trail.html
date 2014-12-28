@@ -40,7 +40,9 @@ var gPoints = svg.selectAll(".points")
 									return "translate("+d[current_time].x+", "+d[current_time].y+")";
 								})
 								.on("mousemove", function() {
-									 draw_trail({x:d3.event.clientX, y:d3.event.clientY})
+									draw_trail({x:d3.event.clientX, y:d3.event.clientY})
+									timecube[0].push({x:d3.event.clientX, y:d3.event.clientY})
+									update();
 								})
 
 gPoints.append("circle")
@@ -50,7 +52,6 @@ gPoints.append("circle")
 var trail_duration = 1000;
 var previous_x = width/2;
 var previous_y = height/2;
-
 
 var color = d3.scale.linear()
     .domain([0, 20])
@@ -73,7 +74,12 @@ function draw_trail(d) {
 	  previous_y = d.y;
 }
 
-function update(v, t) {
+function update() {
+
+	dragit.time.max = timecube[0].length;
+	dragit.time.current = dragit.time.max;
+
+	dragit.utils.sliderUpdate("#slider");
 }
 
 function init() {

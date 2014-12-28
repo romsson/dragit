@@ -101,14 +101,35 @@ gPoints.append("circle")
 
 function update(v, t) {
 
-	var previous_current = dragit.time.currentl
+	var previous_current = dragit.time.current;
 	dragit.time.current = v || dragit.time.current;
 
+
+
+  // Calculate path between the previous and current time point
+  // Duration should be proportional to the distance
+
+	//
+
+  // dragit.utils.translateAlong 
+
+ // Start by playing the current complete trajectory
+
+ //
+
+ // Find sub-trajectory
+	dragit.statemachine.current_id = 0;
+
+console.log("udpate", previous_current, dragit.time.current, dragit.time.previous)
+ // Path between
+
+if(dragit.time.current != dragit.time.previous) {
+	console.log("here", dragit.utils.getSubPath(previous_current, dragit.time.current))
 	gPoints.transition()
-	.duration(200)
-	.attr("transform", function(d) {
-		return "translate("+d[dragit.time.current].x+", "+d[dragit.time.current].y+")";
-	})
+      .duration(1000)
+      .attrTween("transform", dragit.utils.getSubPath(previous_current, dragit.time.current))
+}
+
 
 }
 
