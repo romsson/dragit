@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<title>dragit example with a bar chart</title>
+<link href="../src/dragit.css" rel="stylesheet"/>
 <style>
   .bar {
     fill: steelblue;
@@ -48,8 +50,6 @@
     /* display: none; */
   }
 </style>
-  <title>dragit example with a bar chart</title>
-<link href="../src/dragit.css" rel="stylesheet"/>
 <body>
 <script src="../lib/d3.v3.js"></script>
 <script src="../src/dragit.js"></script>
@@ -112,7 +112,6 @@ var margin = {top: 20, right: 20, bottom: 20, left: 20},
     width = 900 - margin.right - margin.left,
     height = 500 - margin.top - margin.bottom;
 
-init();
 
 // Create the bar chart
 svg.append("g")
@@ -134,16 +133,16 @@ bars = svg.selectAll(".bar")
     .data(timecube)
       .enter();
 
-  bars.append("rect")
-    .attr("class", "bar")
-    .attr("x", function(d, i) { return x(i); })
-    .attr("width", x.rangeBand())
-    .attr("y", function(d) { return y(d[dragit.time.current].y); })
-    .attr("height", function(d) { return height - y(d[dragit.time.current].y); })
-    .attr("opacity", 1)
-    .on("mouseenter", dragit.trajectory.display)
-    .on("mouseout", dragit.trajectory.remove)
-    .call(dragit.object.activate)
+bars.append("rect")
+  .attr("class", "bar")
+  .attr("x", function(d, i) { return x(i); })
+  .attr("width", x.rangeBand())
+  .attr("y", function(d) { return y(d[dragit.time.current].y); })
+  .attr("height", function(d) { return height - y(d[dragit.time.current].y); })
+  .attr("opacity", 1)
+  .on("mouseenter", dragit.trajectory.display)
+  .on("mouseout", dragit.trajectory.remove)
+  .call(dragit.object.activate)
 
 function update(t, duration) {
 
@@ -151,15 +150,32 @@ function update(t, duration) {
 
   dragit.time.current = t || dragit.time.current;
 
+console.log(dragit.time.current)
+
   svg.selectAll(".bar")
     .data(timecube)
       .transition().duration(duration)
-      .attr("y", function(d) { return y(d[dragit.time.current].y); })
+      .attr("y", function(d) {
+        console.log("ddd",d )
+       return y(d[dragit.time.current].y); 
+     })
       .attr("height", function(d) { return height - y(d[dragit.time.current].y); })
 
   d3.select("#slider-time").property("value", dragit.time.current);
 
 }
+
+function hide_barchart() {
+  svg.selectAll(".bar").style("opacity", .1)
+
+}
+
+function show_barchart() {
+
+  svg.selectAll(".bar").style("opacity", 1)
+
+}
+
 
 function init() {
 
@@ -171,18 +187,21 @@ function init() {
     }) 
   });
 
+  dragit.evt.register("dragstart", hide_barchart);
+  dragit.evt.register("dragend", show_barchart);
+
   dragit.evt.register("update", update);
 
-  d3.selectAll("#min-time").text(0)
-  d3.selectAll("#max-time").text(dragit.time.step)
-  d3.select("#slider-time").property("value", dragit.time.current);
+  dragit.utils.slider("#slider", true)
 }
 
+
+init();
 
 </script>
 
 <p style="clear:both"></p>
-0 <input type="range" name="points" min="0" max="20" step="1" value="0" id="slider-time" oninput="update(parseInt(this.value), 100)"> 20
+<div id="slider"></div>
 <label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll();"> Show trajectories</label>
 </body>
 </html>
