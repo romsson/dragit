@@ -135,7 +135,7 @@ function find_node_by_name(name) {
 //})
 
 // Root to leaf traverse
-var root_leaf_paths = traverse(root, ["flare"], [])
+var root_leaf_paths = traverse(root, [root.name], [])
 
 var time_steps = root_leaf_paths[0].length;
 

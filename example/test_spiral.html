@@ -98,26 +98,11 @@ gPoints.append("circle")
 			.attr("class", "points")
 			.attr({r:10, fill:"red"})
 
-
 function update(v, t) {
 
 	var previous_current = dragit.time.current;
 	dragit.time.current = v || dragit.time.current;
 
-
-
-  // Calculate path between the previous and current time point
-  // Duration should be proportional to the distance
-
-	//
-
-  // dragit.utils.translateAlong 
-
- // Start by playing the current complete trajectory
-
- //
-
- // Find sub-trajectory
 	dragit.statemachine.current_id = 0;
 
 console.log("udpate", previous_current, dragit.time.current, dragit.time.previous)
@@ -137,7 +122,6 @@ function init() {
 
 	dragit.init("svg");
 
-	// Convert the timecube for dragit
   dragit.data = timecube.map(function(d, i) { 
   	return d.map(function(e, i) { 
   		return [e.x, e.y]; 
