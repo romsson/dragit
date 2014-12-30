@@ -199,7 +199,7 @@ dragit.object.activate = function(d, i) {
         case "horizontal":
       }
 
-      var mousepoint = d3.mouse(this);
+      var mousepoint = [d3.mouse(this)[0]+dragit.object.offsetX, d3.mouse(this)[1]+dragit.object.offsetY];
 
       // Create the line guide to closest trajectory
       dragit.lineClosestTrajectory = vars.gDragit.append("line")

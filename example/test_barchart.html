@@ -53,6 +53,12 @@
 <body>
 <script src="../lib/d3.v3.js"></script>
 <script src="../src/dragit.js"></script>
+
+<p style="clear:both"></p>
+<div id="viz"></div>
+<div id="slider"></div>
+<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll();"> Show trajectories</label>
+
 <script>
 
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -79,17 +85,18 @@ var yAxis = d3.svg.axis()
     .orient("left")
     .ticks(10);
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#viz").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var nb_points = 12;
-
 var config = {
   time: {min:0, max:20, step:1, current:0}    
 }
+
+
+var nb_points = 10;
 
 dragit.time.current = 0;
 
@@ -112,6 +119,7 @@ var margin = {top: 20, right: 20, bottom: 20, left: 20},
     width = 900 - margin.right - margin.left,
     height = 500 - margin.top - margin.bottom;
 
+dragit.object.offsetX = margin.left;
 
 // Create the bar chart
 svg.append("g")
@@ -146,17 +154,14 @@ bars.append("rect")
 
 function update(t, duration) {
 
-  console.log(dragit.time.current)
+  console.log(dragit.time.current, t)
 
   dragit.time.current = t || dragit.time.current;
-
-console.log(dragit.time.current)
 
   svg.selectAll(".bar")
     .data(timecube)
       .transition().duration(duration)
       .attr("y", function(d) {
-        console.log("ddd",d )
        return y(d[dragit.time.current].y); 
      })
       .attr("height", function(d) { return height - y(d[dragit.time.current].y); })
@@ -167,19 +172,17 @@ console.log(dragit.time.current)
 
 function hide_barchart() {
   svg.selectAll(".bar").style("opacity", .1)
-
 }
 
 function show_barchart() {
-
   svg.selectAll(".bar").style("opacity", 1)
-
 }
-
 
 function init() {
 
   dragit.init("svg");
+
+  dragit.time = {min:0, max:config.time.max, step:1};
 
   dragit.data = timecube.map(function(d, i) { 
     return d.map(function(e, i) { 
@@ -192,16 +195,11 @@ function init() {
 
   dragit.evt.register("update", update);
 
-  dragit.utils.slider("#slider", true)
+  dragit.utils.slider("#slider")
 }
-
 
 init();
 
 </script>
-
-<p style="clear:both"></p>
-<div id="slider"></div>
-<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll();"> Show trajectories</label>
 </body>
 </html>
