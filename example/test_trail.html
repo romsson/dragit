@@ -11,7 +11,7 @@
 <div id="viz"></div>
 <p style="clear:both"></p>
 <div id="slider"></div>
-<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');" checked> Show complete trajectory</label>
+<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggle('focus');" checked> Show complete trajectory</label>
 <script>
 
 var margin = {top: 20, right: 20, bottom: 20, left: 20},
@@ -78,6 +78,15 @@ function update() {
 
 	dragit.time.max = timecube[0].length;
 	dragit.time.current = dragit.time.max;
+
+  dragit.data = timecube.map(function(d, i) { 
+  	return d.map(function(e, i) { 
+  		return [e.x, e.y]; 
+  	}) 
+  });
+
+	dragit.trajectory.removeAll('selected');
+	dragit.trajectory.displayAll('selected');
 
 	dragit.utils.sliderUpdate("#slider");
 }
