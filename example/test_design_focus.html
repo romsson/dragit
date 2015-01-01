@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>dragit example using focus design</title>
+	<link href="../src/dragit.css" rel="stylesheet"/>
+	<script src="../lib/d3.v3.js"></script>
+	<script src="../src/dragit.js"></script>
+</head>
+<body>
+<div id="viz"></div>
+<p style="clear:both"></p>
+
+<style>
+
+.one-button::before{
+  position: absolute;
+  top:0;
+  left:0;
+  height: 25px;
+  width: 25px;
+  padding: 1em;
+  border-radius: 100%;
+  content: "";
+  background: rgb(125,126,125); /* Old browsers */ /* FF3.6+ */ /* Chrome,Safari4+ */ /* Chrome10+,Safari5.1+ */
+  background: -webkit-gradient(linear, 0 0, 0 100%, from(rgba(125,126,125,1)), to(rgba(14,14,14,1)));
+background: -webkit-linear-gradient(rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%);
+background: -moz-linear-gradient(rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%);
+background: -o-linear-gradient(rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%);
+background: linear-gradient(rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%); /* Opera 11.10+ */ /* IE10+ */ /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
+  z-index: 999;
+  box-shadow: 0px 0px 10px 2px #666;
+  border: 1px solid #000;
+}
+.one-button {
+  cursor: pointer;
+  color: #fff;
+  position: relative;
+  z-index: 99999;
+  top: 15px;
+  left: 15px;
+  margin-left: 55px;
+
+}
+.one-button:hover i{
+  color: #09c;
+}
+
+.one-button i{
+  color: #fff;
+  position: relative;;
+  z-index: 99999;
+  top: 15px;
+  left: 16px;
+}
+.one-button::after{
+  position: absolute;
+  top:5px;
+  left:5px;
+  content: "";
+  height: 15px;
+  width: 15px;
+  padding: 1em;
+  z-index:;
+  border-radius: 100%;
+  background: rgb(14,14,14); /* Old browsers */
+background: -webkit-gradient(linear, 0 0, 0 100%, from(rgba(14,14,14,1)), to(rgba(125,126,125,1)));
+background: -webkit-linear-gradient(rgba(14,14,14,1) 0%, rgba(125,126,125,1) 100%);
+background: -moz-linear-gradient(rgba(14,14,14,1) 0%, rgba(125,126,125,1) 100%);
+background: -o-linear-gradient(rgba(14,14,14,1) 0%, rgba(125,126,125,1) 100%);
+background: linear-gradient(rgba(14,14,14,1) 0%, rgba(125,126,125,1) 100%); /* FF3.6+ */ /* Chrome,Safari4+ */ /* Chrome10+,Safari5.1+ */ /* Opera 11.10+ */ /* IE10+ */ /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0e0e0e', endColorstr='#7d7e7d',GradientType=0 ); /* IE6-9 */
+  z-index: 999;
+    border: 1px solid #000;
+}
+
+</style>
+
+<link href='http://fonts.googleapis.com/css?family=Exo+2' rel='stylesheet' type='text/css'>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+<div id="slider"></div>
+<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');"> Show complete trajectory</label>
+
+<script>
+
+// Using social buttons CSS: http://codepen.io/BJack/pen/tusJC
+
+var margin = {top: 20, right: 20, bottom: 20, left: 20},
+    width = 900 - margin.right - margin.left,
+    height = 500 - margin.top - margin.bottom;
+
+var nb_points = 1;
+
+dragit.time = {min: 0, max: 20, step: 1, current: 0};
+dragit.time.current = Math.floor(Math.random()*dragit.time.max);
+
+var timecube = d3.range(nb_points).map(function(d, i) {
+	return d3.range(dragit.time.max).map(function(e, j) { 
+		return {x: j, y: Math.random(), t: j};
+	});
+})
+
+var xScale = d3.scale.linear().domain([0, dragit.time.max]).range([margin.left, width]);
+var yScale = d3.scale.linear()
+					 .domain([0, d3.max(timecube, function(d) { 
+							return d3.max(d, function(e) { 
+								return e.y; 
+							});
+						})
+					 ])
+					 .range([margin.top, height]);
+
+var svg = d3.select("#viz")
+		.append("svg")
+			.attr({width: width, height: height})
+
+var gPoints = svg.selectAll(".points")
+								.data(timecube)
+							.enter()
+								.append("g")
+							  .on("mouseenter", dragit.trajectory.display)
+							  .on("mouseleave", dragit.trajectory.remove)
+							  .call(dragit.object.activate)
+
+gPoints.append("foreignObject")
+    .attr("width", 480)
+    .attr("height", 500)
+  .append("xhtml:div")
+    .style("font", "14px 'Helvetica Neue'")
+    .attr("class", "one-button")
+		.style("left", function(d) {
+			return (xScale(d[dragit.time.current].x)-dragit.object.offsetX) + "px";
+		})
+		.style("top", function(d) {
+			return yScale(d[dragit.time.current].y) + "px";
+		})
+
+function update(v, t) {
+
+	dragit.time.current = v || dragit.time.current;
+	
+	d3.selectAll(".one-button").transition().duration(100)
+			.style("left", function(d) {
+				return xScale(d[dragit.time.current].x) + "px";
+			})
+			.style("top", function(d) {
+				return yScale(d[dragit.time.current].y) + "px";
+			})
+}
+
+function init() {
+
+	dragit.init("svg");
+
+dragit.object.offsetX = 50;
+
+  dragit.data = timecube.map(function(d, i) { 
+  	return d.map(function(e, i) { 
+  		return [xScale(e.x), yScale(e.y)]; 
+  	}) 
+  });
+  
+  dragit.evt.register("update", update);
+  dragit.utils.slider("#slider", true)
+}
+
+init();
+
+</script>
+</body>
+</html>
