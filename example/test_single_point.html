@@ -53,10 +53,10 @@ var gPoints = svg.selectAll(".points")
 							  .call(dragit.object.activate)
 								.attr("transform", function(d) {
 									return "translate("+xScale(d[dragit.time.current].x)+", "+yScale(d[dragit.time.current].y)+")";
-								});
+								})
+								.attr("class", "points");
 
 gPoints.append("circle")
-			.attr("class", "points")
 			.attr({r:10, fill:"red"})
 
 function update(v, t) {

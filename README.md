@@ -9,6 +9,7 @@ dragit.js
 
 * Single point drag ([demo](http://romsson.github.io/dragit/example/test_single_point.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_single_point.html))
 * Multiple points drag ([demo](http://romsson.github.io/dragit/example/test_multi_points.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_multi_points.html))
+* Scatterplot ([demo](http://romsson.github.io/dragit/example/test_scatterplot.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_scatterplot.html))
 * Spiral shape ([demo](http://romsson.github.io/dragit/example/test_spiral.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_spiral.html))
 * Radial tree ([demo](http://romsson.github.io/dragit/example/test_radial_tree.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_radial_tree.html))
 * Pan and zoom ([demo](http://romsson.github.io/dragit/example/test_pan_zoom.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_pan_zoom.html))
@@ -21,7 +22,7 @@ dragit.js
 #### Coming soon
 
 * Ranking tables
-* Standard charts: [Bar chart](http://romsson.github.io/dragit/example/test_barchart.html), pie chart, scatterplot, ..
+* Standard charts: [Bar chart](http://romsson.github.io/dragit/example/test_barchart.html), pie chart, ..
 * Node link diagrams
 * Geo maps navigation
 
@@ -45,7 +46,7 @@ Those two functions will make sure the library's internal state is always up to 
 
 #### Time Cube
 
-The internal data structure where each row is a data point, and each column a time point.You may want to generate a random time cube (of `nb_data_points` x `nb_time_steps`) as below:
+The internal data structure where each row is a data point, and each column a time point.You may want to generate a random time cube (of `nb_data_points` x `nb_time_steps`). The `x` and `y` values should reflect the exact position of the data poin on screen. Example as below:
 
 ```
 var timecube = d3.range(nb_data_points).map(function(d, i) {

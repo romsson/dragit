@@ -109,7 +109,7 @@ dragit.trajectory.display = function(d, i, c) {
                   .data([dragit.data[i]])
                 .enter().append("path")
                   .attr("class", "lineTrajectory")
-                  .attr("d", vars.svgLine.interpolate(dragit.custom.line[vars.custom_trajectory].interpolate));
+                  .attr("d", vars.svgLine.interpolate(dragit.custom.line[vars.custom_trajectory].interpolate))
 
   dragit.pointTrajectory  = vars.gDragit.selectAll(".pointTrajectory")
                     .data(dragit.data[i])
