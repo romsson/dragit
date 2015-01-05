@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>dragit example with a scatterplot</title>
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: #000;
+}
+
+</style>
+  <link href="../src/dragit.css" rel="stylesheet"/>
+  <script src="../lib/d3.v3.js"></script>
+  <script src="../src/dragit.js"></script>
+</head>
+<body>
+
+<div id="viz"></div>
+<p style="clear:both"></p>
+<div id="slider"></div>
+<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');" checked> Show complete trajectory</label>
+<script>
+
+// Original scatterplot from http://bl.ocks.org/mbostock/3887118
+var margin = {top: 20, right: 50, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var x = d3.scale.linear()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var color = d3.scale.category10();
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+var svg = d3.select("#viz").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+dragit.time = {min: 0, max: 6, step: 1, current: 6};
+dragit.object.offsetX = margin.left;
+
+data = [
+  {"name": "Thailand",
+  "years": [
+    {"year": 1960, "value": 3.45},
+    {"year": 1965, "value": 3.08},
+    {"year": 1970, "value": 3.54},
+    {"year": 1975, "value": 3.63},
+    {"year": 1980, "value": 3.77},
+    {"year": 1985, "value": 4.68},
+    {"year": 1990, "value": 5.18}]
+  },
+  {"name": "Ghana",
+  "years": [
+    {"year": 1960, "value": 0.69},
+    {"year": 1965, "value": 0.82},
+    {"year": 1970, "value": 2.03},
+    {"year": 1975, "value": 1.98},
+    {"year": 1980, "value": 2.17},
+    {"year": 1985, "value": 2.51},
+    {"year": 1990, "value": 2.82}]
+  }]  
+
+x.domain(d3.extent(data[1].years, function(d) { return d.year; })).nice();
+y.domain([0, d3.max(data[0].years, function(d) { return d.value; })]).nice();
+
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis)
+  .append("text")
+    .attr("class", "label")
+    .attr("x", width)
+    .attr("y", -6)
+    .style("text-anchor", "end")
+    .text("Time");
+
+svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+  .append("text")
+    .attr("class", "label")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .text("Years of schooling")
+
+var gPoints = svg.selectAll(".points")
+                .data(data)
+              .enter()
+                .append("g")
+                .attr("class", "points")
+                .attr("transform", function(d) {
+                  return "translate("+x(d.years[dragit.time.current].year)+", "+y(d.years[dragit.time.current].value)+")";
+                })
+                .on("mouseenter", dragit.trajectory.display)
+                .on("mouseleave", dragit.trajectory.remove)
+                .call(dragit.object.activate)
+
+gPoints.append("circle")
+  .attr("r", 10)
+  .attr("cx", 0)
+  .attr("cy", 0)
+  .style("fill", function(d) { return color(d.name); })
+
+
+gPoints.append("text")
+    .attr("x", 50)
+    .attr("y", 0)
+    .attr("dy", ".35em")
+    .style("text-anchor", "end")
+    .text(function(d) { return d.name; });
+
+
+var legend = svg.selectAll(".legend")
+    .data(color.domain())
+  .enter().append("g")
+    .attr("class", "legend")
+    .attr("transform", function(d, i) { return "translate(-200," + i * 20 + ")"; });
+
+legend.append("rect")
+    .attr("x", width - 18)
+    .attr("width", 18)
+    .attr("height", 18)
+    .style("fill", color);
+
+legend.append("text")
+    .attr("x", width - 24)
+    .attr("y", 9)
+    .attr("dy", ".35em")
+    .style("text-anchor", "end")
+    .text(function(d) { return d; });
+
+function update(v, t) {
+
+  dragit.time.current = v || dragit.time.current;
+  
+  gPoints.transition().duration(100)
+                .attr("transform", function(d) {
+                  return "translate("+x(d.years[dragit.time.current].year)+", "+y(d.years[dragit.time.current].value)+")";
+                })
+}
+
+function init() {
+
+  dragit.init("svg");
+
+  dragit.data = data.map(function(d, i) { 
+    console.log(d);
+    return d.years.map(function(e, i) { 
+      return [x(e.year)+margin.left, y(e.value)+margin.top]; 
+    }) 
+  });
+  
+  dragit.evt.register("update", update);
+  dragit.utils.slider("#slider", false)
+
+  dragit.trajectory.toggleAll('selected');
+}
+
+init();
+
+
+</script>
