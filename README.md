@@ -60,7 +60,7 @@ Here are the names using for the various objects:
 	<img src="img/points-trajectories-naming.png" width=600/>
 </p>
 
-#### dragit.data
+### dragit.data
 
 * `dragit.data`: is a time-cube defined where each row are data points and columns time steps.
 
@@ -189,6 +189,15 @@ Define the type of design for the focus point `vars.custom_focus` (default) and 
 * `dragit.custom.line`
 * `dragit.custom.point`
 
+
+### dragit.constraint
+
+For each object, this allows to set some expected positions when multiple are available. This can be used in multiple scenarios: 
+
+* To filter out a space and only make visible a specific trajectory
+* When multiple permutations are possible and we need to decide whiche one
+
+* `dragit.constraint` : array of constraints
 
 ### dragit.utils
 
