@@ -9,7 +9,7 @@ dragit.js
 
 * Single point drag ([demo](http://romsson.github.io/dragit/example/test_single_point.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_single_point.html))
 * Multiple points drag ([demo](http://romsson.github.io/dragit/example/test_multi_points.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_multi_points.html))
-* Scatterplot ([demo](http://romsson.github.io/dragit/example/test_scatterplot.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_scatterplot.html))
+* Line chart ([demo](http://romsson.github.io/dragit/example/test_linechart.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_linechart.html))
 * Spiral shape ([demo](http://romsson.github.io/dragit/example/test_spiral.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_spiral.html))
 * Radial tree ([demo](http://romsson.github.io/dragit/example/test_radial_tree.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_radial_tree.html))
 * Pan and zoom ([demo](http://romsson.github.io/dragit/example/test_pan_zoom.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_pan_zoom.html))

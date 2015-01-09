@@ -34,6 +34,8 @@ body {
 <script>
 
 // Original scatterplot from http://bl.ocks.org/mbostock/3887118
+// Data source http://econ.worldbank.org/WBSITE/EXTERNAL/EXTDEC/EXTRESEARCH/0,,contentMDK:20699068~pagePK:64214825~piPK:64214943~theSitePK:469382,00.html
+// Data source http://catalog.ihsn.org/index.php/catalog/1056/data_dictionary
 var margin = {top: 20, right: 50, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
@@ -61,33 +63,46 @@ var svg = d3.select("#viz").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-dragit.time = {min: 0, max: 6, step: 1, current: 6};
+dragit.time = {min: 0, max: 6, step: 1, current: 6, offset: 1960};
 dragit.object.offsetX = margin.left;
 
 data = [
-  {"name": "Thailand",
-  "years": [
-    {"year": 1960, "value": 3.45},
-    {"year": 1965, "value": 3.08},
-    {"year": 1970, "value": 3.54},
-    {"year": 1975, "value": 3.63},
-    {"year": 1980, "value": 3.77},
-    {"year": 1985, "value": 4.68},
-    {"year": 1990, "value": 5.18}]
-  },
   {"name": "Ghana",
   "years": [
-    {"year": 1960, "value": 0.69},
-    {"year": 1965, "value": 0.82},
-    {"year": 1970, "value": 2.03},
-    {"year": 1975, "value": 1.98},
-    {"year": 1980, "value": 2.17},
-    {"year": 1985, "value": 2.51},
-    {"year": 1990, "value": 2.82}]
+    {"year": 1950, "value": 0.68},
+    {"year": 1955, "value": 0.80},
+    {"year": 1960, "value": 1.05},
+    {"year": 1965, "value": 1.95},
+    {"year": 1970, "value": 3.06},
+    {"year": 1975, "value": 3.86},
+    {"year": 1980, "value": 4.53},
+    {"year": 1985, "value": 5.20},
+    {"year": 1990, "value": 5.65},
+    {"year": 1995, "value": 5.89},
+    {"year": 2000, "value": 6.44},
+    {"year": 2005, "value": 7.07},
+    {"year": 2010, "value": 7.00}
+  ]},
+  {"name": "Thailand",
+  "years": [
+    {"year": 1950, "value": 2.04},
+    {"year": 1955, "value": 2.31},
+    {"year": 1960, "value": 2.55},
+    {"year": 1965, "value": 2.28},
+    {"year": 1970, "value": 2.51},
+    {"year": 1975, "value": 3.01},
+    {"year": 1980, "value": 3.64},
+    {"year": 1985, "value": 4.15},
+    {"year": 1990, "value": 4.85},
+    {"year": 1995, "value": 5.50},
+    {"year": 2000, "value": 5.65},
+    {"year": 2005, "value": 7.03},
+    {"year": 2010, "value": 7.99}
+    ]
   }]  
 
 x.domain(d3.extent(data[1].years, function(d) { return d.year; })).nice();
-y.domain([0, d3.max(data[0].years, function(d) { return d.value; })]).nice();
+y.domain([0, d3.max(data, function(d) { return d3.max(d.years, function(e) { return e.value; }) })]).nice();
 
 svg.append("g")
     .attr("class", "x axis")
