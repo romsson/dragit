@@ -27,9 +27,11 @@
   dragit.time = {};
   dragit.object = {};
   dragit.data = [];
+  dragit.constraint = [];
 
   dragit.statemachine = {current_state: "idle", current_id: -1};
-  dragit.time = {min: 0, max: 0, current: 0, step: 1, previous: 0};
+
+  dragit.time = {min: 0, max: 0, current: 0, step: 1, previous: 0, offset: 0};
   dragit.mouse = {scope: "focus"};
   dragit.object = {update: function() {}, offsetX: 0, offsetY: 0, dragging: "absolute"};
   dragit.evt = {register: function() {}, call: function() {}};
@@ -85,6 +87,7 @@ dragit.evt.call = function(evt, a) {
 
 dragit.init = function(container) {
 
+  dragit.time.offset = dragit.time.offset ? dragit.time.offset: 0;
   vars.container = d3.select(container);
 } 
 
