@@ -44,23 +44,6 @@ You are, however, very likely to structure the chart as follows to make sure **d
 
 Those two functions will make sure the library's internal state is always up to date, regardless how you update the data visualization (using regular slider or direct manipulation).
 
-#### Time Cube
-
-The internal data structure where each row is a data point, and each column a time point.You may want to generate a random time cube (of `nb_data_points` x `nb_time_steps`). The `x` and `y` values should reflect the exact position of the data poin on screen. Example as below:
-
-```
-var timecube = d3.range(nb_data_points).map(function(d, i) {
-	return d3.range(nb_time_steps).map(function(e, j) { 
-		return {x: i, y: Math.random(), t: j};
-	});
-})
-```
-
-#### Other Ways to Create a  Cube
-
-* Sampling a SVG shapes (see the spiral example)
-* Browsing paths of a tree data structure (see the radial tree example or the World Cup Brackets example)
-* Or more generally, use any other combinatorial space.
 
 #### Core Concepts
 
@@ -81,6 +64,16 @@ Here are the names using for the various objects:
 
 * `dragit.data`: is a time-cube defined where each row are data points and columns time steps.
 
+You may want to generate a random time cube (of `nb_data_points` x `nb_time_steps`). The `x` and `y` values should reflect the exact position of the data poin on screen. Example as below:
+
+```
+var timecube = d3.range(nb_data_points).map(function(d, i) {
+	return d3.range(nb_time_steps).map(function(e, j) { 
+		return {x: i, y: Math.random(), t: j};
+	});
+})
+```
+
 Example (rows are data, columns are time steps):
 
 ```
@@ -91,6 +84,13 @@ Example (rows are data, columns are time steps):
 ```
 
 Where d<sub>i</sub> are dimensions, as t<sub>i</sub> are time points.
+
+Some other Ways to generate a dataset that can be dragged:
+
+* Sampling a SVG shapes (see the spiral example)
+* Browsing paths of a tree data structure (see the radial tree example or the World Cup Brackets example)
+* Image / Video segmentation
+* Or more generally, use any other combinatorial space.
 
 ### dragit.vars
 
