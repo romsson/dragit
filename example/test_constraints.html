@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>dragit example with a single circle</title>
+	<link href="../src/dragit.css" rel="stylesheet"/>
+	<script src="../lib/d3.v3.js"></script>
+	<script src="../src/dragit.js"></script>
+</head>
+<body>
+<div id="viz"></div>
+<p style="clear:both"></p>
+<div id="slider"></div>
+<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggleAll('selected');"> Show complete trajectory</label>
+
+<script>
+
+var margin = {top: 20, right: 20, bottom: 20, left: 20},
+    width = 900 - margin.right - margin.left,
+    height = 500 - margin.top - margin.bottom;
+
+var nb_points = 1;
+
+dragit.time = {min: 0, max: 20, step: 1, current: 0};
+dragit.time.current = Math.floor(Math.random()*dragit.time.max);
+
+var timecube = d3.range(nb_points).map(function(d, i) {
+	return d3.range(dragit.time.max).map(function(e, j) { 
+		return {x: j, y: Math.random(), t: j};
+	});
+})
+
+var xScale = d3.scale.linear().domain([0, dragit.time.max]).range([margin.left, width]);
+var yScale = d3.scale.linear()
+					 .domain([0, d3.max(timecube, function(d) { 
+							return d3.max(d, function(e) { 
+								return e.y; 
+							});
+						})
+					 ])
+					 .range([margin.top, height]);
+
+var svg = d3.select("#viz")
+		.append("svg")
+			.attr({width: width, height: height})
+
+var gPoints = svg.selectAll(".points")
+								.data(timecube)
+							.enter()
+								.append("g")
+							  .on("mouseenter", dragit.trajectory.display)
+							  .on("mouseleave", dragit.trajectory.remove)
+							  .call(dragit.object.activate)
+								.attr("transform", function(d) {
+									return "translate("+xScale(d[dragit.time.current].x)+", "+yScale(d[dragit.time.current].y)+")";
+								})
+								.attr("class", "points");
+
+gPoints.append("circle")
+			.attr({r:10, fill:"red"})
+
+function update(v, t) {
+
+	dragit.time.current = v || dragit.time.current;
+	
+	gPoints.transition().duration(100)
+								.attr("transform", function(d) {
+									return "translate("+xScale(d[dragit.time.current].x)+", "+yScale(d[dragit.time.current].y)+")";
+								});
+}
+
+function init() {
+
+	dragit.init("svg");
+
+  dragit.data = timecube.map(function(d, i) { 
+  	return d.map(function(e, i) { 
+  		return [xScale(e.x), yScale(e.y)]; 
+  	}) 
+  });
+  
+  dragit.evt.register("update", update);
+  dragit.utils.slider("#slider", true)
+}
+
+init();
+
+</script>
+</body>
+</html>
