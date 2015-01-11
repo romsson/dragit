@@ -8,7 +8,7 @@
   var vars = {
       "dev": false,
       evt: [],
-      tc: [],
+      tc: [], 
       list_closest_datapoint: [],
       svgLine: null,
       container: null,
@@ -28,6 +28,7 @@
   dragit.object = {};
   dragit.data = [];
   dragit.constraint = [];
+  dragit.playback = {};
 
   dragit.statemachine = {current_state: "idle", current_id: -1};
 
@@ -47,6 +48,8 @@
                         'attr_static': {'cx': -10, 'cy': -10, 'r': 3}
                       }
             }
+
+  dragit.playback = {playing: false, loop: false, interpolation: "none"};
   
   vars.svgLine = d3.svg.line()
                       .x(vars.accessor_x)
@@ -412,192 +415,192 @@ dragit.object.activate = function(d, i) {
     return dragit.statemachine.current_state;
   }
 
-// Create and add a DOM HTML slider for time navigation
-dragit.utils.slider = function(el, play_button) {
+  // Create and add a DOM HTML slider for time navigation
+  dragit.utils.slider = function(el, play_button) {
 
-  d3.select(el).append("p")
-               .style("clear", "both");
+    d3.select(el).append("p")
+                 .style("clear", "both");
 
-  if(play_button) {
-    d3.select(el).append("button")
-                 .style({"height": "25px", "width": "25px"})
-                 .text("▶")
-                 .attr("class", "stop")
-                 .on("click", function() {
-                   if(d3.select(this).attr("class") == "stop") {
-                     d3.select(this).text("| |").attr("class", "playing")
-                   } else {
-                     d3.select(this).text("▶").attr("class", "stop")
-                   }
-                 })
+    if(play_button) {
+      d3.select(el).append("button")
+                   .style({"height": "25px", "width": "25px"})
+                   .text("▶")
+                   .attr("class", "stop")
+                   .on("click", function() {
+                     if(d3.select(this).attr("class") == "stop") {
+                       d3.select(this).text("| |").attr("class", "playing")
+                     } else {
+                       d3.select(this).text("▶").attr("class", "stop")
+                     }
+                   })
+    }
+
+    d3.select(el).append("span")
+                 .attr("id", "min-time")
+                 .text(dragit.time.min);
+
+    d3.select(el).append("input")
+                  .attr("type", "range")
+                  .attr("class", "slider-time")
+                  .property("min", dragit.time.min)
+                  .property("max", dragit.time.max)
+                  .property("value", dragit.time.current)
+                  .property("step", 1)
+                  .on("input", function() {
+                    dragit.time.previous = dragit.time.current;
+                    dragit.time.current = parseInt(this.value)-dragit.time.min;
+                    dragit.evt.call("update", this.value, 0); 
+                  })
+
+    d3.select(el).append("span")
+                 .attr("id", "max-time")
+                 .text(dragit.time.max);
+
+    dragit.evt.register("update", function() {
+      d3.select(".slider-time").property("value", dragit.time.current);
+    });
   }
 
-  d3.select(el).append("span")
-               .attr("id", "min-time")
-               .text(dragit.time.min);
+  dragit.utils.sliderUpdate = function(el) {
+    d3.select(el).select("#max-time")
+                 .text(dragit.time.max);
 
-  d3.select(el).append("input")
-                .attr("type", "range")
-                .attr("class", "slider-time")
-                .property("min", dragit.time.min)
+    d3.select(el).select(".slider-time")
                 .property("max", dragit.time.max)
                 .property("value", dragit.time.current)
-                .property("step", 1)
-                .on("input", function() {
-                  dragit.time.previous = dragit.time.current;
-                  dragit.time.current = parseInt(this.value)-dragit.time.min;
-                  dragit.evt.call("update", this.value, 0); 
-                })
+  }
 
-  d3.select(el).append("span")
-               .attr("id", "max-time")
-               .text(dragit.time.max);
+  // Calculate the centroid of a given SVG element
+  dragit.utils.centroid = function(s) {
+    var e = selection.node(),
+    bbox = e.getBBox();
+    return [bbox.x + bbox.width/2, bbox.y + bbox.height/2];
+  }
 
-  dragit.evt.register("update", function() {
-    d3.select(".slider-time").property("value", dragit.time.current);
-  });
-}
+  // Credits: http://bl.ocks.org/mbostock/8027637
+  dragit.utils.closestPointToTrajectory  = function(pathNode, point) {
 
-dragit.utils.sliderUpdate = function(el) {
-  d3.select(el).select("#max-time")
-               .text(dragit.time.max);
+    var pathLength = pathNode.getTotalLength(),
+        precision = pathLength / pathNode.pathSegList.numberOfItems * .125,
+        best,
+        bestLength,
+        bestDistance = Infinity;
 
-  d3.select(el).select(".slider-time")
-              .property("max", dragit.time.max)
-              .property("value", dragit.time.current)
-}
+    // linear scan for coarse approximation
+    for (var scan, scanLength = 0, scanDistance; scanLength <= pathLength; scanLength += precision) {
+      if ((scanDistance = distance2(scan = pathNode.getPointAtLength(scanLength))) < bestDistance) {
+        best = scan, bestLength = scanLength, bestDistance = scanDistance;
+      }
+    }
 
-// Calculate the centroid of a given SVG element
-dragit.utils.centroid = function(s) {
-  var e = selection.node(),
-  bbox = e.getBBox();
-  return [bbox.x + bbox.width/2, bbox.y + bbox.height/2];
-}
+    // binary search for precise estimate
+    precision *= .5;
+    while (precision > .5) {
+      var before,
+          after,
+          beforeLength,
+          afterLength,
+          beforeDistance,
+          afterDistance;
+      if ((beforeLength = bestLength - precision) >= 0 && (beforeDistance = distance2(before = pathNode.getPointAtLength(beforeLength))) < bestDistance) {
+        best = before, bestLength = beforeLength, bestDistance = beforeDistance;
+      } else if ((afterLength = bestLength + precision) <= pathLength && (afterDistance = distance2(after = pathNode.getPointAtLength(afterLength))) < bestDistance) {
+        best = after, bestLength = afterLength, bestDistance = afterDistance;
+      } else {
+        precision *= .5;
+      }
+    }
 
-// Credits: http://bl.ocks.org/mbostock/8027637
-dragit.utils.closestPointToTrajectory  = function(pathNode, point) {
+    best = [best.x, best.y];
+    best.distance = Math.sqrt(bestDistance);
+    return best;
 
-  var pathLength = pathNode.getTotalLength(),
-      precision = pathLength / pathNode.pathSegList.numberOfItems * .125,
-      best,
-      bestLength,
-      bestDistance = Infinity;
-
-  // linear scan for coarse approximation
-  for (var scan, scanLength = 0, scanDistance; scanLength <= pathLength; scanLength += precision) {
-    if ((scanDistance = distance2(scan = pathNode.getPointAtLength(scanLength))) < bestDistance) {
-      best = scan, bestLength = scanLength, bestDistance = scanDistance;
+    function distance2(p) {
+      var dx = p.x - point[0],
+          dy = p.y - point[1];
+      return dx * dx + dy * dy;
     }
   }
 
-  // binary search for precise estimate
-  precision *= .5;
-  while (precision > .5) {
-    var before,
-        after,
-        beforeLength,
-        afterLength,
-        beforeDistance,
-        afterDistance;
-    if ((beforeLength = bestLength - precision) >= 0 && (beforeDistance = distance2(before = pathNode.getPointAtLength(beforeLength))) < bestDistance) {
-      best = before, bestLength = beforeLength, bestDistance = beforeDistance;
-    } else if ((afterLength = bestLength + precision) <= pathLength && (afterDistance = distance2(after = pathNode.getPointAtLength(afterLength))) < bestDistance) {
-      best = after, bestLength = afterLength, bestDistance = afterDistance;
-    } else {
-      precision *= .5;
+  dragit.utils.closestDataPoint  = function(p, points) {
+    var distances = points.map(function(d, i) { 
+      var dx = d[0]-p[0];
+      var dy = d[1]-p[1];
+      return Math.sqrt(dx*dx + dy*dy);
+    })
+    return distances;
+  }
+
+  // Code from http://bl.ocks.org/duopixel/3824661
+  dragit.utils.findYgivenX = function(x, path) {
+    var pathEl = path.node();
+    var pathLength = pathEl.getTotalLength();
+    var BBox = pathEl.getBBox();
+    var scale = pathLength/BBox.width;
+    var offsetLeft = document.getElementsByClassName("lineTrajectory")[0].offsetLeft;
+
+    x = x - offsetLeft; 
+
+    var beginning = x, end = pathLength, target;
+
+    while (true) {
+      target = Math.floor((beginning + end) / 2);
+      pos = pathEl.getPointAtLength(target);
+      if ((target === end || target === beginning) && pos.x !== x) {
+        break;
+      }
+      if (pos.x > x)      
+        end = target;
+      else if (pos.x < x) 
+        beginning = target;
+      else                
+        break;
     }
+    return pos.y-200;
   }
 
-  best = [best.x, best.y];
-  best.distance = Math.sqrt(bestDistance);
-  return best;
+  dragit.utils.animateTrajectory = function(path, start_time, duration) {
 
-  function distance2(p) {
-    var dx = p.x - point[0],
-        dy = p.y - point[1];
-    return dx * dx + dy * dy;
+    var totalLength = path.node().getTotalLength();
+
+    path.attr("stroke-width", "5")
+        .attr("stroke-dasharray", totalLength + " " + totalLength)
+        .attr("stroke-dashoffset", totalLength)
+      .transition()
+        .duration(duration)
+        .ease("linear")
+        .attr("stroke-dashoffset", 0)
   }
-}
 
-dragit.utils.closestDataPoint  = function(p, points) {
-  var distances = points.map(function(d, i) { 
-    var dx = d[0]-p[0];
-    var dy = d[1]-p[1];
-    return Math.sqrt(dx*dx + dy*dy);
-  })
-  return distances;
-}
-
-// Code from http://bl.ocks.org/duopixel/3824661
-dragit.utils.findYgivenX = function(x, path) {
-  var pathEl = path.node();
-  var pathLength = pathEl.getTotalLength();
-  var BBox = pathEl.getBBox();
-  var scale = pathLength/BBox.width;
-  var offsetLeft = document.getElementsByClassName("lineTrajectory")[0].offsetLeft;
-
-  x = x - offsetLeft; 
-
-  var beginning = x, end = pathLength, target;
-
-  while (true) {
-    target = Math.floor((beginning + end) / 2);
-    pos = pathEl.getPointAtLength(target);
-    if ((target === end || target === beginning) && pos.x !== x) {
-      break;
-    }
-    if (pos.x > x)      
-      end = target;
-    else if (pos.x < x) 
-      beginning = target;
-    else                
-      break;
-  }
-  return pos.y-200;
-}
-
-dragit.utils.animateTrajectory = function(path, start_time, duration) {
-
-  var totalLength = path.node().getTotalLength();
-
-  path.attr("stroke-width", "5")
-      .attr("stroke-dasharray", totalLength + " " + totalLength)
-      .attr("stroke-dashoffset", totalLength)
-    .transition()
-      .duration(duration)
-      .ease("linear")
-      .attr("stroke-dashoffset", 0)
-}
-
-// Credits: http://bl.ocks.org/mbostock/1705868
-dragit.utils.translateAlong = function(path, duration) {
-  var l = path.node().getTotalLength();
-  return function(d, i, a) {
-    return function(t) {
-      var p = path.node().getPointAtLength(t * l);
-      return "translate(" + p.x + "," + p.y + ")";
+  // Credits: http://bl.ocks.org/mbostock/1705868
+  dragit.utils.translateAlong = function(path, duration) {
+    var l = path.node().getTotalLength();
+    return function(d, i, a) {
+      return function(t) {
+        var p = path.node().getPointAtLength(t * l);
+        return "translate(" + p.x + "," + p.y + ")";
+      };
     };
-  };
-}
+  }
 
-dragit.utils.getSubPath = function(start_time, end_time) {
+  dragit.utils.getSubPath = function(start_time, end_time) {
 
-  console.log(dragit.statemachine.current_id)
+    console.log(dragit.statemachine.current_id)
 
-  sub_data = dragit.data[dragit.statemachine.current_id].filter(function(d, i) {
-    return i >= start_time && i <= end_time;
-  });
+    sub_data = dragit.data[dragit.statemachine.current_id].filter(function(d, i) {
+      return i >= start_time && i <= end_time;
+    });
 
-  dragit.subTrajectory = vars.gDragit.selectAll(".subTrajectory")
-                  .data([sub_data])
-                .enter().append("path")
-                  .attr("class", "subTrajectory")
-                  .style({'stroke': 'black', 'stroke-width': 4})
-                  .attr("d", vars.svgLine.interpolate(dragit.custom.line[vars.custom_trajectory].interpolate));
+    dragit.subTrajectory = vars.gDragit.selectAll(".subTrajectory")
+                    .data([sub_data])
+                  .enter().append("path")
+                    .attr("class", "subTrajectory")
+                    .style({'stroke': 'black', 'stroke-width': 4})
+                    .attr("d", vars.svgLine.interpolate(dragit.custom.line[vars.custom_trajectory].interpolate));
 
-  return dragit.subTrajectory;
+    return dragit.subTrajectory;
 
-}
+  }
 
 })()
 
