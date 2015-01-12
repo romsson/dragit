@@ -15,7 +15,8 @@
       accessor_x: function(d) {return d[0]; },
       accessor_y: function(d) {return d[1]; },
       custom_focus: 'default',
-      custom_trajectory: 'default'
+      custom_trajectory: 'default',
+      playback: {el: null}
     };
 
   dragit.custom = {};
@@ -49,7 +50,7 @@
                       }
             }
 
-  dragit.playback = {playing: false, loop: false, interpolation: "none"};
+  dragit.playback = {playing: false, loop: false, interpolation: "none", speed: 1000};
   
   vars.svgLine = d3.svg.line()
                       .x(vars.accessor_x)
@@ -415,9 +416,50 @@ dragit.object.activate = function(d, i) {
     return dragit.statemachine.current_state;
   }
 
+  dragit.playback.play = function() {
+
+    if(dragit.playback.playing) {
+      setTimeout(function() {
+
+        if(!dragit.playback.playing)
+          return;
+
+        dragit.time.current++;
+
+        dragit.evt.call("update", 0, 0);
+
+        if(dragit.time.current==dragit.time.max-1) {
+          console.log("stop")
+          dragit.playback.stop();
+        }
+        else
+          dragit.playback.play();
+
+      }, dragit.playback.speed);
+    }
+  }
+
+  dragit.playback.start = function() {
+
+    if(!dragit.playback.playing) {
+      dragit.playback.playing = true;
+      d3.select(vars.playback.el).select("button").text("| |").attr("class", "playing")
+      
+      if(dragit.time.current==dragit.time.max)
+        dragit.time.current;
+
+      dragit.playback.play();
+    }
+  }
+
+  dragit.playback.stop = function() {
+    d3.select(vars.playback.el).select("button").text("▶").attr("class", "stop");
+    dragit.playback.playing = false; 
+  }
+
   // Create and add a DOM HTML slider for time navigation
   dragit.utils.slider = function(el, play_button) {
-
+    vars.playback.el = el;
     d3.select(el).append("p")
                  .style("clear", "both");
 
@@ -427,12 +469,12 @@ dragit.object.activate = function(d, i) {
                    .text("▶")
                    .attr("class", "stop")
                    .on("click", function() {
-                     if(d3.select(this).attr("class") == "stop") {
-                       d3.select(this).text("| |").attr("class", "playing")
-                     } else {
-                       d3.select(this).text("▶").attr("class", "stop")
-                     }
-                   })
+                      if(dragit.playback.playing == false) {
+                        dragit.playback.start();
+                      } else {
+                        dragit.playback.stop();
+                      }
+                   });
     }
 
     d3.select(el).append("span")
