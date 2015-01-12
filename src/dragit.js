@@ -627,8 +627,6 @@ dragit.object.activate = function(d, i) {
 
   dragit.utils.getSubPath = function(start_time, end_time) {
 
-    console.log(dragit.statemachine.current_id)
-
     sub_data = dragit.data[dragit.statemachine.current_id].filter(function(d, i) {
       return i >= start_time && i <= end_time;
     });

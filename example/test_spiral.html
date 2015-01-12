@@ -105,22 +105,23 @@ function update(v, t) {
 
 	dragit.statemachine.current_id = 0;
 
-console.log("udpate", previous_current, dragit.time.current, dragit.time.previous)
- // Path between
-
-if(dragit.time.current != dragit.time.previous) {
-	console.log("here", dragit.utils.getSubPath(previous_current, dragit.time.current))
 	gPoints.transition()
-      .duration(1000)
-      .attrTween("transform", dragit.utils.getSubPath(previous_current, dragit.time.current))
-}
+				.duration(200)
+				.attr("transform", function(d) {	
+						return "translate("+d[dragit.time.current].x+", "+d[dragit.time.current].y+")";
+				})
 
+	//if(dragit.time.current != dragit.time.previous) {
+	//  gPoints.transition()
+	//    .duration(1000)
+	//    .attrTween("transform", dragit.utils.getSubPath(previous_current, dragit.time.current))
+	//}
 
 }
 
 function init() {
 
-	dragit.init("svg");
+  dragit.init("svg");
 
   dragit.data = timecube.map(function(d, i) { 
   	return d.map(function(e, i) { 
@@ -132,7 +133,7 @@ function init() {
   dragit.evt.register("update", update);
 
 	dragit.trajectory.toggleAll('selected');
-	dragit.utils.slider("#slider")
+	dragit.utils.slider("#slider", true)
 }
 
 init();
