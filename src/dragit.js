@@ -249,6 +249,8 @@ dragit.object.activate = function(d, i) {
           d3.select(this).attr("transform", function(d,i) {
             return "translate(" + [mousepoint[0], mousepoint[1]] + ")";
           })  
+    
+          dragit.evt.call("drag");
 
           return;
 
@@ -487,8 +489,7 @@ dragit.object.activate = function(d, i) {
                   .attr("class", "slider-time")
                   .property("min", dragit.time.min)
                   .property("max", dragit.time.max)
-                  .property("value", dragit.time.current)
-                  .property("step", 1)
+                //  .attr("step", 1)
                   .on("input", function() {
                     dragit.time.previous = dragit.time.current;
                     dragit.time.current = parseInt(this.value)-dragit.time.min;
@@ -499,9 +500,12 @@ dragit.object.activate = function(d, i) {
                  .attr("id", "max-time")
                  .text(dragit.time.max);
 
-    dragit.evt.register("update", function() {
-      d3.select(".slider-time").property("value", dragit.time.current-1);
+    d3.select(".slider-time").property("value", dragit.time.current+dragit.time.min)
+
+    dragit.evt.register("drag", function() {
+      d3.select(".slider-time").property("value", dragit.time.current);
     });
+
   }
 
   dragit.utils.sliderUpdate = function(el) {
