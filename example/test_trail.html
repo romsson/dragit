@@ -11,7 +11,7 @@
 <div id="viz"></div>
 <p style="clear:both"></p>
 <div id="slider"></div>
-<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggle('focus');" checked> Show complete trajectory</label>
+<label><input type="checkbox" name="mode" value="trajectory" onclick="dragit.trajectory.toggle('selected');" checked> Show complete trajectory</label>
 <script>
 
 var margin = {top: 20, right: 20, bottom: 20, left: 20},
@@ -70,14 +70,14 @@ function draw_trail(d) {
 		.duration(trail_duration)
 	  .remove();
 	  
-		previous_x = d.x;
+	  previous_x = d.x;
 	  previous_y = d.y;
 }
 
-function update() {
+function update(v) {
 
 	dragit.time.max = timecube[0].length;
-	dragit.time.current = dragit.time.max;
+	dragit.time.current = v || dragit.time.max;
 
   dragit.data = timecube.map(function(d, i) { 
   	return d.map(function(e, i) { 
@@ -87,8 +87,12 @@ function update() {
 
 	dragit.trajectory.removeAll('selected');
 	dragit.trajectory.displayAll('selected');
+	
+	gPoints.transition().duration(100)
+								.attr("transform", function(d) {
+									return "translate("+timecube[0][dragit.time.current].x+", "+timecube[0][dragit.time.current].y+")";
+								});
 
-	dragit.utils.sliderUpdate("#slider");
 }
 
 function init() {
@@ -105,8 +109,11 @@ function init() {
   dragit.time = {min:0, max:time_steps, step:1, current: current_time}
   dragit.evt.register("update", update);
 
-  dragit.statemachine.current_id = 0;
+  dragit.evt.register("drag", function() { 
+  	dragit.utils.sliderUpdate("#slider"); 
+  })
 
+  dragit.statemachine.current_id = 0;
 	dragit.mouse.dragging = "free";
 	dragit.utils.slider("#slider")
 }
