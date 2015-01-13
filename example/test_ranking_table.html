@@ -65,8 +65,8 @@ d3.text("../data/rankings.csv", function(text) {
 	// Create the SVG
   d3.select("#viz").insert("svg", ":first-child")
 	  .attr("width", width)
-	  .attr("height", 0)
-	  .style("top", margin.top)
+	  .attr("height", height)
+	  .style("top", margin.top+50)
 	  .style("left", margin.left)
 	  .style("position", "absolute")
 
@@ -76,9 +76,11 @@ d3.text("../data/rankings.csv", function(text) {
 
 function update(v, duration) {
 
+	//dragit.time.current = v || dragit.time.current;
+
 	d3.select("table").remove();
 
-	var table = d3.select("#viz").append("table"),
+	var table = d3.select("#viz").append("table"),//.style("display", "none"),
 			thead = table.append("thead"),
       tbody = table.append("tbody");
 
@@ -132,13 +134,13 @@ function update(v, duration) {
 			  	dragit.trajectory.display(d, all_countries.indexOf(d3.select(d3.select(this).node().parentNode).attr("id")))
 			  })
 			  .on("mouseout", dragit.trajectory.remove)
-		  //	.call(dragit.object.activate);
+		  	.call(dragit.object.activate);
 
 }
 
 function init() {
 
-	dragit.init("svg");
+  dragit.init("svg");
 
   var margin = {top: d3.select("table").property("offsetTop"), right: d3.select("table").property("offsetRight"), bottom: 19.5, left: d3.select("table").property("offsetLeft")};
 
@@ -154,7 +156,7 @@ function init() {
   	}) 
   });
 
-	dragit.utils.slider("#slider")
+  dragit.utils.slider("#slider", false)
 }
 
 </script>
