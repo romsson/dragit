@@ -71,7 +71,7 @@ function update(v, t) {
 
 function init() {
 
-	dragit.init("svg");
+  dragit.init("svg");
 
   dragit.data = timecube.map(function(d, i) { 
   	return d.map(function(e, i) { 
@@ -80,7 +80,10 @@ function init() {
   });
   
   dragit.evt.register("update", update);
-  dragit.utils.slider("#slider", true)
+
+  dragit.playback.loop = true;
+  dragit.playback.speed =  500;
+  dragit.utils.slider("#slider", true);
 }
 
 init();

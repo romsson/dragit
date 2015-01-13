@@ -429,8 +429,12 @@ dragit.object.activate = function(d, i) {
         dragit.evt.call("update", 0, 0);
 
         if(dragit.time.current==dragit.time.max-1) {
-          console.log("stop")
-          dragit.playback.stop();
+          if(dragit.playback.loop) {
+            dragit.time.current = 0;
+            dragit.playback.play();
+          } else {
+            dragit.playback.stop();
+          }
         }
         else
           dragit.playback.play();
@@ -499,7 +503,7 @@ dragit.object.activate = function(d, i) {
                  .text(dragit.time.max);
 
     dragit.evt.register("update", function() {
-      d3.select(".slider-time").property("value", dragit.time.current);
+      d3.select(".slider-time").property("value", dragit.time.current-1);
     });
   }
 
