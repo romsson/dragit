@@ -3,7 +3,7 @@
   var dragit = window.dragit || {};
   window.dragit = dragit;
 
-  dragit.version = "0.1.3";
+  dragit.version = "0.1.4";
 
   var vars = {
       "dev": false,
@@ -56,7 +56,6 @@
                       .x(vars.accessor_x)
                       .y(vars.accessor_y)
                       .interpolate(dragit.custom.line[vars.custom_trajectory].interpolate);
-
 
 dragit.evt.register = function(evt, f, d) {
 
@@ -210,18 +209,18 @@ dragit.object.activate = function(d, i) {
 
       // Create the line guide to closest trajectory
       dragit.lineClosestTrajectory = vars.gDragit.append("line")
-                                            .attr("class", "lineClosestTrajectory");
+                                                 .attr("class", "lineClosestTrajectory");
 
       // Create the line guide to closest point
       dragit.lineClosestPoint = vars.gDragit.append("line")
-                                       .attr("class", "lineClosestPoint");
+                                            .attr("class", "lineClosestPoint");
 
       // Create the point interesting guide line and closest trajectory
       dragit.pointClosestTrajectory = vars.gDragit.append(dragit.custom.point[vars.custom_focus].mark)
-                                              .attr(dragit.custom.point[vars.custom_focus].attr_static)
-                                              .attr("class", "pointClosestTrajectory")
-                                              .attr("cx", mousepoint[0])
-                                              .attr("cy", mousepoint[1]);
+                                                  .attr(dragit.custom.point[vars.custom_focus].attr_static)
+                                                  .attr("class", "pointClosestTrajectory")
+                                                  .attr("cx", mousepoint[0])
+                                                  .attr("cy", mousepoint[1]);
 
       // Create the focus that follows the mouse cursor
       dragit.focusGuide = vars.gDragit.append(dragit.custom.point[vars.custom_focus].mark)
@@ -252,7 +251,6 @@ dragit.object.activate = function(d, i) {
           })  
 
           return;
-          break;
 
         case "horizontal":
 
@@ -261,16 +259,14 @@ dragit.object.activate = function(d, i) {
 
           d3.select(this).attr("transform", function(d,i) {
             return "translate(" + [ d.x, d.y ] + ")";
-          })  
+          })
 
-          break;
+          return
 
-        return
       }
 
       var list_distances_datapoint = [], list_distances_trajectorypoint = [], list_times = [];
       var list_closest_trajectorypoint = [], list_closest_datapoint = [];
-
 
       var new_id = -1;
 
@@ -385,7 +381,6 @@ dragit.object.activate = function(d, i) {
 
         case "horizontal":
           break;
-          
       }
 
       dragit.lineClosestTrajectory.remove();
@@ -393,7 +388,7 @@ dragit.object.activate = function(d, i) {
       dragit.pointClosestTrajectory.remove();
       dragit.focusGuide.remove();
 
-      // Remove trajectory
+      // Remove the current focus trajectory
       d3.selectAll(".gDragit.focus").remove();
 
       dragit.evt.call("dragend");
@@ -441,6 +436,8 @@ dragit.object.activate = function(d, i) {
 
       }, dragit.playback.speed);
     }
+
+    dragit.evt.call("play");
   }
 
   dragit.playback.start = function() {
