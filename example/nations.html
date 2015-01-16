@@ -105,7 +105,7 @@ path.lineTrajectory {
 
 <div id="chart" style="margin:0px"></div>
 <span id="min-time">1800</span> 
-<input type="range" name="points" min="1800" max="2008" step="1" value="0" id="slider-time" style="width:900px">
+<input type="range" name="points" min="0" max="208" step="1" value="0" id="slider-time" style="width:900px">
 <span id="max-time">2008</span>
 <br>
 <p>
@@ -346,7 +346,7 @@ d3.json("../data/nations.json", function(nations) {
 
     d3.select("#slider-time")
       .on("mousemove", function() { 
-        update(this.value, 500);
+        update(parseInt(this.value), 500);
         clear_demo();
       })
 
