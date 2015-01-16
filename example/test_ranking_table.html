@@ -149,6 +149,14 @@ function init() {
 
   dragit.evt.register("update", update);
 
+  dragit.evt.register("dragstart", function() {
+  	d3.selectAll("table").transition().duration().style("opacity", .2)
+  });
+
+  dragit.evt.register("dragstart", function() {
+  	d3.selectAll("table").style("opacity", .2)
+  });
+
   // Translate the data cube into real line chart coordinates
   dragit.data = timecube.map(function(d, i) { 
   	return d.map(function(e, i) { 
