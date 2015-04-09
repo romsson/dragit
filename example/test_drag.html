@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Testing Select2 and DS.JS</title>
+
+<head>
+  <link href="css/ds.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <script src="../lib/d3.v3.js"></script>
+  <script src="../src/dragit.js"></script>
+
+  <style>
+
+    g.state circle {
+        stroke  : gray;
+        cursor  : pointer;
+        fill    : white;
+    }
+
+    circle.selected {
+      stroke          : red;
+      stroke-width: 4px;
+    }
+
+    g.state circle.outer {
+        stroke-width    : 0px;
+        stroke-dasharray: 4px;
+        stroke-opacity  : 0.5;
+        fill            : transparent;
+    }
+
+    g.state text {
+        font                : 12px sans-serif;
+        font-weight         : bold;
+        pointer-events      : none;
+    }
+
+    path.transition {
+        fill        : none;
+        stroke      : #000;
+        stroke-width: 1px;
+        cursor      : default;
+        marker-end  : url(#end-arrow);
+    }
+
+  </style>
+
+  <style>
+
+  div.source {
+    border-style: solid;
+  }
+
+  div.target {
+    border-style: dotted;
+  }
+
+  </style>
+
+  <div id="state"></div>
+
+  <script>
+
+  /* TODO
+
+    -Use arcs for transitions  
+    -See how to include in dragit (especially the target?)
+    -Get list of states from dragit and their update too
+    -Name the link for transitions
+    -Show self-link nodes
+    -Set a specific state to define the focus (mouseleave, etc.)
+    -Put sates on a grid and add a scale
+    -How to illustrate snapping (e.g. automatic return to a position)
+    -Show example with dragit dual representation visualization
+    -Include in dragit (make it an option?)
+    -
+
+  */
+
+  var radius = 35;
+
+  var states = [
+      {x: 100, y:200, label:"idle", transitions: [], focus: true},
+      {x: 200, y:150, label:"mouseenter", transitions: []},
+      {x: 300, y:150, label:"mousedown", transitions: []},
+      {x: 400, y:150, label:"dragstart", transitions: []},
+      {x: 500, y:200, label:"drag", transitions: []},
+      {x: 400, y:250, label:"dragend", transitions: []},
+      {x: 300, y:250, label:"mouseup", transitions: []},
+      {x: 200, y:250, label:"mouseleave", transitions: []}
+  ];
+
+  states.forEach(function(d, i) {
+    d.id = i;
+  })
+
+  states[0].transitions.push({label : 'init', target : states[1]})
+  states[1].transitions.push({label : 'press', target : states[2]})
+  states[2].transitions.push({label : 'press', target : states[3]})
+  states[3].transitions.push({label : 'press', target : states[4]})
+  states[4].transitions.push({label : 'press', target : states[5]})
+  states[5].transitions.push({label : 'press', target : states[6]})
+  states[6].transitions.push({label : 'press', target : states[7]})
+  states[7].transitions.push({label : 'press', target : states[0]})
+
+  // http://www.dashingd3js.com/svg-paths-and-d3js
+  var computeTransitionPath = /*d3.svg.diagonal.radial()*/function( d) {
+      var deltaX = d.target.x - d.source.x,
+      deltaY = d.target.y - d.source.y,
+      dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
+      normX = deltaX / dist,
+      normY = deltaY / dist,
+      sourcePadding = radius + 2;//d.left ? 17 : 12,
+      targetPadding = radius + 6;//d.right ? 17 : 12,
+      sourceX = d.source.x + (sourcePadding * normX),
+      sourceY = d.source.y + (sourcePadding * normY),
+      targetX = d.target.x - (targetPadding * normX),
+      targetY = d.target.y - (targetPadding * normY);
+
+      // TODO: eventually use paths to make it a curve?
+      return 'M' + sourceX + ',' + sourceY + 'L' + targetX + ',' + targetY;
+  };
+
+  var transitions = function() {
+      return states.reduce( function( initial, state) {
+          return initial.concat( 
+              state.transitions.map( function( transition) {
+                  return { source : state, target : transition.target};
+              })
+          );
+      }, []);
+  };
+  
+  // Init the focus and return the current one
+  function reset_focus(states) {
+    var current_focus = -1;
+
+    states.forEach(function(d, i) {
+      if(d.focus == true)
+        current_focus = d;
+      d.focus = false;
+    })
+
+    return current_focus;
+  }
+
+  function init() {
+
+  }
+
+  function update() {
+
+    gStates = d3.select("svg")
+      .selectAll( "g.state").data(states);
+    
+    var gState = gStates.enter()
+        .append( "g")
+        .attr({
+            "transform" : function( d) {
+                return "translate("+ [d.x,d.y] + ")";
+            },
+            'class'     : 'state'
+        });
+    
+    gState.append( "circle")
+        .attr({r: radius + 4, class: 'outer'})
+        .on( "mousedown", function( d) {
+
+            startState = d, endState = undefined;
+
+            // reposition drag line
+            drag_line
+                .style('marker-end', 'url(#end-arrow)')
+                .classed('hidden', false)
+                .attr('d', 'M' + d.x + ',' + d.y + 'L' + d.x + ',' + d.y);
+
+            // force element to be an top
+            this.parentNode.parentNode.appendChild( this.parentNode);
+            console.log( "mousedown", startState);
+        });
+
+    gState.append( "circle")
+        .attr({
+            r       : radius,
+            class   : function(d) {
+              if(typeof d.focus != "undefined" && d.focus == true)
+                return 'selected inner';
+              else
+                return 'inner';
+            }
+        });
+
+    d3.selectAll("circle.inner")
+              .attr({
+
+            class   : function(d) {
+              if(typeof d.focus != "undefined" && d.focus == true)
+                return 'selected inner';
+              else
+                return 'inner';
+            }
+        });
+
+    gState.append( "text")
+        .attr({
+            'text-anchor'   : 'middle',
+            y               : 4
+        })
+        .text( function( d) {
+            return d.label;
+        });
+
+    gState.append( "title")
+        .text( function( d) {
+            return d.label;
+        });
+
+    gStates.exit().remove();
+
+    gTransitions = svg.selectAll("path.transition").data(transitions);
+    gTransitions.enter().append("path")
+        .attr("class", "transition")
+        .attr("id", function(d, i) {
+          return "link--"+d.source.id+"--"+d.target.id;
+        })
+        .attr('d', computeTransitionPath);
+
+    gTransitions.exit().remove();
+  };
+
+function create_state_diagram(el) {
+
+  var margin = {top: 20, right: 20, bottom: 20, left: 20},
+      width = 900 - margin.right - margin.left,
+      height = 500 - margin.top - margin.bottom;
+
+   svg = d3.select(el)
+      .append("svg")
+        .attr({width: width, height: height})
+
+  svg.append('svg:defs').append('svg:marker')
+      .attr('id', 'end-arrow')
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 3)
+      .attr('markerWidth', 8)
+      .attr('markerHeight', 8)
+      .attr('orient', 'auto')
+    .append('svg:path')
+      .attr('d', 'M0,-5L10,0L0,5')
+      .attr('fill', '#000');
+
+  svg.append('svg:defs').append('svg:marker')
+      .attr('id', 'start-arrow')
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 4)
+      .attr('markerWidth', 8)
+      .attr('markerHeight', 8)
+      .attr('orient', 'auto')
+    .append('svg:path')
+      .attr('d', 'M10,-5L0,0L10,5')
+      .attr('fill', '#000');
+
+  var gStates = svg
+      .selectAll("g.state")
+      .data(states);
+
+  var gTransitions = svg.append( 'g')  
+      .selectAll( "path.transition")
+      .data(transitions);
+
+  update();
+}
+
+create_state_diagram("#state")
+
+var width = 800,
+    height = 600;
+
+var w = 100, h = 80;
+
+var drag = d3.behavior.drag()
+    .origin(function(d) { return d; })
+    .on("drag", dragmove);
+
+var data = [
+    {x: 0, y: 0, color: "red"}
+];
+
+var div = d3.select("body")
+    .selectAll("div.source")
+    .data(data)
+  .enter()
+    .append("div")
+    .style({
+        width: w + "px",
+        height: h + "px",
+        "background-color": function(d, i){ return d.color },
+        position: "absolute",
+        left: function(d, i){ return d.x + "px"; },
+        top: function(d, i) { return d.y + "px"; }
+    })
+    .attr("class", "source")
+    .on("mouseenter", function( d) {
+
+      // Add new state to the diagram
+      console.log("mouseenter", d)
+
+      var current_node = reset_focus(states);
+
+      show_transition(current_node.id, 1);
+
+      states[1].focus = true;
+      update();
+
+    })
+    .on("mouseleave", function( d) {
+
+      // Add new state to the diagram
+      console.log("mouseleave")
+
+      reset_focus(states);
+      states[2].focus = true;
+      update();
+
+    })
+    .call(drag);
+
+function dragmove(d) {
+    d.x = d3.event.x;
+    d.y = d3.event.y;
+    leftVal = d.x + "px";
+    topVal = d.y + "px";
+    d3.select(this)
+        .style({left: leftVal, top: topVal})
+        .html("x: " + d.x + "<br /> y:" + d.y + "<br /> dx:" + d3.event.dx + "<br /> dy: " + d3.event.dy);
+}
+
+function show_transition(id_source, id_target) {
+
+  var c = d3.select("svg").append("circle").attr({cx: 0, cy: 0, r: 5}).style({fill: "red"})
+
+  // Retrieve path
+  var path = d3.select("#link--"+id_source+"--"+id_target);
+
+  // Animate node
+  c.transition()
+    .duration(100)
+    .attrTween("transform",  dragit.utils.translateAlong(path, 100))
+    .each("end", function(d, i) {
+      d3.select(this).remove();
+    })
+
+}
+
+  </script>  
+</body>
+</html>

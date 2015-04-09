@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Testing Select2 and DS.JS</title>
+
+<head>
+  <link href="css/ds.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <script src="../lib/d3.v3.js"></script>
+
+  <style>
+
+  div.source {
+    border-style: solid;
+  }
+
+  div.target {
+    border-style: dotted;
+  }
+
+  </style>
+
+  <script>
+
+  var width = 800,
+      height = 600;
+
+  var w = 100, h = 80;
+
+  var drag = d3.behavior.drag()
+      .origin(function(d) { return d; })
+      .on("drag", dragmove);
+
+  var data = [
+      {x: 0, y: 0, color: "red"},
+      {x: width/2, y: 0, color: "white"},
+      {x: 0, y: height/2, color: "white"},
+      {x: width/2, y: height/2, color: "white"}
+  ];
+
+  var div = d3.select("body").selectAll("div").data(data).enter().append("div")
+      .style({
+          width: w + "px",
+          height: h + "px",
+          "background-color": function(d, i){ return d.color},
+          position: "absolute",
+          left: function(d, i){ return d.x + "px"; },
+          top: function(d, i) { return d.y + "px"; }
+      })
+
+  div.attr("class", function(d, i) {
+    if(i == 0)
+      return "source";
+    else
+      return "target";
+  })
+
+  div.filter(function(d, i) { return i == 0; }).call(drag);
+
+  function dragmove(d) {
+      d.x = d3.event.x;
+      d.y = d3.event.y;
+      leftVal = d.x + "px";
+      topVal = d.y + "px";
+      d3.select(this)
+          .style({left: leftVal, top: topVal})
+          .html("x: " + d.x + "<br /> y:" + d.y + "<br /> dx:" + d3.event.dx + "<br /> dy: " + d3.event.dy);
+  }
+
+  </script>  
+
+</body>
+
+</html>
