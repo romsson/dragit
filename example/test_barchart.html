@@ -47,7 +47,7 @@
   }
 
   .x.axis path {
-    /* display: none; */
+    display: none;
   }
 </style>
 <body>
@@ -94,7 +94,6 @@ var svg = d3.select("#viz").append("svg")
 var config = {
   time: {min:0, max:20, step:1, current:0}    
 }
-
 
 var nb_points = 10;
 
@@ -145,8 +144,8 @@ bars.append("rect")
   .attr("class", "bar")
   .attr("x", function(d, i) { return x(i); })
   .attr("width", x.rangeBand())
-  .attr("y", function(d) { return y(d[dragit.time.current].y); })
-  .attr("height", function(d) { return height - y(d[dragit.time.current].y); })
+  .attr("y", function(d) { return height - y(d[dragit.time.current].y); })
+  .attr("height", function(d) { return  y(d[dragit.time.current].y); })
   .attr("opacity", 1)
   .on("mouseenter", dragit.trajectory.display)
   .on("mouseout", dragit.trajectory.remove)
@@ -154,19 +153,18 @@ bars.append("rect")
 
 function update(t, duration) {
 
-  console.log(dragit.time.current, t)
-
   dragit.time.current = t || dragit.time.current;
 
   svg.selectAll(".bar")
     .data(timecube)
-      .transition().duration(duration)
+      .transition().duration(0)
       .attr("y", function(d) {
-       return y(d[dragit.time.current].y); 
+          console.log(d[dragit.time.current].y, y(d[dragit.time.current].y));
+        return height - y(d[dragit.time.current].y); 
      })
-      .attr("height", function(d) { return height - y(d[dragit.time.current].y); })
+      .attr("height", function(d) { return y(d[dragit.time.current].y); })
 
-  d3.select("#slider-time").property("value", dragit.time.current);
+//  d3.select("#slider-time").property("value", dragit.time.current);
 
 }
 
@@ -192,9 +190,7 @@ function init() {
 
   dragit.evt.register("dragstart", hide_barchart);
   dragit.evt.register("dragend", show_barchart);
-
   dragit.evt.register("update", update);
-
   dragit.utils.slider("#slider")
 }
 
