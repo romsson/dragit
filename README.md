@@ -1,7 +1,7 @@
 dragit.js
 ==========
 
-**dragit** is an extension to the **[D3.js](http://d3js.org/)** library to enable the [direct manipulation](https://en.wikipedia.org/wiki/Direct_manipulation_interface) of SVG data visualization. It is designed to be seamlessly included in an existing **D3** visualization. It is also designed to be highly customizable and extensible.
+**dragit** is an extension to the **[D3.js](http://d3js.org/)** library to enable the [direct manipulation](https://en.wikipedia.org/wiki/Direct_manipulation_interface) of SVG data visualizations. It is designed to be included in an existing **D3** visualization with as little modifications as possible. It is also designed to be highly customizable and extensible.
 
 ### Examples
 
@@ -30,7 +30,7 @@ dragit.js
 
 #### Code Organization
 
-One of the library design goal to be included quasi-seamlessly in a current data visualization, i.e. without much change. To use it, insert the following snippets in the header of your code, right after **D3**:
+One of the library design goal to be included quasi-seamlessly in a current data visualization, i.e. without too many changes. To use it, insert the following snippets in the header of your code, right after **D3**:
 
 ```html
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
