@@ -13,7 +13,12 @@
   <script src="../src/dragit.js"></script>
 
   <style>
-
+/*
+    body {
+      background: #222;
+      background-color: #222; 
+    }
+*/
     g.state circle {
         stroke  : gray;
         cursor  : pointer;
@@ -84,51 +89,59 @@
 
   var states = [
       {x: 100, y:200, label:"idle", transitions: [], focus: true},
-      {x: 200, y:150, label:"mouseenter", transitions: []},
-      {x: 300, y:150, label:"mousedown", transitions: []},
-      {x: 400, y:150, label:"dragstart", transitions: []},
-      {x: 500, y:200, label:"drag", transitions: []},
-      {x: 400, y:250, label:"dragend", transitions: []},
-      {x: 300, y:250, label:"mouseup", transitions: []},
-      {x: 200, y:250, label:"mouseleave", transitions: []}
+ //     {x: 200, y:150, label:"mouseenter", transitions: []},
+      {x: 300, y: 200, label:"mouseover", transitions: []},
+ //     {x: 400, y:150, label:"mouseout", transitions: []},
+      {x: 500, y:200, label:"drag", transitions: []}
   ];
 
   states.forEach(function(d, i) {
     d.id = i;
   })
 
-  states[0].transitions.push({label : 'init', target : states[1]})
-  states[1].transitions.push({label : 'press', target : states[2]})
-  states[2].transitions.push({label : 'press', target : states[3]})
+  states[0].transitions.push({label : 'mouseenter', target : states[1]})
+  states[1].transitions.push({label : 'mouseout', target : states[0]})
+  states[1].transitions.push({label : 'mouseout', target : states[2]})
+  states[2].transitions.push({label : 'mouseout', target : states[1]})
+
+  //states[2].transitions.push({label : 'press', target : states[3]})
+  /*
   states[3].transitions.push({label : 'press', target : states[4]})
   states[4].transitions.push({label : 'press', target : states[5]})
   states[5].transitions.push({label : 'press', target : states[6]})
   states[6].transitions.push({label : 'press', target : states[7]})
   states[7].transitions.push({label : 'press', target : states[0]})
+*/
 
   // http://www.dashingd3js.com/svg-paths-and-d3js
   var computeTransitionPath = /*d3.svg.diagonal.radial()*/function( d) {
+      
       var deltaX = d.target.x - d.source.x,
       deltaY = d.target.y - d.source.y,
       dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
+      
       normX = deltaX / dist,
       normY = deltaY / dist,
+      
       sourcePadding = radius + 2;//d.left ? 17 : 12,
       targetPadding = radius + 6;//d.right ? 17 : 12,
+
       sourceX = d.source.x + (sourcePadding * normX),
       sourceY = d.source.y + (sourcePadding * normY),
       targetX = d.target.x - (targetPadding * normX),
       targetY = d.target.y - (targetPadding * normY);
 
-      // TODO: eventually use paths to make it a curve?
-      return 'M' + sourceX + ',' + sourceY + 'L' + targetX + ',' + targetY;
+      // TODO: Change according to the direction
+      return 'M' + sourceX + ',' + sourceY + 'S' + 200 + ',' + 200 + " " + targetX + "," + targetY;
+ 
+//      return 'M' + sourceX + ',' + sourceY + 'L' + targetX + ',' + targetY;
   };
 
   var transitions = function() {
       return states.reduce( function( initial, state) {
           return initial.concat( 
               state.transitions.map( function( transition) {
-                  return { source : state, target : transition.target};
+                  return {source : state, target : transition.target};
               })
           );
       }, []);
@@ -221,12 +234,26 @@
     gStates.exit().remove();
 
     gTransitions = svg.selectAll("path.transition").data(transitions);
-    gTransitions.enter().append("path")
+
+    var gTransitions_enter = gTransitions.enter();
+
+    gTransitions_enter.append("path")
         .attr("class", "transition")
         .attr("id", function(d, i) {
           return "link--"+d.source.id+"--"+d.target.id;
         })
         .attr('d', computeTransitionPath);
+
+    gTransitions_enter.append("text")
+        .attr(function(d) {
+          console.log(d)
+         return {
+            'text-anchor'   : 'middle',
+            y               : 100,
+            x: 100
+        }})
+    .text("transition")
+
 
     gTransitions.exit().remove();
   };
@@ -283,7 +310,10 @@ var w = 100, h = 80;
 
 var drag = d3.behavior.drag()
     .origin(function(d) { return d; })
+    .on("dragstart", dragstart)
+    .on("dragend", dragend)
     .on("drag", dragmove);
+
 
 var data = [
     {x: 0, y: 0, color: "red"}
@@ -309,7 +339,6 @@ var div = d3.select("body")
       console.log("mouseenter", d)
 
       var current_node = reset_focus(states);
-
       show_transition(current_node.id, 1);
 
       states[1].focus = true;
@@ -321,21 +350,51 @@ var div = d3.select("body")
       // Add new state to the diagram
       console.log("mouseleave")
 
-      reset_focus(states);
-      states[2].focus = true;
+      var current_node = reset_focus(states);
+      show_transition(current_node.id, 0);
+
+      states[0].focus = true;
       update();
 
     })
+
     .call(drag);
 
 function dragmove(d) {
-    d.x = d3.event.x;
-    d.y = d3.event.y;
-    leftVal = d.x + "px";
-    topVal = d.y + "px";
-    d3.select(this)
-        .style({left: leftVal, top: topVal})
-        .html("x: " + d.x + "<br /> y:" + d.y + "<br /> dx:" + d3.event.dx + "<br /> dy: " + d3.event.dy);
+  d.x = d3.event.x;
+  d.y = d3.event.y;
+  leftVal = d.x + "px";
+  topVal = d.y + "px";
+
+  d3.select(this)
+      .style({left: leftVal, top: topVal})
+      .html("x: " + d.x + "<br /> y:" + d.y + "<br /> dx:" + d3.event.dx + "<br /> dy: " + d3.event.dy);
+}
+
+function dragstart(d) {
+
+  // Add new state to the diagram
+  console.log("dragstart", d)
+
+  var current_node = reset_focus(states);
+  show_transition(current_node.id, 2);
+
+  states[2].focus = true;
+  update();
+
+}
+
+function dragend(d) {
+
+  // Add new state to the diagram
+  console.log("dragend", d)
+
+  var current_node = reset_focus(states);
+  show_transition(current_node.id, 1);
+
+  states[1].focus = true;
+  update();
+
 }
 
 function show_transition(id_source, id_target) {
@@ -347,7 +406,7 @@ function show_transition(id_source, id_target) {
 
   // Animate node
   c.transition()
-    .duration(100)
+    .duration(1000)
     .attrTween("transform",  dragit.utils.translateAlong(path, 100))
     .each("end", function(d, i) {
       d3.select(this).remove();
