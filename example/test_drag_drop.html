@@ -32,13 +32,15 @@
 
   var drag = d3.behavior.drag()
       .origin(function(d) { return d; })
+      .on("dragend", dragend)
       .on("drag", dragmove);
 
   var data = [
-      {x: 0, y: 0, color: "red"},
+      {x: 0, y: 0, color: "white"},      
       {x: width/2, y: 0, color: "white"},
       {x: 0, y: height/2, color: "white"},
-      {x: width/2, y: height/2, color: "white"}
+      {x: width/2, y: height/2, color: "white"},
+      {x: 0, y: 0, color: "red"}
   ];
 
   var div = d3.select("body").selectAll("div").data(data).enter().append("div")
@@ -52,13 +54,13 @@
       })
 
   div.attr("class", function(d, i) {
-    if(i == 0)
+    if(i == data.length-1)
       return "source";
     else
       return "target";
   })
 
-  div.filter(function(d, i) { return i == 0; }).call(drag);
+  div.filter(function(d, i) { return i == data.length-1; }).call(drag);
 
   function dragmove(d) {
       d.x = d3.event.x;
@@ -68,6 +70,33 @@
       d3.select(this)
           .style({left: leftVal, top: topVal})
           .html("x: " + d.x + "<br /> y:" + d.y + "<br /> dx:" + d3.event.dx + "<br /> dy: " + d3.event.dy);
+  }
+
+  function dragend(d) {
+
+    // TODO: snap to targets
+    if(d.x < width/4 && d.y < height/4) {
+      d.x = data[0].x;
+      d.y = data[0].y;
+    } else if(d.x >= width/4 && d.y < height/4) {
+      d.x = data[1].x;
+      d.y = data[1].y;
+    } else if(d.x < width/4 && d.y >= height/4) {
+      d.x = data[2].x;
+      d.y = data[2].y;
+    } else if(d.x >= width/4 && d.y >= height/4) {
+      d.x = data[3].x;
+      d.y = data[3].y;
+    }
+ 
+ 
+ 
+  
+    d3.select(this)
+        .transition().duration(500)
+        .style({left: d.x+"px", top: d.y+"px"})
+  
+
   }
 
   </script>  
