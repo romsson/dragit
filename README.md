@@ -3,6 +3,13 @@ dragit.js
 
 **dragit** is an extension to the **[D3.js](http://d3js.org/)** library to enable the [direct manipulation](https://en.wikipedia.org/wiki/Direct_manipulation_interface) of SVG data visualizations. It is designed to be included in an existing **D3** visualization with as little modifications as possible. It is also designed to be highly customizable and extensible.
 
+### Publication
+
+Romain Vuillemot, Charles Perin. **Investigating the Direct Manipulation of Ranking Tables.** Proceedings of the 2015 Annual Conference on Human Factors in Computing Systems (CHI 2015), Apr 2015, Seoul, Korea. ACM.
+
+* [Companion demo](http://romain.vuillemot.net/projects/direct-rankings/) for the paper
+* [More examples](http://romsson.github.io/dragit/example/) using the same technique
+
 ### Examples
 
 #### Simple 
