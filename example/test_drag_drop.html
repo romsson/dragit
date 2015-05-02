@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <meta charset="utf-8">
-<title>Testing Select2 and DS.JS</title>
+<title>Testing Snapping with Drag and Drop</title>
 
 <head>
   <link href="css/ds.css" rel="stylesheet">
@@ -88,14 +88,10 @@
       d.x = data[3].x;
       d.y = data[3].y;
     }
- 
- 
- 
   
     d3.select(this)
         .transition().duration(500)
         .style({left: d.x+"px", top: d.y+"px"})
-  
 
   }
 

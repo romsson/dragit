@@ -6,7 +6,7 @@
   dragit.version = "0.1.4";
 
   var vars = {
-      "dev": false,
+      "dev": true,
       evt: [],
       tc: [], 
       list_closest_datapoint: [],
@@ -114,14 +114,16 @@ dragit.trajectory.display = function(d, i, c) {
   dragit.lineTrajectory = vars.gDragit.selectAll(".lineTrajectory")
                   .data([dragit.data[i]])
                 .enter().append("path")
-                  .attr("class", "lineTrajectory")
-                  .attr("d", vars.svgLine.interpolate(dragit.custom.line[vars.custom_trajectory].interpolate))
+                  .attr("class", "lineTrajectory");
+
+  dragit.lineTrajectory.attr("d", vars.svgLine.interpolate(dragit.custom.line[vars.custom_trajectory].interpolate))
 
   dragit.pointTrajectory  = vars.gDragit.selectAll(".pointTrajectory")
                     .data(dragit.data[i])
                   .enter().append(dragit.custom.point[vars.custom_focus].mark)
-                    .attr("class", "pointTrajectory")
-                    .attr(dragit.custom.point[vars.custom_focus].attr);
+                    .attr("class", "pointTrajectory");
+
+  dragit.pointTrajectory.attr(dragit.custom.point[vars.custom_focus].attr);
 
   return dragit.trajectory.displayUpdate(d, i);
 }
@@ -232,7 +234,7 @@ dragit.object.activate = function(d, i) {
       dragit.evt.call("dragstart");
 
     })
-    .on("drag", function(d,i) {
+    .on("drag", function(d, i) {
 
       d3.event.sourceEvent.stopPropagation();
       dragit.time.previous = dragit.time.current;
@@ -360,7 +362,7 @@ dragit.object.activate = function(d, i) {
         dragit.evt.call("new_focus", dragit.statemachine.current_id);
       }
 
-      dragit.evt.call("drag");
+      dragit.evt.call("drag", {x: mousepoint[0], y: mousepoint[1]});
 
     })
     .on("dragend", function(d,i) {

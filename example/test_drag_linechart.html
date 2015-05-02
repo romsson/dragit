@@ -4,6 +4,7 @@
 <title>Testing Drag and Drop</title>
 <head>
   <link href="css/ds.css" rel="stylesheet">
+  <link href="../src/dragit.css" rel="stylesheet"/>  
 </head>
 
 <body>
@@ -22,15 +23,6 @@
         stroke  : gray;
         cursor  : pointer;
         fill    : white;
-    }
-
-    .source:hover {
-      border-color: red;
-    }
-
-    .selected.inner {
-            stroke          : red;
-            color: white;
     }
 
     circle.selected {
@@ -95,13 +87,12 @@
 
   var radius = 35;
 
-  is_dragging = false;
-  is_transition = false;
-
   var states = [
       {x: 100, y:200, label:"idle", transitions: [], focus: true},
       {x: 300, y: 200, label:"mouseover", transitions: []},
-      {x: 500, y:200, label:"drag", transitions: []}  
+      {x: 500, y:200, label:"drag table", transitions: []},
+      {x: 500, y:400, label:"display line", transitions: []},  
+      {x: 700, y:400, label:"drag line", transitions: []}  
   ];
 
   states.forEach(function(d, i) {
@@ -112,21 +103,28 @@
   states[0].transitions.push({label : 'mouse enter', target : states[1], px: 200, py: 170})
 
   // Idle to itself
-  states[0].transitions.push({label : 'mouse move', target : states[0], px: 100, py: 70})
+  states[0].transitions.push({label : 'mouse move', target : states[0], px: 100, py: 50})
 
-  // Mouse over back to idle
-  states[1].transitions.push({label : 'mouse move target', target : states[0], px: 200, py: 230})
+  // Mouse
+  states[1].transitions.push({label : 'mouse move', target : states[1], px: 300, py: 50})
 
-  // Mouse over target
-  states[1].transitions.push({label : 'mouse move', target : states[1], px: 300, py: 70})
+  states[1].transitions.push({label : 'mouse out', target : states[0], px: 200, py: 250})
 
-//  states[1].transitions.push({label : 'mouse out', target : states[0], px: 200, py: 250})
+  states[1].transitions.push({label : 'click press', target : states[2], px: 400, py: 150})
 
-  states[1].transitions.push({label : 'click press', target : states[2], px: 400, py: 170})
+  states[2].transitions.push({label : 'click release', target : states[1], px: 400, py: 250})
 
-  states[2].transitions.push({label : 'click release', target : states[1], px: 400, py: 230})
+//  states[2].transitions.push({label : 'Mouse move', target : states[2], px: 400, py: 250})
 
-  states[2].transitions.push({label : 'mouse move', target : states[2], px: 500, py: 70})
+  // Drag table to drag line
+  states[2].transitions.push({label : 'Mouse move', target : states[3], px: 400, py: 250})
+  states[3].transitions.push({label : 'Mouse move', target : states[2], px: 400, py: 250})
+
+  // Drag line chart to drag line
+  states[3].transitions.push({label : 'Mouse move', target : states[4], px: 400, py: 250})
+  states[4].transitions.push({label : 'Mouse move', target : states[3], px: 400, py: 250})
+
+  states[4].transitions.push({label : 'Mouse move', target : states[4], px: 400, py: 250})
 
   // http://www.dashingd3js.com/svg-paths-and-d3js
   var computeTransitionPathX = /*d3.svg.diagonal.radial()*/function(d) {
@@ -338,7 +336,6 @@
 
     gTransitions_enter.selectAll("text").data(function(d) { return [d];}).enter().append("text")
         .attr('text-anchor', 'middle')
-        .attr('id', function(d, i) { return 'trans_' + i; })
         .attr('x', function(d) { return d.px; })
         .attr('y', function(d) { return d.py; })
         .text(function(d) { return d.label; })
@@ -386,7 +383,120 @@ function create_state_diagram(el) {
       .selectAll( "path.transition")
       .data(transitions);
 
+
+  var dragit_margin = {top: 300, right: 20, bottom: 20, left: 20},
+      dragit_width = 400 - dragit_margin.right - dragit_margin.left,
+      dragit_height = 200 - dragit_margin.top - dragit_margin.bottom;
+
+
+var nb_points = 1;
+
+dragit.time = {min: 0, max: 20, step: 1, current: 0};
+dragit.time.current = Math.floor(Math.random()*dragit.time.max);
+
+var timecube = d3.range(nb_points).map(function(d, i) {
+  return d3.range(dragit.time.max).map(function(e, j) { 
+    return {x: j, y: Math.random(), t: j};
+  });
+})
+
+var xScale = d3.scale.linear().domain([0, dragit.time.max]).range([dragit_margin.left, dragit_width]);
+var yScale = d3.scale.linear()
+           .domain([0, d3.max(timecube, function(d) { 
+              return d3.max(d, function(e) { 
+                return e.y; 
+              });
+            })
+           ])
+           .range([400, 300]);
+
+
+var gPoints = svg.selectAll(".points")
+                .data(timecube)
+              .enter()
+                .append("g")
+                .on("mouseenter", dragit.trajectory.display)
+                .on("mouseleave", dragit.trajectory.remove)
+                .call(dragit.object.activate)
+                .attr("transform", function(d) {
+                  return "translate("+xScale(d[dragit.time.current].x)+", "+yScale(d[dragit.time.current].y)+")";
+                })
+                .attr("class", "points");
+
+gPoints.append("rect")
+      .attr({width: 100, height: 10, fill:"white", stroke: "black"})
+   .on("mouseenter", function( d) {
+
+    //  d3.event.stopPropagation();
+      var current_node = reset_focus(states);
+      show_transition(current_node.id, 1);
+
+      states[1].focus = true;
+      update();
+
+    })
+    .on("mousemove", function( d) {
+
+   //   d3.event.stopPropagation();
+
+      var current_node = reset_focus(states);
+      show_transition(current_node.id, 1);
+
+      states[1].focus = true;
+      update();
+
+    })    
+    .on("mouseleave", function( d) {  
+
+    //  d3.event.stopPropagation();
+
+      var current_node = reset_focus(states);
+      show_transition(current_node.id, 0);
+
+      states[0].focus = true;
+      update();
+
+    })
+
+  dragit.evt.register("dragstart", dragstart);
+  dragit.evt.register("drag", dragmove);
+  dragit.evt.register("dragend", dragend);
+
+function dragit_update(v, t) {
+
+  dragit.time.current = v || dragit.time.current;
+  
+  gPoints.transition().duration(100)
+                .attr("transform", function(d) {
+                  return "translate("+xScale(d[dragit.time.current].x)+", "+yScale(d[dragit.time.current].y)+")";
+                });
+}
+
+function init() {
+
+  dragit.init("svg");
+
+  dragit.data = timecube.map(function(d, i) { 
+    return d.map(function(e, i) { 
+      return [xScale(e.x), yScale(e.y)]; 
+    }) 
+  });
+  
+  dragit.evt.register("update", dragit_update);
+
+  dragit.playback.loop = true;
+  dragit.playback.speed =  500;
+  dragit.utils.slider("#slider", true);
+}
+
+init();
+
+
+
   update();
+
+
+
 }
 
 create_state_diagram("#state")
@@ -394,7 +504,7 @@ create_state_diagram("#state")
 var width = 800,
     height = 600;
 
-var w = 100, h = 40;
+var w = 100, h = 30;
 
 var drag = d3.behavior.drag()
     .origin(function(d) { return d; })
@@ -403,29 +513,26 @@ var drag = d3.behavior.drag()
     .on("drag", dragmove);
 
 var data = [
-    {x: 50, y: 300, color: "white"}
+    {x: 0, y: 0, color: "red"}
 ];
 
-
+/*
 d3.select("body")
     .on("mousemove", function( d) {
 
       // Add new state to the diagram
       console.log("mousemove body", d)
 
-      if(!is_dragging) {
+      var current_node = reset_focus(states);
+      show_transition(current_node.id, 0);
 
-        var current_node = reset_focus(states);
-
-        console.log(is_transition)
-        show_transition(0, 0);
-
-        states[0].focus = true;
-        update();
-      }
+      states[0].focus = true;
+      update();
 
     })  
+*/
 
+/*
 var div = d3.select("body")
     .selectAll("div.source")
     .data(data)
@@ -447,29 +554,19 @@ var div = d3.select("body")
       var current_node = reset_focus(states);
       show_transition(current_node.id, 1);
 
-
-
       states[1].focus = true;
       update();
 
     })
     .on("mousemove", function( d) {
 
-      console.log("nouseo move")
-      if(!is_dragging) {
-
-      d3.event.stopPropagation();
+   //   d3.event.stopPropagation();
 
       var current_node = reset_focus(states);
-
-      if(!is_transition)
-        show_transition(1, 1);
+      show_transition(current_node.id, 1);
 
       states[1].focus = true;
       update();
-
-      }
-
 
     })    
     .on("mouseleave", function( d) {  
@@ -477,7 +574,7 @@ var div = d3.select("body")
     //  d3.event.stopPropagation();
 
       var current_node = reset_focus(states);
-      show_transition(1, 0);
+      show_transition(current_node.id, 0);
 
       states[0].focus = true;
       update();
@@ -485,37 +582,42 @@ var div = d3.select("body")
     })
 
     .call(drag);
-
+*/
 function dragmove(d) {
-  d.x = d3.event.x;
+ 
+  console.log("dragmove", d3.event.x);
+
+  if(typeof d == "undefined")
+    d = {};
+
+/*  d.x = d3.event.x;
   d.y = d3.event.y;
   leftVal = d.x + "px";
   topVal = d.y + "px";
-
-  //d3.event.stopPropagation();
+*/
+//  d3.event.stopPropagation();
 
   var current_node = reset_focus(states);
-  show_transition(current_node.id, 2);
+  show_transition(4, 4);
 
   states[2].focus = true;
+  states[3].focus = true;  
   update();
-
+/*
   d3.select(this)
       .style({left: leftVal, top: topVal})
-  //    .html("x: " + d.x + "<br /> y:" + d.y + "<br /> dx:" + d3.event.dx + "<br /> dy: " + d3.event.dy);
+      .html("x: " + d.x + "<br /> y:" + d.y + "<br /> dx:" + d3.event.dx + "<br /> dy: " + d3.event.dy);
+*/
 }
 
 function dragstart(d) {
-
-//d3.event.stopPropagation();
-
-  is_dragging = true;
 
   // Add new state to the diagram
   console.log("dragstart", d)
 
   var current_node = reset_focus(states);
   show_transition(1, 2);
+  show_transition(2, 3);
 
   states[2].focus = true;
   update();
@@ -524,92 +626,36 @@ function dragstart(d) {
 
 function dragend(d) {
 
-//  d3.event.stopPropagation();
-
-  is_dragging = false;
-
   // Add new state to the diagram
   console.log("dragend", d)
 
   var current_node = reset_focus(states);
-  show_transition(current_node.id, 1);
+  show_transition(4, 3);
+  show_transition(3, 2);
+  show_transition(2, 1);
 
-  states[2].focus = true;
+  states[1].focus = true;
   update();
 
 }
 
-queue = {};
-vars = {};
-
-vars._methods = [];
-
-queue.add = function(fn, delay) {
-
-  if(typeof delay == "undefined")
-    delay = 0;
-  // if the queue had been flushed, return immediately
-
-  vars._methods.push([fn, delay]);
-
-}
-
-queue.flush = function(resp) {
-
-  var next = vars._methods.shift();
-
-  var fn = next[0];
-  var delay = next[1];
-  vars._running = true;
-
-  setTimeout(function() {
-
-    vars._response = fn(vars._response);
-    vars._running = false;
-  
-    if(vars._methods.length>0)
-      queue.flush()
-
-  }, delay);
-}
+function show_transition(id_source, id_target) {
 
 
-function show_transition(id_source, id_target, delay) {
 
-  delay = delay || 0;
-//  queue.add(function() {
+  var c = d3.select("svg").append("circle").attr({cx: 0, cy: 0, r: 5}).style({fill: "red"})
 
-    var c = d3.select("svg").append("circle").attr({cx: 0, cy: 0, r: 5}).style({fill: "red"})
+  // Retrieve path
+  var path = d3.select("#link--"+id_source+"--"+id_target);
 
-    // Retrieve path
-    path = d3.select("#link--"+id_source+"--"+id_target);
+  // Animate node
+  c.transition()
+    .duration(1000)
+    .attrTween("transform",  dragit.utils.translateAlong(path, 100))
+    .each("end", function(d, i) {
+      d3.select(this).remove();
+    })
 
-    // Animate node
-    c.transition()
-      .duration(1000)
-      .delay(delay)
-      .attrTween("transform",  dragit.utils.translateAlong(path, 100))
-      .each("start", function(d, i) {
-
-        d3.select(path[0][0].parentNode).select("text").attr("font-size", 30)
-          .transition().delay(100).duration(100)
-          .each("end", function() {
-          
-            d3.select(this).transition().duration(1000).attr("font-size", 20)            
-          })
-
-
-        if(id_source != id_target)
-          is_transition = true
-      })
-      .each("end", function(d, i) {
-        d3.select(this).remove();
-
-        if(id_source != id_target)
-          is_transition = false
-
-      })
-  //});
 }
 
   </script>  
