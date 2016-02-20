@@ -8,7 +8,7 @@
   var vars = {
       "dev": false,
       evt: [],
-      tc: [], 
+      tc: [],
       list_closest_datapoint: [],
       svgLine: null,
       container: null,
@@ -44,14 +44,14 @@
   }
 
   dragit.custom.point = {
-            'default': {'mark': 'svg:circle', 'style': {'stroke': 'black', 'stroke-width': 2}, 
+            'default': {'mark': 'svg:circle', 'style': {'stroke': 'black', 'stroke-width': 2},
                         'attr': {'cx': vars.accessor_x, 'cy': vars.accessor_y, 'r': 3},
                         'attr_static': {'cx': -10, 'cy': -10, 'r': 3}
                       }
             }
 
   dragit.playback = {playing: false, loop: false, interpolation: "none", speed: 1000};
-  
+
   vars.svgLine = d3.svg.line()
                       .x(vars.accessor_x)
                       .y(vars.accessor_y)
@@ -67,7 +67,7 @@ dragit.evt.register = function(evt, f, d) {
   evt.forEach(function(e) {
     if(typeof vars.evt[e] == "undefined")
       vars.evt[e] = [];
-    
+
     vars.evt[e].push([f,d]);
   })
 }
@@ -92,7 +92,7 @@ dragit.init = function(container) {
 
   dragit.time.offset = dragit.time.offset ? dragit.time.offset: 0;
   vars.container = d3.select(container);
-} 
+}
 
 dragit.trajectory.display = function(d, i, c) {
 
@@ -106,9 +106,9 @@ dragit.trajectory.display = function(d, i, c) {
                                .attr("class", "gDragit")
 
   if(typeof c != "undefined" && c != 0) {
-    vars.gDragit.classed(c, true);                           
+    vars.gDragit.classed(c, true);
   } else {
-    vars.gDragit.classed("focus", true);    
+    vars.gDragit.classed("focus", true);
   }
 
   dragit.lineTrajectory = vars.gDragit.selectAll(".lineTrajectory")
@@ -152,19 +152,19 @@ dragit.trajectory.toggleAll = function(c) {
     dragit.trajectory.displayAll(c);
 }
 
-dragit.trajectory.displayAll = function(c) { 
+dragit.trajectory.displayAll = function(c) {
   var c = c || "";
   dragit.data.map(function(d, i) {
-    dragit.trajectory.display({}, i, c)    
+    dragit.trajectory.display({}, i, c)
   })
-} 
+}
 
 dragit.trajectory.remove = function(d, i) {
   if(dragit.statemachine.current_state != "drag")
     d3.selectAll(".gDragit.focus").remove();
 }
 
-dragit.trajectory.removeAll = function(c) { 
+dragit.trajectory.removeAll = function(c) {
   var c = c || "focus";
   d3.selectAll(".gDragit."+c).remove();
 }
@@ -191,7 +191,7 @@ dragit.object.activate = function(d, i) {
 
       d3.event.sourceEvent.stopPropagation();
       dragit.statemachine.setState("dragstart");
-      
+
       if (vars.dev) console.log("[dragstart]", d, i)
 
       dragit.trajectory.index_closest_trajectorypoint = -1;
@@ -248,8 +248,8 @@ dragit.object.activate = function(d, i) {
 
           d3.select(this).attr("transform", function(d,i) {
             return "translate(" + [mousepoint[0], mousepoint[1]] + ")";
-          })  
-    
+          })
+
           dragit.evt.call("drag");
 
           return;
@@ -335,7 +335,7 @@ dragit.object.activate = function(d, i) {
                              .attr("y1", list_closest_datapoint[index_closest_datapoint][1])
                              .attr("x2", mousepoint[0])
                              .attr("y2", mousepoint[1]);
-      
+
       // Update the focus that follows the mouse cursor
       dragit.focusGuide.attr("cx", mousepoint[0])
                        .attr("cy", mousepoint[1]);
@@ -367,7 +367,7 @@ dragit.object.activate = function(d, i) {
 
       d3.event.sourceEvent.stopPropagation();
       dragit.statemachine.setState("dragend");
-      
+
       if (vars.dev) console.log("[dragend]", d, i)
 
       switch(dragit.mouse.dragging) {
@@ -398,7 +398,7 @@ dragit.object.activate = function(d, i) {
       dragit.statemachine.setState("idle");
     })
 
-  )} 
+  )}
 
   dragit.statemachine.setState = function(state) {
 
@@ -447,7 +447,7 @@ dragit.object.activate = function(d, i) {
     if(!dragit.playback.playing) {
       dragit.playback.playing = true;
       d3.select(vars.playback.el).select("button").text("| |").attr("class", "playing")
-      
+
       if(dragit.time.current==dragit.time.max)
         dragit.time.current;
 
@@ -457,7 +457,7 @@ dragit.object.activate = function(d, i) {
 
   dragit.playback.stop = function() {
     d3.select(vars.playback.el).select("button").text("▶").attr("class", "stop");
-    dragit.playback.playing = false; 
+    dragit.playback.playing = false;
   }
 
   // Create and add a DOM HTML slider for time navigation
@@ -493,7 +493,7 @@ dragit.object.activate = function(d, i) {
                   .on("input", function() {
                     dragit.time.previous = dragit.time.current;
                     dragit.time.current = parseInt(this.value)-dragit.time.min;
-                    dragit.evt.call("update", this.value, 0); 
+                    dragit.evt.call("update", this.value, 0);
                   })
 
     d3.select(el).append("span")
@@ -526,9 +526,8 @@ dragit.object.activate = function(d, i) {
 
   // Credits: http://bl.ocks.org/mbostock/8027637
   dragit.utils.closestPointToTrajectory  = function(pathNode, point) {
-
     var pathLength = pathNode.getTotalLength(),
-        precision = pathLength / pathNode.pathSegList.numberOfItems * .125,
+        precision = 8,
         best,
         bestLength,
         bestDistance = Infinity;
@@ -541,8 +540,8 @@ dragit.object.activate = function(d, i) {
     }
 
     // binary search for precise estimate
-    precision *= .5;
-    while (precision > .5) {
+    precision /= 2;
+    while (precision > 0.5) {
       var before,
           after,
           beforeLength,
@@ -554,7 +553,7 @@ dragit.object.activate = function(d, i) {
       } else if ((afterLength = bestLength + precision) <= pathLength && (afterDistance = distance2(after = pathNode.getPointAtLength(afterLength))) < bestDistance) {
         best = after, bestLength = afterLength, bestDistance = afterDistance;
       } else {
-        precision *= .5;
+        precision /= 2;
       }
     }
 
@@ -570,7 +569,7 @@ dragit.object.activate = function(d, i) {
   }
 
   dragit.utils.closestDataPoint  = function(p, points) {
-    var distances = points.map(function(d, i) { 
+    var distances = points.map(function(d, i) {
       var dx = d[0]-p[0];
       var dy = d[1]-p[1];
       return Math.sqrt(dx*dx + dy*dy);
@@ -586,7 +585,7 @@ dragit.object.activate = function(d, i) {
     var scale = pathLength/BBox.width;
     var offsetLeft = document.getElementsByClassName("lineTrajectory")[0].offsetLeft;
 
-    x = x - offsetLeft; 
+    x = x - offsetLeft;
 
     var beginning = x, end = pathLength, target;
 
@@ -596,11 +595,11 @@ dragit.object.activate = function(d, i) {
       if ((target === end || target === beginning) && pos.x !== x) {
         break;
       }
-      if (pos.x > x)      
+      if (pos.x > x)
         end = target;
-      else if (pos.x < x) 
+      else if (pos.x < x)
         beginning = target;
-      else                
+      else
         break;
     }
     return pos.y-200;
