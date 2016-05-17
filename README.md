@@ -8,11 +8,8 @@ dragit.js
 Romain Vuillemot, Charles Perin. **Investigating the Direct Manipulation of Ranking Tables.** Proceedings of the 2015 Annual Conference on Human Factors in Computing Systems (CHI 2015), Apr 2015, Seoul, Korea. ACM.
 
 * [Companion demo](http://romain.vuillemot.net/projects/direct-rankings/) for the paper
-* [More examples](http://romsson.github.io/dragit/example/) using the same technique
 
 ### Examples
-
-#### Simple 
 
 * Single point drag ([demo](http://romsson.github.io/dragit/example/test_single_point.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_single_point.html))
 * Multiple points drag ([demo](http://romsson.github.io/dragit/example/test_multi_points.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_multi_points.html))
@@ -21,7 +18,7 @@ Romain Vuillemot, Charles Perin. **Investigating the Direct Manipulation of Rank
 * Radial tree ([demo](http://romsson.github.io/dragit/example/test_radial_tree.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_radial_tree.html))
 * Pan and zoom ([demo](http://romsson.github.io/dragit/example/test_pan_zoom.html) | [source](https://github.com/romsson/dragit/blob/master/example/test_pan_zoom.html))
 
-#### Complex
+More advanced ones:
 
 * Interactive soccer bracket ([demo](http://romain.vuillemot.net/projects/worldcup14/))
 * A Re-Recreation of Gapminder's Wealth of Nations ([demo](http://romsson.github.io/dragit/example/nations.html) | [source](https://github.com/romsson/dragit/blob/master/example/nations.html))
